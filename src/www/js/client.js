@@ -84,11 +84,16 @@ let cameraOrbitHorisontal = 0
 let cameraOrbitVertical = Math.PI / 6
 
 let landTypes = [
-  'grass',
   'dirt',
+  'grass',
   'sand'
 ]
 let currentLandType = 0
+
+const MOUSE_ACTION_RAISE = 'raise'
+const MOUSE_ACTION_LOWER = 'lower'
+const MOUSE_ACTION_PAINT = 'paint'
+let currentMouseAction = MOUSE_ACTION_RAISE
 
 const keyboard = {}
 document.addEventListener('keydown', e => { keyboard[e.key.toUpperCase()] = true; })
@@ -122,7 +127,8 @@ requestAnimationFrame (function render(t) {
  
   output.innerHTML = `
     Land type: ${landTypes[currentLandType].toUpperCase()}<br/>
-    Marker position: ${markerPosition[0]}, ${markerPosition[2]} 
+    Marker position: ${markerPosition[0]}, ${markerPosition[2]}<br/>
+    Mouse action: ${currentMouseAction.toUpperCase()}
   `.trim()
   
   prevKeyboard = jsonCopy(keyboard)
@@ -190,12 +196,22 @@ function runLogic(t) {
     ]
   }
 
+  if (keyboard[1]) {
+    currentMouseAction = MOUSE_ACTION_RAISE
+  }
+  if (keyboard[2]) {
+    currentMouseAction = MOUSE_ACTION_LOWER
+  }
+  if (keyboard[3]) {
+    currentMouseAction = MOUSE_ACTION_PAINT
+  }
+
   const landPoint = land.points[markerPosition[2] * land.size + markerPosition[0]]
   const heightDelta = 0.1
-  if (keyboard.ARROWUP) {
+  if (keyboard.ARROWUP || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_RAISE)) {
     landPoint.height += heightDelta
   }
-  if (keyboard.ARROWDOWN) {
+  if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_LOWER)) {
     landPoint.height -= heightDelta
   }
   if (keyboard.DELETE) {
@@ -207,7 +223,7 @@ function runLogic(t) {
   if (keyboard.ARROWRIGHT && !prevKeyboard.ARROWRIGHT) {
     currentLandType = Math.min(currentLandType + 1, landTypes.length - 1)
   }
-  if (keyboard[' ']) {
+  if (keyboard[' '] || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_PAINT)) {
     landPoint.type = landTypes[currentLandType]
   }
 }
