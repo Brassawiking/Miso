@@ -1,4 +1,4 @@
-import { v3, linePlaneIntersectionPoint } from './math.js'
+import { v3, m4, linePlaneIntersectionPoint } from './math.js'
 
 import { Sky } from './renders/Sky.js'
 import { Sea } from './renders/Sea.js'
@@ -76,8 +76,12 @@ const terrain = new Terrain(gl, landSize)
 const terrainMarker = new TerrainMarker(gl)
 const camera = new Camera()
 
+const state = {}
 let playerPosition = [0, 0, 0]
 let markerPosition = [0, 0, 0]
+let cameraOrbitDistance = 10
+let cameraOrbitHorisontal = 0
+let cameraOrbitVertical = Math.PI / 6
 
 let landTypes = [
   'grass',
@@ -91,16 +95,17 @@ document.addEventListener('keydown', e => { keyboard[e.key.toUpperCase()] = true
 document.addEventListener('keyup', e => { keyboard[e.key.toUpperCase()] = false })
 window.keyboard = keyboard
 
-const mouse = {
-  x: 0,
-  y: 0
-}
+const mouse = { x: 0, y: 0, buttons: [] }
+document.addEventListener('contextmenu', e => { e.preventDefault() })
+document.addEventListener('mousedown', e => { mouse.buttons[e.button] = true })
+document.addEventListener('mouseup', e => { mouse.buttons[e.button] = false })
 document.addEventListener('mousemove', e => {
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1
   mouse.y = (1 - (e.clientY / window.innerHeight)) * 2 - 1
 })
 
-let prevKeyboard = {}
+let prevKeyboard = jsonCopy(keyboard)
+let prevMouse = jsonCopy(mouse)
 requestAnimationFrame (function render(t) {
   stats.begin()
 
@@ -120,7 +125,8 @@ requestAnimationFrame (function render(t) {
     Marker position: ${markerPosition[0]}, ${markerPosition[2]} 
   `.trim()
   
-  prevKeyboard = Object.assign({}, keyboard)
+  prevKeyboard = jsonCopy(keyboard)
+  prevMouse = jsonCopy(mouse)
 
   stats.end()
   requestAnimationFrame(render)
@@ -148,10 +154,29 @@ function runLogic(t) {
     playerPosition[1] -= speed
   }
 
+  if (mouse.buttons[2]) {
+    if (!prevMouse.buttons[2]) {
+      state.orbitMoveStart = {
+        mouseX: mouse.x,
+        mouseY: mouse.y,
+        orbitH: cameraOrbitHorisontal,
+        orbitV: cameraOrbitVertical
+      }
+    }
+
+    const orbitSpeed = 1.5;
+    cameraOrbitHorisontal = state.orbitMoveStart.orbitH - (mouse.x - state.orbitMoveStart.mouseX) * orbitSpeed
+    cameraOrbitVertical = clamp(
+      state.orbitMoveStart.orbitV - (mouse.y - state.orbitMoveStart.mouseY) * orbitSpeed,
+      -Math.PI / 2,
+      Math.PI / 2
+    )
+  }
+  
   updateCamera(t, playerPosition)
 
   const planeIntersection = linePlaneIntersectionPoint(
-    camera.z,
+    v3.add(camera.z, v3.add(v3.multiply(camera.x, mouse.x * camera.aspect), v3.multiply(camera.y, mouse.y))),
     camera.position,
     [0, 1, 0],
     [0, 0, 0]
@@ -159,9 +184,9 @@ function runLogic(t) {
 
   if (planeIntersection) {
     markerPosition = [
-      Math.min(Math.max(Math.round(planeIntersection[0]), 0), land.size-1), 
+      clamp(Math.round(planeIntersection[0]), 0, landSize - 1),
       0, 
-      Math.min(Math.max(Math.round(planeIntersection[2]), 0), land.size-1), 
+      clamp(Math.round(planeIntersection[2]), 0, landSize - 1),
     ]
   }
 
@@ -191,9 +216,15 @@ function updateCamera(t, playerPosition) {
   camera.near = 1
   camera.far = 1000
   camera.aspect = canvas.clientWidth / canvas.clientHeight
-  camera.position = v3.add(playerPosition, [0, 5, -7])
-  
-  camera.target = v3.add(playerPosition, [0, 0, 0])
+  camera.target = playerPosition
+
+  let offset = [
+    cameraOrbitDistance * Math.sin(cameraOrbitHorisontal) * Math.cos(cameraOrbitVertical), 
+    cameraOrbitDistance * Math.sin(cameraOrbitVertical),
+    -cameraOrbitDistance * Math.cos(cameraOrbitHorisontal) * Math.cos(cameraOrbitVertical),
+  ]
+
+  camera.position = v3.add(playerPosition, offset)
   camera.update()
 }
 
@@ -213,4 +244,12 @@ function createLand(size) {
   }
 
   return land
+}
+
+function jsonCopy (obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
+
+function clamp (value, min, max) {
+  return Math.min(Math.max(value, min), max)
 }
