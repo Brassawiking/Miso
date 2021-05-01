@@ -185,6 +185,6 @@ export class Terrain {
       }))
     )
 
-    gl.drawArrays(gl.TRIANGLES, 0, this.mesh.length / 3)
+    gl.drawArrays(gl.TRIANGLES, 0, this.mesh.length)
   }
 } 

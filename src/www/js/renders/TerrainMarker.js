@@ -8,6 +8,7 @@ export class TerrainMarker {
         vertexPosition: 'vec4'
       },
       uniforms: {
+        color: 'vec3',
         time: 'float',
         cameraView: 'mat4',
         worldPosition: 'vec3'
@@ -30,7 +31,7 @@ export class TerrainMarker {
       `,
       fragment: `
         void main() {
-          fragment = vec4(vec3(1.0, 0, 0) * gl_FragCoord.z, 1.0);
+          fragment = vec4(color * gl_FragCoord.z, 1.0);
         }
       `
     })
@@ -44,7 +45,7 @@ export class TerrainMarker {
     this.positionBuffer = createArrayBuffer(gl, this.mesh)
   }
 
-  render(gl, t, cameraView, position) {
+  render(gl, t, cameraView, position, color) {
     this.shaderProgram.use({
       attributes: {
         vertexPosition: {
@@ -57,6 +58,7 @@ export class TerrainMarker {
         }
       },
       uniforms: {
+        color: ['3f', ...color],
         time: ['1f', t / 1000],
         cameraView: ['Matrix4fv', false, cameraView],
         worldPosition: ['3f', ...position]

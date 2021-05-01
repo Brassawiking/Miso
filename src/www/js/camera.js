@@ -50,7 +50,10 @@ export class Camera {
       0, 0, (far + near) / (far - near), -(2.0 * far * near) / (far - near),
       0, 0, 1, 0
     ]
-
+    
+    this.x = cameraX
+    this.y = cameraY
+    this.z = cameraZ
     this.matrix = m4.multiply(projection, m4.multiply(rotation, translation))
   }
 }

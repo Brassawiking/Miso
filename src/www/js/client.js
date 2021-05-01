@@ -1,4 +1,4 @@
-import { v3 } from './math.js'
+import { v3, linePlaneIntersectionPoint } from './math.js'
 
 import { Sky } from './renders/Sky.js'
 import { Sea } from './renders/Sea.js'
@@ -91,6 +91,15 @@ document.addEventListener('keydown', e => { keyboard[e.key.toUpperCase()] = true
 document.addEventListener('keyup', e => { keyboard[e.key.toUpperCase()] = false })
 window.keyboard = keyboard
 
+const mouse = {
+  x: 0,
+  y: 0
+}
+document.addEventListener('mousemove', e => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+  mouse.y = (1 - (e.clientY / window.innerHeight)) * 2 - 1
+})
+
 let prevKeyboard = {}
 requestAnimationFrame (function render(t) {
   stats.begin()
@@ -98,20 +107,21 @@ requestAnimationFrame (function render(t) {
   runLogic(t)
 
   gl.clear(gl.DEPTH_BUFFER_BIT)
-  updateCamera(t, playerPosition)
 
   sky.render(gl, t)
   terrain.render(gl, t, camera.matrix, land)
-  terrainMarker.render(gl, t, camera.matrix, markerPosition)
+  terrainMarker.render(gl, t, camera.matrix, markerPosition, [1, 0, 0])
   //testModel.render(gl, t, camera.matrix, playerPosition)
  
   sea.render(gl, t, camera.matrix)
  
   output.innerHTML = `
-    Land type: ${landTypes[currentLandType].toUpperCase()}
-  `
+    Land type: ${landTypes[currentLandType].toUpperCase()}<br/>
+    Marker position: ${markerPosition[0]}, ${markerPosition[2]} 
+  `.trim()
   
   prevKeyboard = Object.assign({}, keyboard)
+
   stats.end()
   requestAnimationFrame(render)
 })
@@ -138,12 +148,22 @@ function runLogic(t) {
     playerPosition[1] -= speed
   }
 
-  const markerAheadOffset = 0
-  markerPosition = [
-    Math.min(Math.max(Math.round(playerPosition[0]), 0), land.size-1), 
-    0, 
-    Math.min(Math.max(Math.round(playerPosition[2] + markerAheadOffset), 0), land.size-1), 
-  ]
+  updateCamera(t, playerPosition)
+
+  const planeIntersection = linePlaneIntersectionPoint(
+    camera.z,
+    camera.position,
+    [0, 1, 0],
+    [0, 0, 0]
+  )
+
+  if (planeIntersection) {
+    markerPosition = [
+      Math.min(Math.max(Math.round(planeIntersection[0]), 0), land.size-1), 
+      0, 
+      Math.min(Math.max(Math.round(planeIntersection[2]), 0), land.size-1), 
+    ]
+  }
 
   const landPoint = land.points[markerPosition[2] * land.size + markerPosition[0]]
   const heightDelta = 0.1

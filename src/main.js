@@ -13,7 +13,7 @@ const server = http.createServer((req, res) => {
   })
 
   req.on('end', () => {
-    const path = new URL(req.url, `http://${req.headers.host}`).pathname
+    let path = new URL(req.url, `http://${req.headers.host}`).pathname
     const result = (statusCode, headers, body) => {
       res.writeHead(statusCode, headers).end(body)
     }
@@ -31,10 +31,14 @@ const server = http.createServer((req, res) => {
         return result(500, null, http.STATUS_CODES[500])
       }
     }
+
+    if (path === '/') {
+      path = '/index.html'
+    }
   
     fs.readFile('./src/www' + path, (err, data) => {
       if (err) {
-        console.error(err)
+        console.error('Could not serve: ' + path, err)
         return result(404, null, http.STATUS_CODES[404])
       }
       return result(200, { 'Content-Type': getContentType(path) }, data)

@@ -26,6 +26,14 @@ export const v3 = {
     ]
   },
 
+  multiply(v, scalar) {
+    return [
+      v[0] * scalar, 
+      v[1] * scalar, 
+      v[2] * scalar
+    ]
+  },
+
   cross(a, b) {
     return [
       a[1] * b[2] - a[2] * b[1],
@@ -67,5 +75,15 @@ export const m4 = {
     }
 
     return result
+  }
+}
+
+export function linePlaneIntersectionPoint(lineDirection, linePoint, planeNormal, planePoint) {
+  const lineDotNormal = v3.dot(lineDirection, planeNormal)
+  if (Math.abs(lineDotNormal) > 0) {
+    const distanceToPlane = v3.dot(v3.subtract(planePoint, linePoint), planeNormal) / lineDotNormal
+    return v3.add(linePoint, v3.multiply(lineDirection, distanceToPlane))
+  } else {
+    return null
   }
 }
