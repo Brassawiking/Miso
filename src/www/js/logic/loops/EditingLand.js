@@ -1,5 +1,5 @@
 import { v3, linePlaneIntersectionPoint, clamp } from '../../common/math.js'
-import { Camera } from '../../entities/Camera.js'
+import { Camera } from '../entities/Camera.js'
 import { createScene_EditingLand } from '../../rendering/scenes/EditingLand.js'
 import { createLoop_GameOver } from './GameOver.js'
 
@@ -55,9 +55,25 @@ export function createLoop_EditingLand ({
     })
    
     output.innerHTML = `
-      Land type: ${landTypes[currentLandType].toUpperCase()}<br/>
-      Marker position: ${markerPosition[0]}, ${markerPosition[2]}<br/>
-      Mouse action: ${currentMouseAction.toUpperCase()}
+      <table style="width: 100%;">
+        <tr><th style="text-align: left;"> Mouse action </th><td> ${currentMouseAction.toUpperCase()} </td><tr>
+        <tr><th style="text-align: left;"> Land type </th><td> ${landTypes[currentLandType].toUpperCase()} </td><tr>
+        <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
+      </table>
+      <br/>
+
+      <table style="width: 100%;">
+        <tr><th colspan="2" style="text-align: center;"> ----- Controls ----- </th><tr>
+        <tr><th style="text-align: left;"> WASDEQ </th><td> Move camera </td><tr>
+        <tr><th style="text-align: left;"> Up/Down </th><td> Raise/Lower land </td><tr>
+        <tr><th style="text-align: left;"> Left/Right </th><td> Change land type </td><tr>
+        <tr><th style="text-align: left;"> Space </th><td> Paint land type </td><tr>
+        <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
+        <tr><th style="text-align: left;"> Mouse left </th><td> Mouse action </td><tr>
+        <tr><th style="text-align: left;"> Mouse right </th><td> Rotate camera </td><tr>
+        <tr><th style="text-align: left;"> 1/2/3 </th><td> Switch mouse action </td><tr>
+        <tr><th style="text-align: left;"> K </th><td> Go to game over </td><tr>
+      </table>
     `.trim()
 
     if (keyboard.K && !prevKeyboard.K) {
@@ -143,6 +159,7 @@ export function createLoop_EditingLand ({
     }
     if (keyboard.DELETE) {
       landPoint.height = 0
+      landPoint.type = 'grass'
     }
     if (keyboard.ARROWLEFT && !prevKeyboard.ARROWLEFT) {
       currentLandType = Math.max(currentLandType - 1, 0)

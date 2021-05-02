@@ -1,4 +1,4 @@
-import { v3, m4 } from '../common/math.js'
+import { v3, m4 } from '../../common/math.js'
 
 export class Camera {
 
