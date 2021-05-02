@@ -72,7 +72,7 @@ export function createRender_Terrain(gl, gridSize) {
       vec4 getColor(vec2 uv, vec3 surfaceNormal) {
         vec4 baseColor = texture(colorMap, uv);
         
-        float waves = (sin(v_pos.x * 50.0) * cos(v_pos.z * 10.0) + 1.0) / 2.0;
+        float waves = (sin(v_pos.x * 50.0) * cos(v_pos.z * 10.0) * cos(v_pos.y * 10.0) + 1.0) / 2.0;
         
         return baseColor 
           + vec4(vec3(1.0, 1.0, 0) * waves, 1.0) * baseColor.b;
