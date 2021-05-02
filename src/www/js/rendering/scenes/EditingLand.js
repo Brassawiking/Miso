@@ -1,15 +1,15 @@
-import { createSky } from '../renders/Sky.js'
-import { createSea } from '../renders/Sea.js'
-import { createTerrain } from '../renders/Terrain.js'
-import { createTerrainMarker } from '../renders/TerrainMarker.js'
-import { createTestModel } from '../renders/TestModel.js'
+import { createRender_Sky } from '../renders/Sky.js'
+import { createRender_Sea } from '../renders/Sea.js'
+import { createRender_Terrain } from '../renders/Terrain.js'
+import { createRender_TerrainMarker } from '../renders/TerrainMarker.js'
+import { createRender_TestModel } from '../renders/TestModel.js'
 
-export function createEditingLand(gl, landSize) {
-  const Sky = createSky(gl)
-  const Sea = createSea(gl)
-  const Terrain = createTerrain(gl, landSize)
-  const TerrainMarker = createTerrainMarker(gl)
-  const TestModel = createTestModel(gl)
+export function createScene_EditingLand(gl, landSize) {
+  const render_Sky = createRender_Sky(gl)
+  const render_Sea = createRender_Sea(gl)
+  const render_Terrain = createRender_Terrain(gl, landSize)
+  const render_TerrainMarker = createRender_TerrainMarker(gl)
+  const render_TestModel = createRender_TestModel(gl)
 
   return ({
     cameraView, 
@@ -27,12 +27,12 @@ export function createEditingLand(gl, landSize) {
 
     gl.clear(gl.DEPTH_BUFFER_BIT)
 
-    Sky()
-    Terrain({ time, cameraView, heightMap, colorMap })
-    TerrainMarker(cameraView, markerPosition, [1, 0, 0])
-    TestModel(cameraView, playerPosition)
+    render_Sky()
+    render_Terrain({ time, cameraView, heightMap, colorMap })
+    render_TerrainMarker(cameraView, markerPosition, [1, 0, 0])
+    render_TestModel(cameraView, playerPosition)
 
     // Transparent renders
-    Sea(cameraView)  
+    render_Sea(cameraView)  
   }
 }

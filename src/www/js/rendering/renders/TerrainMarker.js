@@ -1,7 +1,7 @@
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createTerrainMarker(gl) {
+export function createRender_TerrainMarker(gl) {
   const Shader = createShader(gl, {
     attributes: {
       vertexPosition: 'vec4'

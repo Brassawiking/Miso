@@ -1,7 +1,7 @@
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createTerrain(gl, gridSize) {
+export function createRender_Terrain(gl, gridSize) {
   const Shader = createShader(gl, {
     attributes: {
       a_pos: 'vec4',

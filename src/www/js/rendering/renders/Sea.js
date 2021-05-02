@@ -1,7 +1,7 @@
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createSea(gl) {
+export function createRender_Sea(gl) {
   const Shader = createShader(gl, {
     attributes: {
       a_pos: 'vec4'

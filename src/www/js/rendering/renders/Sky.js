@@ -1,7 +1,7 @@
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createSky(gl) {
+export function createRender_Sky(gl) {
   const Shader = createShader(gl, {
     attributes: {
       vertex: 'vec4'

@@ -1,7 +1,7 @@
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createTestModel(gl) {
+export function createRender_TestModel(gl) {
   const Shader = createShader(gl, {
     attributes: {
       vertexPosition: 'vec4'
