@@ -42,17 +42,31 @@ export function createRender_Terrain(gl, gridSize) {
     `,
     fragment: `
       vec3 getSurfaceNormal() {
-        float sampleOffset = 1.0 / (gridSize * 4.0);
-        
-        float c = texture(heightMap, v_uv + vec2(0.5, 0.5) / gridSize).r;
-        float t = texture(heightMap, v_uv + vec2(0.5, 0.5+sampleOffset) / gridSize).r;
-        float r = texture(heightMap, v_uv + vec2(0.5+sampleOffset, 0.5) / gridSize).r;
+        float sampleOffset = 0.5;
+        vec2 uvCenter = v_uv + vec2(0.5, 0.5) / gridSize;
 
-        vec3 vC = vec3(0, c, 0);
+        float t = texture(heightMap, uvCenter + vec2(0.0, sampleOffset) / gridSize).r;
+        float b = texture(heightMap, uvCenter + vec2(0.0, -sampleOffset) / gridSize).r;
+        float r = texture(heightMap, uvCenter + vec2(sampleOffset, 0.0) / gridSize).r;
+        float l = texture(heightMap, uvCenter + vec2(-sampleOffset, 0.0) / gridSize).r;
+
         vec3 vT = vec3(0, t, sampleOffset);
+        vec3 vB = vec3(0, b, -sampleOffset);
         vec3 vR = vec3(sampleOffset, r, 0);
+        vec3 vL = vec3(-sampleOffset, l, 0);
 
-        return normalize(cross(vT - vC, vR - vC));
+        vec3 normalTR = normalize(cross(vT - vB, vR - vL));
+        vec3 normalRB = normalize(cross(vR - vL, vB - vT));
+        vec3 normalBL = normalize(cross(vB - vT, vL - vR));
+        vec3 normalLT = normalize(cross(vL - vR, vT - vB));
+
+        return normalize(
+          mix(
+            normalize(mix(normalTR, normalRB, 0.5)),
+            normalize(mix(normalBL, normalLT, 0.5)),
+            0.5
+          )
+        );
       }
 
       vec4 getColor(vec2 uv, vec3 surfaceNormal) {
