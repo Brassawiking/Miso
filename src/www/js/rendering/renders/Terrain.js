@@ -16,16 +16,10 @@ export function createRender_Terrain(gl, gridSize) {
     },
     varyings: {
       v_uv: 'vec2',
+      v_pos: 'vec4'
     },
     vertex: `
       void main() {
-        vec4 position = vec4(
-          a_pos.x,
-          texture(heightMap, a_uv + vec2(0.5, 0.5) / gridSize).r,
-          a_pos.y,
-          1 
-        );
-
         mat4 toWorldSpace = mat4(
           1.0, 0, 0, 0,
           0, 1.0, 0, 0,
@@ -33,40 +27,70 @@ export function createRender_Terrain(gl, gridSize) {
           0, 0, 0, 1.0
         );
 
+        vec4 position = vec4(
+          a_pos.x,
+          texture(heightMap, a_uv + vec2(0.5, 0.5) / gridSize).r,
+          a_pos.y,
+          1 
+        ) * toWorldSpace;
+
+        v_pos = position;
         v_uv = a_uv;
 
-        gl_Position = position 
-          * toWorldSpace
-          * cameraView;
+        gl_Position = position * cameraView;
       }
     `,
     fragment: `
-      void main() {
-        float heightMapSize = float(textureSize(heightMap, 0).x);
-
-        float sampleOffset = (1.0 / heightMapSize) / 1.0;
-        float c = texture(heightMap, v_uv + vec2(0.5, 0.5) / heightMapSize).r;
-        float t = texture(heightMap, v_uv + vec2(0.5, 0.5+sampleOffset) / heightMapSize).r;
-        float b = texture(heightMap, v_uv + vec2(0.5, 0.5-sampleOffset) / heightMapSize).r;
-        float r = texture(heightMap, v_uv + vec2(0.5+sampleOffset, 0.5) / heightMapSize).r;
-        float l = texture(heightMap, v_uv + vec2(0.5-sampleOffset, 0.5) / heightMapSize).r;
+      vec3 getSurfaceNormal() {
+        float sampleOffset = 1.0 / (gridSize * 4.0);
+        
+        float c = texture(heightMap, v_uv + vec2(0.5, 0.5) / gridSize).r;
+        float t = texture(heightMap, v_uv + vec2(0.5, 0.5+sampleOffset) / gridSize).r;
+        float r = texture(heightMap, v_uv + vec2(0.5+sampleOffset, 0.5) / gridSize).r;
 
         vec3 vC = vec3(0, c, 0);
         vec3 vT = vec3(0, t, sampleOffset);
-        vec3 vB = vec3(0, t, -sampleOffset);
         vec3 vR = vec3(sampleOffset, r, 0);
-        vec3 vL = vec3(-sampleOffset, r, 0);
 
-        vec3 normal = normalize(cross(vT - vC, vR - vC));
+        return normalize(cross(vT - vC, vR - vC));
+      }
+
+      vec4 getColor(vec2 uv, vec3 surfaceNormal) {
+        vec4 baseColor = texture(colorMap, uv);
+        
+        float waves = (sin(v_pos.x * 50.0) * cos(v_pos.z * 10.0) + 1.0) / 2.0;
+        
+        return baseColor 
+          + vec4(vec3(1.0, 1.0, 0) * waves, 1.0) * baseColor.b;
+      }
+
+      void main() {
+        vec3 normal = getSurfaceNormal();
 
         float lightTime = time / 1.0;
         float light = dot(-normalize(vec3(sin(lightTime) * 3.0, -3.0, vec3(cos(lightTime) * 3.0))), normal);
 
-        //fragment = vec4(vec3(0.34, 0.69, 0) * max(light, 0.25), 1);
-        fragment = vec4((texture(colorMap, v_uv) * max(light, 0.4)).rgb, 1);
-        //fragment = vec4(max(light, 0.1) * (normal + 1.0) / 2.0, 1);
-        //fragment = vec4((normal + 1.0) / 2.0, 1);
-        //fragment = vec4(normal, 1);
+        vec2 mapXY = v_uv * gridSize;
+        vec2 mapXYCorner = floor(mapXY);
+        vec2 mapXYFractional = fract(mapXY);
+
+        vec2 uv_x0y0 = (mapXYCorner + vec2(0.5, 0.5)) / gridSize;
+        vec2 uv_x1y0 = (mapXYCorner + vec2(1.5, 0.5)) / gridSize;
+        vec2 uv_x0y1 = (mapXYCorner + vec2(0.5, 1.5)) / gridSize;
+        vec2 uv_x1y1 = (mapXYCorner + vec2(1.5, 1.5)) / gridSize;
+
+        vec4 color_x0y0 = getColor(uv_x0y0, normal);
+        vec4 color_x1y0 = getColor(uv_x1y0, normal);
+        vec4 color_x0y1 = getColor(uv_x0y1, normal);
+        vec4 color_x1y1 = getColor(uv_x1y1, normal);        
+
+        vec4 color = mix(
+          mix(color_x0y0, color_x1y0, mapXYFractional.x),
+          mix(color_x0y1, color_x1y1, mapXYFractional.x),
+          mapXYFractional.y
+        );
+
+        fragment = vec4((color * max(light, 0.4)).rgb, 1);
       }
     `
   })
