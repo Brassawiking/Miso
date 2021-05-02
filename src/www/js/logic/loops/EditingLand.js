@@ -1,6 +1,7 @@
-import { v3, linePlaneIntersectionPoint, clamp } from '../common/math.js'
-import { Camera } from '../entities/Camera.js'
-import { createScene_EditingLand } from '../rendering/scenes/EditingLand.js'
+import { v3, linePlaneIntersectionPoint, clamp } from '../../common/math.js'
+import { Camera } from '../../entities/Camera.js'
+import { createScene_EditingLand } from '../../rendering/scenes/EditingLand.js'
+import { createLoop_GameOver } from './GameOver.js'
 
 export function createLoop_EditingLand ({ 
   gl, 
@@ -58,6 +59,10 @@ export function createLoop_EditingLand ({
       Marker position: ${markerPosition[0]}, ${markerPosition[2]}<br/>
       Mouse action: ${currentMouseAction.toUpperCase()}
     `.trim()
+
+    if (keyboard.K && !prevKeyboard.K) {
+      return createLoop_GameOver
+    }
   }
 
   function logic(t) {

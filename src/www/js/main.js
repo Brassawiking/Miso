@@ -1,7 +1,7 @@
 import { gl } from './rendering/glCanvas.js'
 import { keyboard, prevKeyboard, mouse, prevMouse, updatePrevInput} from './system/input.js'
 import { output } from './system/output.js'
-import { createLoop_EditingLand } from './loops/EditingLand.js'
+import { createLoop_EditingLand } from './logic/loops/EditingLand.js'
 import { Stats } from './external/stats.js'
 
 const stats = new Stats()
@@ -13,19 +13,26 @@ gl.canvas.width = 800
 gl.canvas.height = 600
 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
-const loop_EditingLand = createLoop_EditingLand({ 
-  gl, 
-  output,
-  keyboard,
-  prevKeyboard,
-  mouse,
-  prevMouse
-})
+let currentLoop
+const setCurrentLoop = (createLoop) => {
+  currentLoop = createLoop({
+    gl, 
+    output,
+    keyboard,
+    prevKeyboard,
+    mouse,
+    prevMouse  
+  })
+}
 
+setCurrentLoop(createLoop_EditingLand)
 requestAnimationFrame (function update(t) {
   stats.begin()
 
-  loop_EditingLand({ t })
+  const createNextLoop = currentLoop({ t })
+  if (createNextLoop) {
+    setCurrentLoop(createNextLoop)
+  }
   updatePrevInput()
 
   stats.end()
