@@ -1,27 +1,13 @@
-import { v3, m4, linePlaneIntersectionPoint } from './math.js'
-
-import { Sky } from './renders/Sky.js'
-import { Sea } from './renders/Sea.js'
-import { TestModel } from './renders/TestModel.js'
-import { Terrain } from './renders/Terrain.js'
-import { TerrainMarker } from './renders/TerrainMarker.js'
-import { Camera } from './camera.js'
-
-import Stats from './external/stats.js'
+import { gl } from './rendering/glCanvas.js'
+import { v3, linePlaneIntersectionPoint, clamp } from './common/math.js'
+import { jsonCopy } from './common/util.js'
+import { createEditingLand } from './rendering/scenes/EditingLand.js'
+import { Camera } from './entities/Camera.js'
+import { Stats } from './external/stats.js'
 
 const stats = new Stats()
 stats.showPanel(1)
 document.body.appendChild(stats.dom)
-
-const canvas = document.createElement('canvas')
-Object.assign(canvas.style, {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  width: '100vw',
-  height: '100vh'
-})
-document.body.appendChild(canvas)
 
 const output = document.createElement('output')
 Object.assign(output.style, {
@@ -36,23 +22,10 @@ Object.assign(output.style, {
 })
 document.body.appendChild(output)
 
-const gl = canvas.getContext('webgl2', {
-  preserveDrawingBuffer: true,
-  alpha: false
-  //desynchronized: true,
-  //powerPreference: 'high-performance'
-})
-window.gl = gl
-
-const extensions = [
-  gl.getExtension('OES_texture_float_linear')
-]
-console.log('EXTENSIONS:', extensions)
-
 // Internal resolution
-canvas.width = 800
-canvas.height = 600
-gl.viewport(0, 0, canvas.width, canvas.height)
+gl.canvas.width = 800
+gl.canvas.height = 600
+gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
 // window.addEventListener('resize', e => {
 //   canvas.width = canvas.clientWidth
@@ -60,20 +33,11 @@ gl.viewport(0, 0, canvas.width, canvas.height)
 //   gl.viewport(0, 0, canvas.width, canvas.height)  
 // })
 
-gl.enable(gl.DEPTH_TEST)
-gl.depthFunc(gl.LESS)
-
-gl.enable(gl.BLEND)
-gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
 const landSize = 64
 const land = createLand(landSize)
 
-const sky = new Sky(gl)
-const sea = new Sea(gl)
-const testModel = new TestModel(gl)
-const terrain = new Terrain(gl, landSize)
-const terrainMarker = new TerrainMarker(gl)
+const EditingLand = createEditingLand(gl, landSize)
+
 const camera = new Camera()
 
 const state = {}
@@ -115,15 +79,21 @@ requestAnimationFrame (function render(t) {
   stats.begin()
 
   runLogic(t)
-
-  gl.clear(gl.DEPTH_BUFFER_BIT)
-
-  sky.render(gl, t)
-  terrain.render(gl, t, camera.matrix, land)
-  terrainMarker.render(gl, t, camera.matrix, markerPosition, [1, 0, 0])
-  //testModel.render(gl, t, camera.matrix, playerPosition)
- 
-  sea.render(gl, t, camera.matrix)
+  EditingLand({
+    cameraView: camera.matrix,
+    time: t,
+    markerPosition,
+    playerPosition,
+    heightMap: land.points.map(x => x.height),
+    colorMap: land.points.flatMap(x => {
+      switch(x.type) {
+        case 'grass': return [86, 176, 0]
+        case 'dirt': return [115, 118, 83]
+        case 'sand': return [246, 228, 173]
+        default: return [255, 255, 255]
+      }
+    })
+  })
  
   output.innerHTML = `
     Land type: ${landTypes[currentLandType].toUpperCase()}<br/>
@@ -231,7 +201,7 @@ function runLogic(t) {
 function updateCamera(t, playerPosition) {
   camera.near = 1
   camera.far = 1000
-  camera.aspect = canvas.clientWidth / canvas.clientHeight
+  camera.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
   camera.target = playerPosition
 
   let offset = [
@@ -260,12 +230,4 @@ function createLand(size) {
   }
 
   return land
-}
-
-function jsonCopy (obj) {
-  return JSON.parse(JSON.stringify(obj))
-}
-
-function clamp (value, min, max) {
-  return Math.min(Math.max(value, min), max)
 }

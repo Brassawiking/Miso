@@ -87,7 +87,7 @@ export const m4 = {
   }
 }
 
-export function linePlaneIntersectionPoint(lineDirection, linePoint, planeNormal, planePoint) {
+export const linePlaneIntersectionPoint = (lineDirection, linePoint, planeNormal, planePoint) => {
   const lineDotNormal = v3.dot(lineDirection, planeNormal)
   if (Math.abs(lineDotNormal) > 0) {
     const distanceToPlane = v3.dot(v3.subtract(planePoint, linePoint), planeNormal) / lineDotNormal
@@ -96,3 +96,5 @@ export function linePlaneIntersectionPoint(lineDirection, linePoint, planeNormal
     return null
   }
 }
+
+export const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
