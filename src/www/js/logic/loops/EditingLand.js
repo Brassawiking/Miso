@@ -23,9 +23,9 @@ export function createLoop_EditingLand ({
   let cameraOrbitVertical = Math.PI / 6
   
   let landTypes = [
+    'sand',
     'dirt',
-    'grass',
-    'sand'
+    'grass'
   ]
   let currentLandType = 0
   
