@@ -47,7 +47,7 @@ export function createLoop_EditingLand ({
       colorMap: land.points.flatMap(x => {
         switch(x.type) {
           case 'grass': return [86, 176, 0]
-          case 'dirt': return [115, 118, 83]
+          case 'dirt': return [118, 85, 43]
           case 'sand': return [246, 228, 173]
           default: return [255, 255, 255]
         }
