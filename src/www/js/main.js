@@ -11,6 +11,8 @@ document.body.appendChild(stats.dom)
 // Internal resolution
 gl.canvas.width = 800
 gl.canvas.height = 600
+// gl.canvas.width = gl.canvas.clientWidth
+// gl.canvas.height = gl.canvas.clientHeight
 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
 let currentLoop

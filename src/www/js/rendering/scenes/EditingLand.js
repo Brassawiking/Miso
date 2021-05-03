@@ -28,7 +28,14 @@ export function createScene_EditingLand(gl, landSize) {
     gl.clear(gl.DEPTH_BUFFER_BIT)
 
     render_Sky()
-    render_Terrain({ time, cameraView, heightMap, colorMap })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [0, 0, 0] 
+    })
+    
     render_TerrainMarker(cameraView, markerPosition, [1, 0, 0])
     render_TestModel(cameraView, playerPosition)
 

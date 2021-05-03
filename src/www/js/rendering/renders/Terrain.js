@@ -8,6 +8,7 @@ export function createRender_Terrain(gl, gridSize) {
       a_uv: 'vec2'
     },
     uniforms: {
+      u_pos: 'vec3',
       cameraView: 'mat4',
       time: 'float',
       gridSize: 'float',
@@ -21,39 +22,36 @@ export function createRender_Terrain(gl, gridSize) {
     vertex: `
       void main() {
         mat4 toWorldSpace = mat4(
-          1.0, 0, 0, 0,
-          0, 1.0, 0, 0,
-          0, 0, 1.0, 0,
+          1.0, 0, 0, u_pos.x,
+          0, 1.0, 0, u_pos.y,
+          0, 0, 1.0, u_pos.z,
           0, 0, 0, 1.0
         );
 
         vec4 position = vec4(
           a_pos.x,
-          texture(heightMap, a_uv + vec2(0.5, 0.5) / gridSize).r,
+          texture(heightMap, a_uv).r,
           a_pos.y,
           1 
         ) * toWorldSpace;
 
         v_pos = position;
         v_uv = a_uv;
-
         gl_Position = position * cameraView;
       }
     `,
     fragment: `
       vec3 getSurfaceNormal() {
-        float sampleOffset = 0.5;
-        vec2 uvCenter = v_uv + vec2(0.5, 0.5) / gridSize;
+        vec2 sampleOffset = vec2(0.5, 0);
+        float t = texture(heightMap, v_uv + sampleOffset.yx / gridSize).r;
+        float b = texture(heightMap, v_uv - sampleOffset.yx / gridSize).r;
+        float r = texture(heightMap, v_uv + sampleOffset.xy / gridSize).r;
+        float l = texture(heightMap, v_uv - sampleOffset.xy / gridSize).r;
 
-        float t = texture(heightMap, uvCenter + vec2(0.0, sampleOffset) / gridSize).r;
-        float b = texture(heightMap, uvCenter + vec2(0.0, -sampleOffset) / gridSize).r;
-        float r = texture(heightMap, uvCenter + vec2(sampleOffset, 0.0) / gridSize).r;
-        float l = texture(heightMap, uvCenter + vec2(-sampleOffset, 0.0) / gridSize).r;
-
-        vec3 vT = vec3(0, t, sampleOffset);
-        vec3 vB = vec3(0, b, -sampleOffset);
-        vec3 vR = vec3(sampleOffset, r, 0);
-        vec3 vL = vec3(-sampleOffset, l, 0);
+        vec3 vT = vec3(0, t, sampleOffset.x);
+        vec3 vB = vec3(0, b, -sampleOffset.x);
+        vec3 vR = vec3(sampleOffset.x, r, 0);
+        vec3 vL = vec3(-sampleOffset.x, l, 0);
 
         vec3 normalTR = normalize(cross(vT - vB, vR - vL));
         vec3 normalRB = normalize(cross(vR - vL, vB - vT));
@@ -88,10 +86,10 @@ export function createRender_Terrain(gl, gridSize) {
         vec2 mapXYCorner = floor(mapXY);
         vec2 mapXYFractional = fract(mapXY);
 
-        vec2 uv_x0y0 = (mapXYCorner + vec2(0.5, 0.5)) / gridSize;
-        vec2 uv_x1y0 = (mapXYCorner + vec2(1.5, 0.5)) / gridSize;
-        vec2 uv_x0y1 = (mapXYCorner + vec2(0.5, 1.5)) / gridSize;
-        vec2 uv_x1y1 = (mapXYCorner + vec2(1.5, 1.5)) / gridSize;
+        vec2 uv_x0y0 = (mapXYCorner) / gridSize;
+        vec2 uv_x1y0 = (mapXYCorner + vec2(1.0, 0)) / gridSize;
+        vec2 uv_x0y1 = (mapXYCorner + vec2(0, 1.0)) / gridSize;
+        vec2 uv_x1y1 = (mapXYCorner + vec2(1.0, 1.0)) / gridSize;
 
         vec4 color_x0y0 = getColor(uv_x0y0, normal);
         vec4 color_x1y0 = getColor(uv_x1y0, normal);
@@ -123,12 +121,12 @@ export function createRender_Terrain(gl, gridSize) {
         x, y
       )
       texCoords.push(
-        x / gridSize,     y / gridSize,
-        (x+1) / gridSize, y / gridSize,
-        (x+1) / gridSize, (y+1) / gridSize,
-        (x+1) / gridSize, (y+1) / gridSize,
-        x / gridSize,     (y+1) / gridSize,
-        x / gridSize,     y / gridSize
+        (x+0.5) / gridSize, (y+0.5) / gridSize,
+        (x+1.5) / gridSize, (y+0.5) / gridSize,
+        (x+1.5) / gridSize, (y+1.5) / gridSize,
+        (x+1.5) / gridSize, (y+1.5) / gridSize,
+        (x+0.5) / gridSize, (y+1.5) / gridSize,
+        (x+0.5) / gridSize, (y+0.5) / gridSize
       )
     }
   }
@@ -154,7 +152,8 @@ export function createRender_Terrain(gl, gridSize) {
     time, 
     cameraView,
     heightMap,
-    colorMap
+    colorMap,
+    position
   }) => {
     Shader({
       attributes: {
@@ -176,6 +175,7 @@ export function createRender_Terrain(gl, gridSize) {
         }
       },
       uniforms: {
+        u_pos: ['3f', ...position],
         time: ['1f', time / 1000],
         gridSize: ['1f', gridSize],
         cameraView: ['Matrix4fv', false, cameraView],
