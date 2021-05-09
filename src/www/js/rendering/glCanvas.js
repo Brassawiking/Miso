@@ -6,7 +6,6 @@ Object.assign(canvas.style, {
   width: '100vw',
   height: '100vh'
 })
-document.body.appendChild(canvas)
 
 export const gl = canvas.getContext('webgl2', {
   preserveDrawingBuffer: true,

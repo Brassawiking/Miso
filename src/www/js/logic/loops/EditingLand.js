@@ -4,7 +4,8 @@ import { createScene_EditingLand } from '../../rendering/scenes/EditingLand.js'
 import { createLoop_GameOver } from './GameOver.js'
 
 export function createLoop_EditingLand ({ 
-  gl, 
+  gl,
+  ui,  
   output,
   keyboard,
   prevKeyboard,
@@ -36,8 +37,126 @@ export function createLoop_EditingLand ({
  
   const scene_EditingLand = createScene_EditingLand(gl, landSize)
 
+  ui.innerHTML = `
+    <style>
+      .menu {
+        position: absolute; 
+        margin: 0;
+        padding: 0;
+        right: 10px; 
+        top: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+      }
+      .menu li {
+        cursor: pointer;
+        display: flex;
+        margin: 10px;
+        border-radius: 100%;
+        border: 1px solid #ddd;
+        height: 50px;
+        width: 50px;
+        box-sizing:border-box;
+        color: #fff;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 14px;
+        font-family: "Gothic A1", sans-serif;
+        font-weight: bold;
+      }
+      .menu li:hover {        
+        background: rgba(1, 1, 1, 0.3);
+      }
+      .menu li.selected {
+        background: #eee;
+        color: #000;
+      }
+
+    </style>
+    <ul class="menu" onmousedown="event.stopPropagation()">
+      <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>
+      <li>Char</li>
+      <li>Help</li>
+    </ul>
+
+    <style>
+      [hidden] {
+        display: none !important;
+      }
+
+      .inventory {
+        position: absolute; 
+        margin: 0;
+        padding: 0;
+        left: 20px; 
+        right: 100px; 
+        top: 20px;
+        bottom: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+        color: #fff;
+        padding: 20px;
+        font-family: "Gothic A1", sans-serif;
+
+        display: flex;
+        flex-direction: column;
+      }
+
+      .inventory h1 {
+        font-family: inherit;
+        font-weight: 100;
+        margin: 0px;
+        font-size: 44px;
+      }
+
+      .inventory .grid {
+        flex: 1 1 0px;
+        display: grid;
+        grid-template-columns: repeat(24, 1fr);
+        grid-template-rows: repeat(12, 1fr);
+        gap: 2px;
+        overflow: hidden;
+      }
+
+      .inventory .slot {
+        overflow: hidden;
+        border-radius: 4px;
+        border: 1px solid #777;
+        background: linear-gradient(142deg, rgba(2,0,36,1) 0%, rgba(52,58,74,1) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .inventory .slot:hover {
+        background: #343a4a;
+      }
+
+      .inventory .slot img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+    </style>
+    <div id="ui_inventory" class="inventory" onmousedown="event.stopPropagation()" hidden>
+      <h1>Inventory</h1>
+      <div class="grid">
+        ${
+          Array(24 * 1).fill('<div class="slot"> <img src="https://i.pinimg.com/originals/40/ed/8e/40ed8e381cf0876d77b540144c1247e0.png"/> </div>').join('')
+        }
+        ${
+          Array(24 * 1).fill('<div class="slot"> <img src="https://i.pinimg.com/originals/3b/37/86/3b37860fb69293ef99bba496fe9cb1d5.png"/> </div>').join('')
+        }
+        ${
+          Array(24 * 10).fill('<div class="slot"> </div>').join('')
+        }
+      </div>
+    </div>
+  `
+
   return ({t}) => {
     logic(t)
+
     scene_EditingLand({
       cameraView: camera.matrix,
       time: t,
