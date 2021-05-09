@@ -165,6 +165,7 @@ export function createLoop_EditingLand ({
       cameraView: camera.matrix,
       time: t,
       markerPosition,
+      brushSize,
       playerPosition,
       heightMap: land.points.map(x => x.height),
       colorMap: land.points.flatMap(x => {

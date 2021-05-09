@@ -1,3 +1,5 @@
+import { v3 } from '../../common/math.js'
+
 import { createRender_Sky } from '../renders/Sky.js'
 import { createRender_Sea } from '../renders/Sea.js'
 import { createRender_Terrain } from '../renders/Terrain.js'
@@ -14,7 +16,8 @@ export function createScene_EditingLand(gl, landSize) {
   return ({
     cameraView, 
     time,
-    markerPosition, 
+    markerPosition,
+    brushSize, 
     playerPosition,
     heightMap,
     colorMap,
@@ -37,6 +40,14 @@ export function createScene_EditingLand(gl, landSize) {
     })
     
     render_TerrainMarker(cameraView, markerPosition, [1, 0, 0])
+
+    const markerOffset = (brushSize - 1)
+    const markerOutlineColor = [1, 1, 0]
+    render_TerrainMarker(cameraView, v3.add(markerPosition, [markerOffset, 0, markerOffset]) , markerOutlineColor)
+    render_TerrainMarker(cameraView, v3.add(markerPosition, [markerOffset, 0, -markerOffset]) , markerOutlineColor)
+    render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOffset, 0, -markerOffset]) , markerOutlineColor)
+    render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOffset, 0, markerOffset]) , markerOutlineColor)
+    
     render_TestModel(cameraView, playerPosition)
 
     // Transparent renders
