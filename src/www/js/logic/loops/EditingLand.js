@@ -12,7 +12,7 @@ export function createLoop_EditingLand ({
   mouse,
   prevMouse 
 }) {
-  const landSize = 64
+  const landSize = 128
   const land = createLand(landSize)
   const camera = new Camera()
     
@@ -35,6 +35,8 @@ export function createLoop_EditingLand ({
   const MOUSE_ACTION_PAINT = 'paint'
   let currentMouseAction = MOUSE_ACTION_RAISE
  
+  let brushSize = 1
+
   const scene_EditingLand = createScene_EditingLand(gl, landSize)
 
   ui.innerHTML = `
@@ -43,19 +45,20 @@ export function createLoop_EditingLand ({
         position: absolute; 
         margin: 0;
         padding: 0;
-        right: 10px; 
+        right: 15px; 
         top: 20px;
         background: rgba(0, 0, 0, 0.3);
-        border-radius: 5px;
+        border-radius: 9999px;
+        padding: 0px 10px;
       }
       .menu li {
         cursor: pointer;
         display: flex;
-        margin: 10px;
+        margin: 10px 0;
         border-radius: 100%;
-        border: 1px solid #ddd;
-        height: 50px;
-        width: 50px;
+        border: 1px solid #fff;
+        height: 45px;
+        width: 45px;
         box-sizing:border-box;
         color: #fff;
         align-items: center;
@@ -69,8 +72,9 @@ export function createLoop_EditingLand ({
         background: rgba(1, 1, 1, 0.3);
       }
       .menu li.selected {
-        background: #eee;
-        color: #000;
+        background: #fff;
+        border-color: #fff;
+        color: #343a4a;
       }
 
     </style>
@@ -177,6 +181,7 @@ export function createLoop_EditingLand ({
       <table style="width: 100%;">
         <tr><th style="text-align: left;"> Mouse action </th><td> ${currentMouseAction.toUpperCase()} </td><tr>
         <tr><th style="text-align: left;"> Land type </th><td> ${landTypes[currentLandType].toUpperCase()} </td><tr>
+        <tr><th style="text-align: left;"> Brush size </th><td> ${brushSize} </td><tr>
         <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
       </table>
       <br/>
@@ -186,6 +191,7 @@ export function createLoop_EditingLand ({
         <tr><th style="text-align: left;"> WASDEQ </th><td> Move camera </td><tr>
         <tr><th style="text-align: left;"> Up/Down </th><td> Raise/Lower land </td><tr>
         <tr><th style="text-align: left;"> Left/Right </th><td> Change land type </td><tr>
+        <tr><th style="text-align: left;"> Z/X </th><td> Change brush size </td><tr>
         <tr><th style="text-align: left;"> Space </th><td> Paint land type </td><tr>
         <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
         <tr><th style="text-align: left;"> Mouse left </th><td> Mouse action </td><tr>
@@ -267,18 +273,31 @@ export function createLoop_EditingLand ({
     if (keyboard[3]) {
       currentMouseAction = MOUSE_ACTION_PAINT
     }
+
+    if (keyboard.Z && !prevKeyboard.Z) {
+      brushSize = Math.max(brushSize - 1, 1)
+    }
+    if (keyboard.X && !prevKeyboard.X) {
+      brushSize++
+    }
   
-    const landPoint = land.points[markerPosition[2] * land.size + markerPosition[0]]
+    const landPoints = getAllLandsPointsWithinBrush()
     const heightDelta = 0.1
     if (keyboard.ARROWUP || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_RAISE)) {
-      landPoint.height += heightDelta
+      landPoints.forEach(landPoint => {
+        landPoint.height += heightDelta
+      })
     }
     if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_LOWER)) {
-      landPoint.height -= heightDelta
+      landPoints.forEach(landPoint => {
+        landPoint.height -= heightDelta
+      })
     }
     if (keyboard.DELETE) {
-      landPoint.height = 0
-      landPoint.type = 'grass'
+      landPoints.forEach(landPoint => {
+        landPoint.height = 0
+        landPoint.type = 'grass'
+      })
     }
     if (keyboard.ARROWLEFT && !prevKeyboard.ARROWLEFT) {
       currentLandType = Math.max(currentLandType - 1, 0)
@@ -287,8 +306,25 @@ export function createLoop_EditingLand ({
       currentLandType = Math.min(currentLandType + 1, landTypes.length - 1)
     }
     if (keyboard[' '] || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_PAINT)) {
-      landPoint.type = landTypes[currentLandType]
+      landPoints.forEach(landPoint => {
+        landPoint.type = landTypes[currentLandType]
+      })
     }
+  }
+
+  function getAllLandsPointsWithinBrush() {
+    const landPoints = []
+    for (let i = 0 ; i < 2 * (brushSize - 1) + 1; ++i) {
+      for (let j = 0 ; j < 2 * (brushSize - 1) + 1; ++j) {
+        const x = clamp(markerPosition[0] + (i - brushSize + 1), 0, landSize-1)
+        const y = clamp(markerPosition[2] + (j - brushSize + 1), 0, landSize-1)
+        const landPoint = land.points[y * land.size + x]
+        if (!landPoints.includes(landPoint)) {
+          landPoints.push(landPoint)
+        }
+      }
+    }
+    return landPoints
   }
 
   function updateCamera(playerPosition) {
