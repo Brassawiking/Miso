@@ -5,6 +5,7 @@ import { createRender_Sea } from '../renders/Sea.js'
 import { createRender_Terrain } from '../renders/Terrain.js'
 import { createRender_TerrainMarker } from '../renders/TerrainMarker.js'
 import { createRender_TestModel } from '../renders/TestModel.js'
+import { createRender_Tree } from '../renders/Tree.js'
 
 export function createScene_EditingLand(gl, landSize) {
   const render_Sky = createRender_Sky(gl)
@@ -12,6 +13,7 @@ export function createScene_EditingLand(gl, landSize) {
   const render_Terrain = createRender_Terrain(gl, landSize)
   const render_TerrainMarker = createRender_TerrainMarker(gl)
   const render_TestModel = createRender_TestModel(gl)
+  const render_Tree = createRender_Tree(gl)
 
   return ({
     cameraView, 
@@ -21,6 +23,7 @@ export function createScene_EditingLand(gl, landSize) {
     playerPosition,
     heightMap,
     colorMap,
+    propMap
   }) => {
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LESS)
@@ -48,6 +51,15 @@ export function createScene_EditingLand(gl, landSize) {
     render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOffset, 0, -markerOffset]) , markerOutlineColor)
     render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOffset, 0, markerOffset]) , markerOutlineColor)
     
+    for (let i = 0; i < propMap.length; ++i) {
+      const x = i % landSize
+      const y = (i - x) / landSize
+      switch(propMap[i]) {
+        case 'tree':
+          render_Tree(cameraView, [x, heightMap[i], y])
+          break
+      }
+    }
     render_TestModel(cameraView, playerPosition)
 
     // Transparent renders

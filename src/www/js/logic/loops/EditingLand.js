@@ -175,7 +175,8 @@ export function createLoop_EditingLand ({
           case 'sand': return [246, 228, 173]
           default: return [255, 255, 255]
         }
-      })
+      }),
+      propMap: land.points.map(x => x.prop)
     })
    
     output.innerHTML = `
@@ -298,8 +299,20 @@ export function createLoop_EditingLand ({
       landPoints.forEach(landPoint => {
         landPoint.height = 0
         landPoint.type = 'grass'
+        landPoint.prop = null
       })
     }
+    if (keyboard.C && !prevKeyboard.C) {
+      landPoints.forEach(landPoint => {
+        landPoint.prop = 'tree'
+      })
+    } 
+    if (keyboard.V && !prevKeyboard.C) {
+      landPoints.forEach(landPoint => {
+        landPoint.prop = null
+      })
+    } 
+
     if (keyboard.ARROWLEFT && !prevKeyboard.ARROWLEFT) {
       currentLandType = Math.max(currentLandType - 1, 0)
     }
@@ -354,7 +367,8 @@ export function createLoop_EditingLand ({
       for (let x = 0; x < size; ++x) {
         land.points.push({
           height: 0,
-          type: 'grass'
+          type: 'grass',
+          prop: null
         })
       }  
     }

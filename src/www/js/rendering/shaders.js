@@ -1,10 +1,14 @@
+let currentProgram = null
+
 export function createShader(gl, options) {
   const shaderProgram = createGLShaderProgram(options)
   const attributes = dictionaryMap(options.attributes, key => gl.getAttribLocation(shaderProgram, key))
   const uniforms = dictionaryMap(options.uniforms, key => gl.getUniformLocation(shaderProgram, key))
 
   return (inputs) => {
-    gl.useProgram(shaderProgram)
+    if (currentProgram !== shaderProgram) {
+      gl.useProgram(shaderProgram)
+    }
 
     Object.keys(inputs.attributes).forEach(key => {
       const attribute = inputs.attributes[key]

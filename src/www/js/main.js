@@ -9,7 +9,7 @@ const stats = new Stats()
 stats.showPanel(1)
 
 document.body.appendChild(gl.canvas)
-//document.body.appendChild(stats.dom)
+document.body.appendChild(stats.dom)
 document.body.appendChild(output)
 document.body.appendChild(ui)
 

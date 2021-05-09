@@ -9,7 +9,7 @@ Object.assign(canvas.style, {
 
 export const gl = canvas.getContext('webgl2', {
   preserveDrawingBuffer: true,
-  alpha: false
+  alpha: false,
   //desynchronized: true,
   //powerPreference: 'high-performance'
 })
