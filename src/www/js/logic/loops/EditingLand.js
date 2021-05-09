@@ -194,6 +194,7 @@ export function createLoop_EditingLand ({
         <tr><th style="text-align: left;"> Up/Down </th><td> Raise/Lower land </td><tr>
         <tr><th style="text-align: left;"> Left/Right </th><td> Change land type </td><tr>
         <tr><th style="text-align: left;"> Z/X </th><td> Change brush size </td><tr>
+        <tr><th style="text-align: left;"> C/V </th><td> Add/Remove tree </td><tr>
         <tr><th style="text-align: left;"> Space </th><td> Paint land type </td><tr>
         <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
         <tr><th style="text-align: left;"> Mouse left </th><td> Mouse action </td><tr>
