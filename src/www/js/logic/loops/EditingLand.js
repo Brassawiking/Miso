@@ -211,16 +211,16 @@ export function createLoop_EditingLand ({
     const speed = 0.2
   
     if (keyboard.D) {
-      playerPosition[0] += speed
+      playerPosition = v3.add(playerPosition, v3.multiply(v3.normalize([camera.x[0], 0, camera.x[2]]), speed))
     }
     if (keyboard.A) {
-      playerPosition[0] -= speed
+      playerPosition = v3.subtract(playerPosition, v3.multiply(v3.normalize([camera.x[0], 0, camera.x[2]]), speed))
     }
     if (keyboard.W) {
-      playerPosition[2] += speed
+      playerPosition = v3.add(playerPosition, v3.multiply(v3.normalize([camera.z[0], 0, camera.z[2]]), speed))
     }
     if (keyboard.S) {
-      playerPosition[2] -= speed
+      playerPosition = v3.subtract(playerPosition, v3.multiply(v3.normalize([camera.z[0], 0, camera.z[2]]), speed))
     }
     if (keyboard.E) {
       playerPosition[1] += speed
