@@ -19,18 +19,6 @@
      id="defs2">
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient1039">
-      <stop
-         style="stop-color:#baf1fa;stop-opacity:1;"
-         offset="0"
-         id="stop1035" />
-      <stop
-         style="stop-color:#79e4f5;stop-opacity:1"
-         offset="1"
-         id="stop1037" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
        id="linearGradient1027">
       <stop
          style="stop-color:#1f9c50;stop-opacity:1;"
@@ -97,15 +85,6 @@
        x2="502.55719"
        y2="110.19896"
        gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient1039"
-       id="linearGradient1041"
-       x1="475.72083"
-       y1="172.11145"
-       x2="475.45621"
-       y2="-18.653126"
-       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -147,13 +126,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-326.23123,19.049999)">
-    <rect
-       style="fill:url(#linearGradient1041);fill-opacity:1;stroke-width:0.529167"
-       id="rect835"
-       width="294.74582"
-       height="190.76459"
-       x="326.23123"
-       y="-19.049999" />
     <circle
        style="fill:#fffde6;fill-opacity:1;stroke-width:0.405695;filter:url(#filter859)"
        id="circle837"
