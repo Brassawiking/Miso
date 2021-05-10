@@ -17,6 +17,7 @@ export function createLoop_EditingLand ({
   const camera = new Camera()
     
   const state = {}
+  let gravity = false
   let playerPosition = [0, 0, 0]
   let markerPosition = [0, 0, 0]
   let cameraOrbitDistance = 6
@@ -186,12 +187,14 @@ export function createLoop_EditingLand ({
         <tr><th style="text-align: left;"> Land type </th><td> ${landTypes[currentLandType].toUpperCase()} </td><tr>
         <tr><th style="text-align: left;"> Brush size </th><td> ${brushSize} </td><tr>
         <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
+        <tr><th style="text-align: left;"> Gravity </th><td> ${gravity ? 'ON' : 'OFF'} </td><tr>
       </table>
       <br/>
 
       <table style="width: 100%;">
         <tr><th colspan="2" style="text-align: center;"> ----- Controls ----- </th><tr>
-        <tr><th style="text-align: left;"> WASDEQ </th><td> Move camera </td><tr>
+        <tr><th style="text-align: left;"> WASDEQ </th><td> Move </td><tr>
+        <tr><th style="text-align: left;"> G </th><td> Toggle gravity </td><tr>
         <tr><th style="text-align: left;"> Up/Down </th><td> Raise/Lower land </td><tr>
         <tr><th style="text-align: left;"> Left/Right </th><td> Change land type </td><tr>
         <tr><th style="text-align: left;"> Z/X </th><td> Change brush size </td><tr>
@@ -235,6 +238,20 @@ export function createLoop_EditingLand ({
     }
     if (keyboard.Q) {
       playerPosition[1] -= speed
+    }
+
+    if (keyboard.G && !prevKeyboard.G) {
+      gravity = !gravity
+    }
+
+    if (gravity) {
+      const x = clamp(Math.round(playerPosition[0]), 0, landSize-1)
+      const y = clamp(Math.round(playerPosition[2]), 0, landSize-1)
+      playerPosition = v3.add(playerPosition, [
+        0, 
+        (land.points[y * land.size + x].height - playerPosition[1]) / 10, 
+        0
+      ])
     }
   
     if (mouse.buttons[2]) {
