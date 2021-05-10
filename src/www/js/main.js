@@ -37,15 +37,18 @@ const setCurrentLoop = (createLoop) => {
 }
 
 setCurrentLoop(createLoop_StartScreen)
+
+let prevT = performance.now()
 requestAnimationFrame (function update(t) {
   stats.begin()
 
-  const createNextLoop = currentLoop({ t })
+  const createNextLoop = currentLoop({ t, dt: t-prevT })
   if (createNextLoop) {
     setCurrentLoop(createNextLoop)
   }
   updatePrevInput()
-
+  prevT = t
+  
   stats.end()
   requestAnimationFrame(update)
 })

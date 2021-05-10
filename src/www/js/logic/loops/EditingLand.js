@@ -12,16 +12,16 @@ export function createLoop_EditingLand ({
   mouse,
   prevMouse 
 }) {
-  const landSize = 128
+  const landSize = 512
   const land = createLand(landSize)
   const camera = new Camera()
     
   const state = {}
   let playerPosition = [0, 0, 0]
   let markerPosition = [0, 0, 0]
-  let cameraOrbitDistance = 10
+  let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = 0
-  let cameraOrbitVertical = Math.PI / 6
+  let cameraOrbitVertical = Math.PI / 5
   
   let landTypes = [
     'sand',
@@ -36,6 +36,13 @@ export function createLoop_EditingLand ({
   let currentMouseAction = MOUSE_ACTION_RAISE
  
   let brushSize = 1
+
+  let heightMap = new Float32Array(new Array(land.points.length))
+  let colorMap = new Uint8Array(new Array(land.points.length * 3))
+  let propMap = new Array(land.points.length)
+  updateHeightMap()
+  updateColorMap()
+  updatePropMap()
 
   const scene_EditingLand = createScene_EditingLand(gl, landSize)
 
@@ -158,8 +165,8 @@ export function createLoop_EditingLand ({
     </div>
   `
 
-  return ({t}) => {
-    logic(t)
+  return ({t, dt}) => {
+    logic(t, dt)
 
     scene_EditingLand({
       cameraView: camera.matrix,
@@ -167,19 +174,13 @@ export function createLoop_EditingLand ({
       markerPosition,
       brushSize,
       playerPosition,
-      heightMap: land.points.map(x => x.height),
-      colorMap: land.points.flatMap(x => {
-        switch(x.type) {
-          case 'grass': return [86, 176, 0]
-          case 'dirt': return [118, 85, 43]
-          case 'sand': return [246, 228, 173]
-          default: return [255, 255, 255]
-        }
-      }),
-      propMap: land.points.map(x => x.prop)
+      heightMap,
+      colorMap,
+      propMap
     })
    
-    output.innerHTML = `
+     
+    const outputContent = `
       <table style="width: 100%;">
         <tr><th style="text-align: left;"> Mouse action </th><td> ${currentMouseAction.toUpperCase()} </td><tr>
         <tr><th style="text-align: left;"> Land type </th><td> ${landTypes[currentLandType].toUpperCase()} </td><tr>
@@ -204,13 +205,18 @@ export function createLoop_EditingLand ({
       </table>
     `.trim()
 
+    if (outputContent !== state.prevOutputContent) {
+      output.innerHTML = outputContent
+      state.prevOutputContent = outputContent
+    }
+
     if (keyboard.K && !prevKeyboard.K) {
       return createLoop_GameOver
     }
   }
 
-  function logic(t) {
-    const speed = 0.2
+  function logic(t, dt) {
+    const speed = 10.5 * dt / 1000;
   
     if (keyboard.D) {
       playerPosition = v3.add(playerPosition, v3.multiply(v3.normalize([camera.x[0], 0, camera.x[2]]), speed))
@@ -290,11 +296,13 @@ export function createLoop_EditingLand ({
       landPoints.forEach(landPoint => {
         landPoint.height += heightDelta
       })
+      updateHeightMap()
     }
     if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_LOWER)) {
       landPoints.forEach(landPoint => {
         landPoint.height -= heightDelta
       })
+      updateHeightMap()
     }
     if (keyboard.DELETE) {
       landPoints.forEach(landPoint => {
@@ -302,16 +310,21 @@ export function createLoop_EditingLand ({
         landPoint.type = 'grass'
         landPoint.prop = null
       })
+      updateHeightMap()
+      updateColorMap()
+      updatePropMap()
     }
     if (keyboard.C && !prevKeyboard.C) {
       landPoints.forEach(landPoint => {
         landPoint.prop = 'tree'
       })
+      updatePropMap()
     } 
     if (keyboard.V && !prevKeyboard.C) {
       landPoints.forEach(landPoint => {
         landPoint.prop = null
       })
+      updatePropMap()
     } 
 
     if (keyboard.ARROWLEFT && !prevKeyboard.ARROWLEFT) {
@@ -324,6 +337,7 @@ export function createLoop_EditingLand ({
       landPoints.forEach(landPoint => {
         landPoint.type = landTypes[currentLandType]
       })
+      updateColorMap()
     }
   }
 
@@ -343,10 +357,10 @@ export function createLoop_EditingLand ({
   }
 
   function updateCamera(playerPosition) {
-    camera.near = 1
-    camera.far = 1000
+    camera.near = 0.1
+    camera.far = 10000
     camera.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
-    camera.target = playerPosition
+    camera.target = v3.add(playerPosition, [0, 1.5, 0])
   
     let offset = [
       cameraOrbitDistance * Math.sin(cameraOrbitHorisontal) * Math.cos(cameraOrbitVertical), 
@@ -375,5 +389,43 @@ export function createLoop_EditingLand ({
     }
 
     return land
+  }
+
+  function updateHeightMap () {
+    for (let i = 0; i < land.points.length; ++i) {
+      heightMap[i] = land.points[i].height
+    }
+  }
+
+  function updateColorMap () {
+    for (let i = 0; i < land.points.length; ++i) {
+      switch(land.points[i].type) {
+        case 'grass':
+          colorMap[3*i + 0] = 86 
+          colorMap[3*i + 1] = 176 
+          colorMap[3*i + 2] = 0
+          break
+        case 'dirt':
+          colorMap[3*i + 0] = 118 
+          colorMap[3*i + 1] = 85 
+          colorMap[3*i + 2] = 43
+          break
+        case 'sand':
+          colorMap[3*i + 0] = 246 
+          colorMap[3*i + 1] = 228 
+          colorMap[3*i + 2] = 173
+          break
+        default:
+          colorMap[3*i + 0] = 255 
+          colorMap[3*i + 1] = 255 
+          colorMap[3*i + 2] = 255
+      }
+    }
+  }
+
+  function updatePropMap () {
+    for (let i = 0; i < land.points.length; ++i) {
+      propMap[i] = land.points[i].prop
+    }
   }
 }

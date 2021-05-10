@@ -34,20 +34,20 @@ export function createRender_TestModel(gl) {
   })
 
   const mesh = [
-    -1, 1, 1,     // Back-top-left
-    1, 1, 1,      // Back-top-right
-    -1, -1, 1,    // Back-bottom-left
-    1, -1, 1,     // Back-bottom-right
-    1, -1, -1,    // Front-bottom-right
-    1, 1, 1,      // Back-top-right
-    1, 2, -1,     // Front-top-right
-    -1, 1, 1,     // Back-top-left
-    -1, 2, -1,    // Front-top-left
-    -1, -1, 1,    // Back-bottom-left
-    -1, -1, -1,   // Front-bottom-left
-    1, -1, -1,    // Front-bottom-right
-    -1, 1, -1,    // Front-top-left
-    1, 1, -1      // Front-top-right
+    -0.5, 1, 0.25,     // Back-top-left
+    0.5, 1, 0.25,      // Back-top-right
+    -0.5, 0, 0.25,    // Back-bottom-left
+    0.5, 0, 0.25,     // Back-bottom-right
+    0.5, 0, -0.25,    // Front-bottom-right
+    0.5, 1, 0.25,      // Back-top-right
+    0.5, 2, -0.25,     // Front-top-right
+    -0.5, 1, 0.25,     // Back-top-left
+    -0.5, 2, -0.25,    // Front-top-left
+    -0.5, 0, 0.25,    // Back-bottom-left
+    -0.5, 0, -0.25,   // Front-bottom-left
+    0.5, 0, -0.25,    // Front-bottom-right
+    -0.5, 1, -0.25,    // Front-top-left
+    0.5, 1, -0.25      // Front-top-right
   ]
   const positionBuffer = createArrayBuffer(gl, mesh)
 

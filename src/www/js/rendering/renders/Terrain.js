@@ -184,7 +184,7 @@ export function createRender_Terrain(gl, gridSize) {
       }
     })
 
-    for (let i = 0; i < 16; ++i) {
+    for (let i = 0; i < 1; ++i) {
       const heightMapSize = Math.sqrt(heightMap.length)
       gl.activeTexture(gl['TEXTURE' + i])
       gl.bindTexture(gl.TEXTURE_2D, heightTexture)
@@ -197,7 +197,7 @@ export function createRender_Terrain(gl, gridSize) {
         0, 
         gl.RED, 
         gl.FLOAT,
-        new Float32Array(heightMap)
+        heightMap
       )
     }
 
@@ -213,7 +213,7 @@ export function createRender_Terrain(gl, gridSize) {
       0, 
       gl.RGB, 
       gl.UNSIGNED_BYTE,
-      new Uint8Array(colorMap)
+      colorMap
     )
 
     gl.drawArrays(gl.TRIANGLES, 0, mesh.length)
