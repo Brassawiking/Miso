@@ -40,21 +40,23 @@ export function createRender_Sky(gl) {
     1, -1,
   ])
 
+  const attributes = {
+    vertexPosition: {
+      size: 2,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: quad
+    }
+  }
+
   return () => {
     gl.disable(gl.DEPTH_TEST)
     gl.depthMask(false)
   
     Shader({
-      attributes: {
-        vertexPosition: {
-          size: 2,
-          type: gl.FLOAT,
-          normalized: false,
-          stride: 0,
-          offset: 0,
-          buffer: quad
-        }
-      },
+      attributes,
       uniforms: {}
     })
   

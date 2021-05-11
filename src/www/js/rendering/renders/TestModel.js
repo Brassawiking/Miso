@@ -51,18 +51,20 @@ export function createRender_TestModel(gl) {
   ]
   const positionBuffer = createArrayBuffer(gl, mesh)
 
+  const attributes = {
+    vertexPosition: {
+      size: 3,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: positionBuffer
+    }
+  }
+
   return (cameraView, position) => {
     Shader({
-      attributes: {
-        vertexPosition: {
-          size: 3,
-          type: gl.FLOAT,
-          normalized: false,
-          stride: 0,
-          offset: 0,
-          buffer: positionBuffer
-        }
-      },
+      attributes,
       uniforms: {
         cameraView: ['Matrix4fv', false, cameraView],
         worldPosition: ['3f', ...position]

@@ -1,4 +1,6 @@
-let currentProgram = null
+let currentProgram
+let cachedAttributes
+let cachedUniforms
 
 export function createShader(gl, options) {
   const shaderProgram = createGLShaderProgram(options)
@@ -8,12 +10,22 @@ export function createShader(gl, options) {
   return (inputs) => {
     if (currentProgram !== shaderProgram) {
       gl.useProgram(shaderProgram)
+      currentProgram = shaderProgram
+      cachedAttributes = {}
+      cachedUniforms = {}
     }
 
-    Object.keys(inputs.attributes).forEach(key => {
+    const attributeKeys = Object.keys(inputs.attributes)
+    for (let i = 0, len = attributeKeys.length; i < len; ++i) {
+      const key = attributeKeys[i]
       const attribute = inputs.attributes[key]
+
+      if (cachedAttributes[key] == attribute) {
+        continue
+      }
+      cachedAttributes[key] = attribute
+
       const attributeLocation = attributes[key]
-  
       gl.bindBuffer(gl.ARRAY_BUFFER, attribute.buffer)
       gl.enableVertexAttribArray(attributeLocation)
       gl.vertexAttribPointer(
@@ -24,14 +36,22 @@ export function createShader(gl, options) {
         attribute.stride, 
         attribute.offset
       )
-    })
+    }
   
-    Object.keys(inputs.uniforms).forEach(key => {
+    const uniformKeys = Object.keys(inputs.uniforms)
+    for (let i = 0, len = uniformKeys.length; i < len; ++i) {
+      const key = uniformKeys[i]
       const uniform = inputs.uniforms[key]
+
+      if (cachedUniforms[key] == uniform) {
+        continue
+      }
+      cachedUniforms[key] = uniform
+      
       const uniformLocation = uniforms[key]
-  
-      gl[`uniform${uniform[0]}`](uniformLocation, ...uniform.slice(1))
-    })
+      const [type, ...args] = uniform
+      gl[`uniform${type}`](uniformLocation, ...args)
+    }
   }
 }
 

@@ -39,18 +39,20 @@ export function createRender_TerrainMarker(gl) {
     0, -1, 0
   ])
 
+  const attributes = {
+    vertexPosition: {
+      size: 3,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: positionBuffer
+    }
+  }
+
   return (cameraView, position, color) => {
     Shader({
-      attributes: {
-        vertexPosition: {
-          size: 3,
-          type: gl.FLOAT,
-          normalized: false,
-          stride: 0,
-          offset: 0,
-          buffer: positionBuffer
-        }
-      },
+      attributes,
       uniforms: {
         color: ['3f', ...color],
         cameraView: ['Matrix4fv', false, cameraView],

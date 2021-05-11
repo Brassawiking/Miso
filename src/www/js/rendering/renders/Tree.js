@@ -37,14 +37,23 @@ export function createRender_Tree(gl) {
   })
 
   const rootLevel = -0.5
+  const rootWidth = -0.25
   const treeHeight = 10;
   const mesh = [
-    -0.5, rootLevel, 0,
-    0.5, rootLevel, 0,
+    -rootWidth, rootLevel, -rootWidth,
+    rootWidth, rootLevel, -rootWidth,
     0, treeHeight, 0,
 
-    0, rootLevel, -0.5,
-    0, rootLevel, 0.5,
+    -rootWidth, rootLevel, rootWidth,
+    rootWidth, rootLevel, rootWidth,
+    0, treeHeight, 0,
+
+    -rootWidth, rootLevel, -rootWidth,
+    -rootWidth, rootLevel, rootWidth,
+    0, treeHeight, 0,
+
+    rootWidth, rootLevel, -rootWidth,
+    rootWidth, rootLevel, rootWidth,
     0, treeHeight, 0,
 
     -2, treeHeight, -2,
@@ -56,9 +65,18 @@ export function createRender_Tree(gl) {
     -2, treeHeight-2, 2,
   ]
   const positionBuffer = createArrayBuffer(gl, mesh)
+
   const trunkColor = [97/255, 59/255, 22/255, 1]
   const leafColor = [0.76, 0.04, 0.31, 0.8]
   const colorBuffer = createArrayBuffer(gl, [
+    ...trunkColor,
+    ...trunkColor,
+    ...trunkColor,
+
+    ...trunkColor,
+    ...trunkColor,
+    ...trunkColor,
+    
     ...trunkColor,
     ...trunkColor,
     ...trunkColor,
@@ -76,30 +94,45 @@ export function createRender_Tree(gl) {
     ...leafColor,
   ])
 
+  const attributes = {
+    vertexPosition: {
+      size: 3,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: positionBuffer
+    },
+    a_color: {
+      size: 4,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: colorBuffer
+    }
+  }
+
+  const uniforms = {
+    cameraView: null,
+    worldPosition: null
+  }
+
+  let currentCameraView
+  let currentPosition
   return (cameraView, position) => {
+    if (currentCameraView != cameraView) {
+      uniforms.cameraView = ['Matrix4fv', false, cameraView]
+      currentCameraView = cameraView
+    }
+    if (currentPosition != position) {
+      uniforms.worldPosition = ['3f', ...position]
+      currentPosition = position
+    }
+
     Shader({
-      attributes: {
-        vertexPosition: {
-          size: 3,
-          type: gl.FLOAT,
-          normalized: false,
-          stride: 0,
-          offset: 0,
-          buffer: positionBuffer
-        },
-        a_color: {
-          size: 4,
-          type: gl.FLOAT,
-          normalized: false,
-          stride: 0,
-          offset: 0,
-          buffer: colorBuffer
-        }
-      },
-      uniforms: {
-        cameraView: ['Matrix4fv', false, cameraView],
-        worldPosition: ['3f', ...position]
-      }
+      attributes,
+      uniforms
     })
 
     gl.drawArrays(gl.TRIANGLES, 0, mesh.length)

@@ -51,10 +51,16 @@ export function createScene_EditingLand(gl, landSize) {
     render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOffset, 0, -markerOffset]) , markerOutlineColor)
     render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOffset, 0, markerOffset]) , markerOutlineColor)
     
-    for (let i = 0; i < propMap.length; ++i) {
+
+
+    for (let i = 0, len = propMap.length; i < len; ++i) {
+      const prop = propMap[i]
+      if (prop == null) {
+        continue
+      }
       const x = i % landSize
       const y = (i - x) / landSize
-      switch(propMap[i]) {
+      switch(prop) {
         case 'tree':
           render_Tree(cameraView, [x, heightMap[i], y])
           break

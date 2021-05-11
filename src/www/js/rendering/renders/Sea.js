@@ -41,18 +41,20 @@ export function createRender_Sea(gl) {
     1, -1,
   ])
 
+  const attributes = {
+    a_pos: {
+      size: 2,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: quad
+    }
+  }
+
   return (cameraView) => {
     Shader({
-      attributes: {
-        a_pos: {
-          size: 2,
-          type: gl.FLOAT,
-          normalized: false,
-          stride: 0,
-          offset: 0,
-          buffer: quad
-        }
-      },
+      attributes,
       uniforms: {
         cameraView: ['Matrix4fv', false, cameraView]
       }
