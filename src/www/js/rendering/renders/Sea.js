@@ -29,7 +29,7 @@ export function createRender_Sea(gl) {
     `,
     fragment: `
       void main() {
-        fragment = vec4(31.0 / 255.0, 74.0 / 255.0, 186.0 / 255.0, 0.90);
+        fragment = vec4(31.0 / 255.0, 74.0 / 255.0, 186.0 / 255.0, 0.75);
       }    
     `
   })
