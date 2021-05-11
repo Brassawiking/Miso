@@ -41,12 +41,33 @@ export function createRender_Terrain(gl, gridSize) {
       }
     `,
     fragment: `
+      float getHeight(vec2 uv) {
+        float heightMapSize = float(textureSize(heightMap, 0).x);
+        vec2 xy = uv * heightMapSize + vec2(-0.5, -0.5);
+        vec2 x0y0 = floor(xy);
+        vec2 x1y0 = x0y0 + vec2(1.0, 0);
+        vec2 x0y1 = x0y0 + vec2(0, 1.0);
+        vec2 x1y1 = x0y0 + vec2(1.0, 1.0);
+        vec2 xyFract = fract(xy);
+
+        float h_x0y0 = texture(heightMap, x0y0 / heightMapSize).r; 
+        float h_x1y0 = texture(heightMap, x1y0 / heightMapSize).r; 
+        float h_x0y1 = texture(heightMap, x0y1 / heightMapSize).r; 
+        float h_x1y1 = texture(heightMap, x1y1 / heightMapSize).r; 
+
+        return mix(
+          mix(h_x0y0, h_x1y0, xyFract.x),
+          mix(h_x0y1, h_x1y1, xyFract.x),
+          xyFract.y
+        );
+      }
+
       vec3 getSurfaceNormal() {
         vec2 sampleOffset = vec2(0.5, 0);
-        float t = texture(heightMap, v_uv + sampleOffset.yx / gridSize).r;
-        float b = texture(heightMap, v_uv - sampleOffset.yx / gridSize).r;
-        float r = texture(heightMap, v_uv + sampleOffset.xy / gridSize).r;
-        float l = texture(heightMap, v_uv - sampleOffset.xy / gridSize).r;
+        float t = getHeight(v_uv + sampleOffset.yx / gridSize);
+        float b = getHeight(v_uv - sampleOffset.yx / gridSize);
+        float r = getHeight(v_uv + sampleOffset.xy / gridSize);
+        float l = getHeight(v_uv - sampleOffset.xy / gridSize);
 
         vec3 vT = vec3(0, t, sampleOffset.x);
         vec3 vB = vec3(0, b, -sampleOffset.x);
@@ -136,8 +157,8 @@ export function createRender_Terrain(gl, gridSize) {
 
   const heightTexture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, heightTexture)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 

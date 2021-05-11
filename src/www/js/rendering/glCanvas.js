@@ -15,13 +15,3 @@ export const gl = canvas.getContext('webgl2', {
 })
 window.gl = gl
 
-// TODO: Remove extension dependencies
-const extensions = [
-  gl.getExtension('OES_texture_float_linear')
-]
-console.log('EXTENSIONS:', extensions)
-
-if (extensions[0] == null) {
-  alert('Missing OpenGL extension: "OES_texture_float_linear"\nCheck graphics card and drivers for support')
-}
-
