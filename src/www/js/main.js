@@ -38,8 +38,10 @@ const setCurrentLoop = (createLoop) => {
 
 setCurrentLoop(createLoop_StartScreen)
 
+stats.begin()
 let prevT = performance.now()
 requestAnimationFrame (function update(t) {
+  stats.end()
   stats.begin()
 
   const createNextLoop = currentLoop({ t, dt: t-prevT })
@@ -49,6 +51,5 @@ requestAnimationFrame (function update(t) {
   updatePrevInput()
   prevT = t
   
-  stats.end()
   requestAnimationFrame(update)
 })

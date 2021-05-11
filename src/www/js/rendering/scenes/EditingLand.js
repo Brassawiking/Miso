@@ -15,6 +15,7 @@ export function createScene_EditingLand(gl, landSize) {
   const render_TestModel = createRender_TestModel(gl)
   const render_Tree = createRender_Tree(gl)
 
+  let currentHeightMap
   return ({
     cameraView, 
     time,
@@ -25,6 +26,10 @@ export function createScene_EditingLand(gl, landSize) {
     colorMap,
     propMap
   }) => {
+    if (heightMap) {
+      currentHeightMap = heightMap
+    }
+
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LESS)
 
@@ -34,12 +39,74 @@ export function createScene_EditingLand(gl, landSize) {
     gl.clear(gl.DEPTH_BUFFER_BIT)
 
     render_Sky()
+
+    // Left Top to Bottom
     render_Terrain({ 
       time, 
       cameraView, 
       heightMap, 
       colorMap, 
+      position: [-landSize, 0, landSize] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [-landSize, 0, 0] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [-landSize, 0, -landSize] 
+    })
+
+    // Middle Top to Bottom
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [0, 0, landSize] 
+    })
+    render_Terrain({ // Main Land
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
       position: [0, 0, 0] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [0, 0, -landSize] 
+    })
+
+    // Right Top to Bottom
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [landSize, 0, landSize] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [landSize, 0, 0] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [landSize, 0, -landSize] 
     })
     
     render_TerrainMarker(cameraView, markerPosition, [1, 0, 0])
@@ -52,7 +119,6 @@ export function createScene_EditingLand(gl, landSize) {
     render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOffset, 0, markerOffset]) , markerOutlineColor)
     
 
-
     for (let i = 0, len = propMap.length; i < len; ++i) {
       const prop = propMap[i]
       if (prop == null) {
@@ -62,7 +128,7 @@ export function createScene_EditingLand(gl, landSize) {
       const y = (i - x) / landSize
       switch(prop) {
         case 'tree':
-          render_Tree(cameraView, [x, heightMap[i], y])
+          render_Tree(cameraView, [x, currentHeightMap[i], y])
           break
       }
     }

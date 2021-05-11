@@ -12,7 +12,7 @@ export function createLoop_EditingLand ({
   mouse,
   prevMouse 
 }) {
-  const landSize = 512
+  const landSize = 256
   const land = createLand(landSize)
   const camera = new Camera()
     
@@ -38,6 +38,8 @@ export function createLoop_EditingLand ({
  
   let brushSize = 1
 
+  let heightMapDirty = false
+  let colorMapDirty = false
   let heightMap = new Float32Array(new Array(land.points.length))
   let colorMap = new Uint8Array(new Array(land.points.length * 3))
   let propMap = new Array(land.points.length)
@@ -175,11 +177,13 @@ export function createLoop_EditingLand ({
       markerPosition,
       brushSize,
       playerPosition,
-      heightMap,
-      colorMap,
+      heightMap: heightMapDirty ? heightMap : null,
+      colorMap: colorMapDirty ? colorMap : null,
       propMap
     })
-   
+
+    heightMapDirty = false
+    colorMapDirty = false
      
     const outputContent = `
       <table style="width: 100%;">
@@ -412,6 +416,7 @@ export function createLoop_EditingLand ({
     for (let i = 0; i < land.points.length; ++i) {
       heightMap[i] = land.points[i].height
     }
+    heightMapDirty = true
   }
 
   function updateColorMap () {
@@ -438,6 +443,7 @@ export function createLoop_EditingLand ({
           colorMap[3*i + 2] = 255
       }
     }
+    colorMapDirty = true
   }
 
   function updatePropMap () {

@@ -187,37 +187,42 @@ export function createRender_Terrain(gl, gridSize) {
     })
 
     for (let i = 0; i < 1; ++i) {
-      const heightMapSize = Math.sqrt(heightMap.length)
       gl.activeTexture(gl['TEXTURE' + i])
       gl.bindTexture(gl.TEXTURE_2D, heightTexture)
+
+      if (heightMap) {
+        const heightMapSize = Math.sqrt(heightMap.length)
+        gl.texImage2D(
+          gl.TEXTURE_2D, 
+          0, 
+          gl.R32F, 
+          heightMapSize,
+          heightMapSize,
+          0, 
+          gl.RED, 
+          gl.FLOAT,
+          heightMap
+        )
+      }
+    }
+
+    gl.activeTexture(gl.TEXTURE1)
+    gl.bindTexture(gl.TEXTURE_2D, colorTexture)
+    if (colorMap) {
+      const colorMapSize = Math.sqrt(colorMap.length / 3)
       gl.texImage2D(
         gl.TEXTURE_2D, 
         0, 
-        gl.R32F, 
-        heightMapSize,
-        heightMapSize,
+        gl.RGB, 
+        colorMapSize, 
+        colorMapSize, 
         0, 
-        gl.RED, 
-        gl.FLOAT,
-        heightMap
+        gl.RGB, 
+        gl.UNSIGNED_BYTE,
+        colorMap
       )
     }
-
-    const colorMapSize = Math.sqrt(colorMap.length / 3)
-    gl.activeTexture(gl.TEXTURE1)
-    gl.bindTexture(gl.TEXTURE_2D, colorTexture)
-    gl.texImage2D(
-      gl.TEXTURE_2D, 
-      0, 
-      gl.RGB, 
-      colorMapSize, 
-      colorMapSize, 
-      0, 
-      gl.RGB, 
-      gl.UNSIGNED_BYTE,
-      colorMap
-    )
-
+ 
     gl.drawArrays(gl.TRIANGLES, 0, mesh.length)
   }
 }
