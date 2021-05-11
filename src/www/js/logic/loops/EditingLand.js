@@ -36,6 +36,9 @@ export function createLoop_EditingLand ({
   const MOUSE_ACTION_PAINT = 'paint'
   let currentMouseAction = MOUSE_ACTION_RAISE
  
+  let propCount = 0
+  let maxPropCount = 5000
+
   let brushSize = 1
 
   let heightMapDirty = false
@@ -192,12 +195,14 @@ export function createLoop_EditingLand ({
         <tr><th style="text-align: left;"> Brush size </th><td> ${brushSize} </td><tr>
         <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
         <tr><th style="text-align: left;"> Gravity </th><td> ${gravity ? 'ON' : 'OFF'} </td><tr>
+        <tr><th style="text-align: left;"> Prop count </th><td> ${propCount} / ${maxPropCount} </td><tr>
       </table>
       <br/>
 
       <table style="width: 100%;">
         <tr><th colspan="2" style="text-align: center;"> ----- Controls ----- </th><tr>
         <tr><th style="text-align: left;"> WASDEQ </th><td> Move </td><tr>
+        <tr><th style="text-align: left;"> R/F </th><td> Zoom in/out </td><tr>
         <tr><th style="text-align: left;"> G </th><td> Toggle gravity </td><tr>
         <tr><th style="text-align: left;"> Up/Down </th><td> Raise/Lower land </td><tr>
         <tr><th style="text-align: left;"> Left/Right </th><td> Change land type </td><tr>
@@ -256,6 +261,14 @@ export function createLoop_EditingLand ({
         (land.points[y * land.size + x].height - playerPosition[1]) / 10, 
         0
       ])
+    }
+
+    const zoomSpeed = 0.1
+    if (keyboard.R) {
+      cameraOrbitDistance = Math.max(cameraOrbitDistance-zoomSpeed, 2.5)
+    }
+    if (keyboard.F) {
+      cameraOrbitDistance += zoomSpeed
     }
   
     if (mouse.buttons[2]) {
@@ -329,7 +342,10 @@ export function createLoop_EditingLand ({
       landPoints.forEach(landPoint => {
         landPoint.height = 0
         landPoint.type = 'grass'
-        landPoint.prop = null
+        if (landPoint.prop != null) {
+          landPoint.prop = null
+          propCount--
+        }
       })
       updateHeightMap()
       updateColorMap()
@@ -337,13 +353,22 @@ export function createLoop_EditingLand ({
     }
     if (keyboard.C && !prevKeyboard.C) {
       landPoints.forEach(landPoint => {
+        if (landPoint.prop == null) {
+          if (propCount >= maxPropCount) {
+            return
+          }
+          propCount++
+        }
         landPoint.prop = 'tree'
-      })
+    })
       updatePropMap()
     } 
     if (keyboard.V && !prevKeyboard.C) {
       landPoints.forEach(landPoint => {
-        landPoint.prop = null
+        if (landPoint.prop != null) {
+          landPoint.prop = null
+          propCount--
+        }
       })
       updatePropMap()
     } 
