@@ -374,8 +374,8 @@ export function createLoop_EditingLand ({
   }
 
   function updateCamera(playerPosition) {
-    camera.near = 0.1
-    camera.far = 10000
+    camera.near = 1
+    camera.far = 1000
     camera.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
     camera.target = v3.add(playerPosition, [0, 1.5, 0])
   
@@ -418,14 +418,14 @@ export function createLoop_EditingLand ({
     for (let i = 0; i < land.points.length; ++i) {
       switch(land.points[i].type) {
         case 'grass':
-          colorMap[3*i + 0] = 86 
+          colorMap[3*i + 0] = 71 
           colorMap[3*i + 1] = 176 
-          colorMap[3*i + 2] = 0
+          colorMap[3*i + 2] = 20
           break
         case 'dirt':
           colorMap[3*i + 0] = 118 
           colorMap[3*i + 1] = 85 
-          colorMap[3*i + 2] = 43
+          colorMap[3*i + 2] = 10
           break
         case 'sand':
           colorMap[3*i + 0] = 246 

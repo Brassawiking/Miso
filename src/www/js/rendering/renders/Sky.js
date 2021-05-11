@@ -18,17 +18,17 @@ export function createRender_Sky(gl) {
     `,
     fragment: `
       void main() {
-        vec3 colarA = vec3(
-          193.0 / 255.0,
-          220.0 / 255.0,
-          237.0 / 255.0
+        vec3 colarTop = vec3(
+          121.0 / 255.0,
+          228.0 / 255.0,
+          245.0 / 255.0
         );
-        vec3 colarB = vec3(
-          63.0 / 255.0, 
-          113.0 / 255.0, 
-          183.0 / 255.0
+        vec3 colarBottom = vec3(
+          186.0 / 255.0, 
+          241.0 / 255.0, 
+          250.0 / 255.0
         );
-        fragment = vec4(mix(colarA, colarB, quadPos.y), 1);
+        fragment = vec4(mix(colarBottom, colarTop, quadPos.y), 1);
       }    
     `
   })
