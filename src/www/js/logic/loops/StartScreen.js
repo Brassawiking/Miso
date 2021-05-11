@@ -23,7 +23,13 @@ export function createLoop_StartScreen ({
     Press Enter to start
   `.trim()
 
-  return () => { 
+  let touchStart = false
+  ui.firstElementChild.addEventListener('touchstart', e => { touchStart = true})
+
+  return () => {
+    if (touchStart) {
+      return createLoop_EditingLand
+    } 
     if (keyboard.ENTER && !prevKeyboard.ENTER) {
       return createLoop_EditingLand
     }
