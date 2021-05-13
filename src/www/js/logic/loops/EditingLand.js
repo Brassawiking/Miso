@@ -24,20 +24,33 @@ export function createLoop_EditingLand ({
   let cameraOrbitHorisontal = 0
   let cameraOrbitVertical = Math.PI / 5
   
-  let landTypes = [
+  let propText
+
+  const actionTypes = [
+    'raise',
+    'lower',
+    'paint',
+    'prop',
+    'reset'
+  ]
+  let currentActionType = actionTypes[0]
+
+  const landTypes = [
     'sand',
     'dirt',
     'grass'
   ]
-  let currentLandType = 0
-  
-  const MOUSE_ACTION_RAISE = 'raise'
-  const MOUSE_ACTION_LOWER = 'lower'
-  const MOUSE_ACTION_PAINT = 'paint'
-  let currentMouseAction = MOUSE_ACTION_RAISE
+  let currentLandType = landTypes[0]
+
+  const propTypes = [
+    '',
+    'tree',
+    'stone_tablet',
+  ]
+  let currentPropType = propTypes[0]
  
   let propCount = 0
-  let maxPropCount = 5000
+  let maxPropCount = 1500
 
   let brushSize = 1
 
@@ -53,6 +66,61 @@ export function createLoop_EditingLand ({
   const scene_EditingLand = createScene_EditingLand(gl, landSize)
 
   ui.innerHTML = `
+    <style>
+      .toolbar {
+        position: absolute;
+        top: 10px;
+        left: 100px;
+        max-width: calc(100vw - 200px);
+        font-family: "Gothic A1", sans-serif;
+      }
+      .toolbar label {
+        margin: 2px; 10px;
+        display: inline-block;
+      }
+      .toolbar select {
+        border-radius: 5px;
+        border: none;
+        padding: 5px;
+        background: rgba(0, 0, 0, 0.3);
+        color: #fff;
+      }
+    </style>
+    <div class="toolbar" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()">
+      <label>
+        Mouse: 
+        <select class="js-action-type" tabindex="-1"></select>
+      </label>
+      <label>
+        Land [Q/Z/X]: 
+        <select class="js-land-type" tabindex="-1"></select>
+      </label>
+      <label>
+        Prop [E/C/V]: 
+        <select class="js-prop-type" tabindex="-1"></select>
+      </label>
+      <label>
+        Gravity [G]:
+        <input class="js-gravity" type="checkbox" tabindex="-1"/>
+      </label>
+    </div>
+
+    <style>
+      .propText {
+        position: absolute; 
+        margin: 0;
+        padding: 20px;
+        left: 20px; 
+        bottom: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+        color: #fff;
+        font-family: "Gothic A1", sans-serif;
+      }
+    </style>
+
+    <div class="propText"></div>
+
     <style>
       .menu {
         position: absolute; 
@@ -171,8 +239,46 @@ export function createLoop_EditingLand ({
     </div>
   `
 
+  const ui_actionType = ui.querySelector('.js-action-type')
+  actionTypes.forEach((mouseAction, index) => { 
+    ui_actionType.add(new Option(`[${index+1}] ${mouseAction.toUpperCase()}`, mouseAction)) 
+  })
+  ui_actionType.addEventListener('input', e => { 
+    currentActionType = e.target.value
+    e.target.blur()
+  })
+
+  const ui_landType = ui.querySelector('.js-land-type')
+  landTypes.forEach(landType => { ui_landType.add(new Option(landType.toUpperCase(), landType)) })
+  ui_landType.addEventListener('input', e => { 
+    currentLandType = e.target.value
+    e.target.blur()
+  })
+
+  const ui_propType = ui.querySelector('.js-prop-type')
+  propTypes.forEach(propType => { ui_propType.add(new Option(propType.toUpperCase() || '(remove prop)', propType)) })
+  ui_propType.addEventListener('input', e => { 
+    currentPropType = e.target.value
+    e.target.blur()
+  })
+
+  const ui_gravity = ui.querySelector('.js-gravity')
+  ui_gravity.addEventListener('input', e => { 
+    gravity = e.target.checked 
+    e.target.blur()
+  })
+
   return ({t, dt}) => {
     logic(t, dt)
+
+    ui_landType.value = currentLandType
+    ui_propType.value = currentPropType
+    ui_actionType.value = currentActionType
+    ui_gravity.checked = gravity
+
+    const ui_propText = ui.querySelector('.propText')
+    ui_propText.hidden = !propText
+    ui_propText.textContent = propText
 
     scene_EditingLand({
       cameraView: camera.matrix,
@@ -190,30 +296,24 @@ export function createLoop_EditingLand ({
      
     const outputContent = `
       <table style="width: 100%;">
-        <tr><th style="text-align: left;"> Mouse action </th><td> ${currentMouseAction.toUpperCase()} </td><tr>
-        <tr><th style="text-align: left;"> Land type </th><td> ${landTypes[currentLandType].toUpperCase()} </td><tr>
-        <tr><th style="text-align: left;"> Brush size </th><td> ${brushSize} </td><tr>
+        <tr><th style="text-align: left;"> Brush size </th><td> ${(brushSize-1)*2 + 1} </td><tr>
         <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
-        <tr><th style="text-align: left;"> Gravity </th><td> ${gravity ? 'ON' : 'OFF'} </td><tr>
         <tr><th style="text-align: left;"> Prop count </th><td> ${propCount} / ${maxPropCount} </td><tr>
       </table>
       <br/>
 
       <table style="width: 100%;">
         <tr><th colspan="2" style="text-align: center;"> ----- Controls ----- </th><tr>
-        <tr><th style="text-align: left;"> WASDEQ </th><td> Move </td><tr>
-        <tr><th style="text-align: left;"> R/F </th><td> Zoom in/out </td><tr>
-        <tr><th style="text-align: left;"> G </th><td> Toggle gravity </td><tr>
-        <tr><th style="text-align: left;"> Up/Down </th><td> Raise/Lower land </td><tr>
-        <tr><th style="text-align: left;"> Left/Right </th><td> Change land type </td><tr>
-        <tr><th style="text-align: left;"> Z/X </th><td> Change brush size </td><tr>
-        <tr><th style="text-align: left;"> C/V </th><td> Add/Remove tree </td><tr>
-        <tr><th style="text-align: left;"> Space </th><td> Paint land type </td><tr>
+        <tr><th style="text-align: left;"> WASD </th><td> Move </td><tr>
+        <tr><th style="text-align: left;"> Shift / Control </th><td> Fly up / down </td><tr>
+        <tr><th style="text-align: left;"> Up / Down </th><td> Land height </td><tr>
+        <tr><th style="text-align: left;"> Left / Right </th><td> Brush size </td><tr>
         <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
-        <tr><th style="text-align: left;"> Mouse left </th><td> Mouse action </td><tr>
+        <tr><th style="text-align: left;"> Mouse left </th><td> Action </td><tr>
         <tr><th style="text-align: left;"> Mouse right </th><td> Rotate camera </td><tr>
-        <tr><th style="text-align: left;"> 1/2/3 </th><td> Switch mouse action </td><tr>
+        <tr><th style="text-align: left;"> Mouse wheel </th><td> Zoom </td><tr>
         <tr><th style="text-align: left;"> K </th><td> Go to game over </td><tr>
+        <tr><th style="text-align: left;"> [A/B/C/...] </th><td> Shortcuts </td><tr>
       </table>
     `.trim()
 
@@ -242,17 +342,16 @@ export function createLoop_EditingLand ({
     if (keyboard.S) {
       playerPosition = v3.subtract(playerPosition, v3.multiply(v3.normalize([camera.z[0], 0, camera.z[2]]), speed))
     }
-    if (keyboard.E) {
+    if (keyboard.SHIFT) {
       playerPosition[1] += speed
     }
-    if (keyboard.Q) {
+    if (keyboard.CONTROL) {
       playerPosition[1] -= speed
     }
 
     if (keyboard.G && !prevKeyboard.G) {
       gravity = !gravity
     }
-
     if (gravity) {
       const x = clamp(Math.round(playerPosition[0]), 0, landSize-1)
       const y = clamp(Math.round(playerPosition[2]), 0, landSize-1)
@@ -264,10 +363,10 @@ export function createLoop_EditingLand ({
     }
 
     const zoomSpeed = 0.1
-    if (keyboard.R) {
+    if (mouse.wheel < 0) {
       cameraOrbitDistance = Math.max(cameraOrbitDistance-zoomSpeed, 2.5)
     }
-    if (keyboard.F) {
+    if (mouse.wheel > 0) {
       cameraOrbitDistance += zoomSpeed
     }
   
@@ -307,38 +406,34 @@ export function createLoop_EditingLand ({
       ]
     }
   
-    if (keyboard[1]) {
-      currentMouseAction = MOUSE_ACTION_RAISE
-    }
-    if (keyboard[2]) {
-      currentMouseAction = MOUSE_ACTION_LOWER
-    }
-    if (keyboard[3]) {
-      currentMouseAction = MOUSE_ACTION_PAINT
-    }
+    actionTypes.forEach((mouseAction, index) => {
+      if (keyboard[index+1]) {
+        currentActionType = mouseAction
+      }
+    })
 
-    if (keyboard.Z && !prevKeyboard.Z) {
+    if (keyboard.ARROWLEFT && !prevKeyboard.ARROWLEFT) {
       brushSize = Math.max(brushSize - 1, 1)
     }
-    if (keyboard.X && !prevKeyboard.X) {
+    if (keyboard.ARROWRIGHT && !prevKeyboard.ARROWRIGHT) {
       brushSize++
     }
   
     const landPoints = getAllLandsPointsWithinBrush()
     const heightDelta = 0.1
-    if (keyboard.ARROWUP || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_RAISE)) {
+    if (keyboard.ARROWUP || (mouse.buttons[0] && currentActionType === 'raise')) {
       landPoints.forEach(landPoint => {
         landPoint.height += heightDelta
       })
       updateHeightMap()
     }
-    if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_LOWER)) {
+    if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentActionType === 'lower')) {
       landPoints.forEach(landPoint => {
         landPoint.height -= heightDelta
       })
       updateHeightMap()
     }
-    if (keyboard.DELETE) {
+    if (keyboard.DELETE || (mouse.buttons[0] && currentActionType === 'reset')) {
       landPoints.forEach(landPoint => {
         landPoint.height = 0
         landPoint.type = 'grass'
@@ -351,39 +446,55 @@ export function createLoop_EditingLand ({
       updateColorMap()
       updatePropMap()
     }
+
     if (keyboard.C && !prevKeyboard.C) {
+      currentPropType = propTypes[Math.max(propTypes.indexOf(currentPropType) - 1, 0)]
+    }
+    if (keyboard.V && !prevKeyboard.V) {
+      currentPropType = propTypes[Math.min(propTypes.indexOf(currentPropType) + 1, propTypes.length - 1)]
+    }
+    if (keyboard.E || (mouse.buttons[0] && currentActionType === 'prop')) {
       landPoints.forEach(landPoint => {
-        if (landPoint.prop == null) {
-          if (propCount >= maxPropCount) {
-            return
+        if (currentPropType) {
+          if (landPoint.prop == null) {
+            if (propCount >= maxPropCount) {
+              return
+            }
+            propCount++
           }
-          propCount++
-        }
-        landPoint.prop = 'tree'
-    })
-      updatePropMap()
-    } 
-    if (keyboard.V && !prevKeyboard.C) {
-      landPoints.forEach(landPoint => {
-        if (landPoint.prop != null) {
+          landPoint.prop = currentPropType
+        } else if (landPoint.prop != null) {
           landPoint.prop = null
           propCount--
         }
       })
       updatePropMap()
-    } 
+    }
 
-    if (keyboard.ARROWLEFT && !prevKeyboard.ARROWLEFT) {
-      currentLandType = Math.max(currentLandType - 1, 0)
+    if (keyboard.Z && !prevKeyboard.Z) {
+      currentLandType = landTypes[Math.max(landTypes.indexOf(currentLandType) - 1, 0)]
     }
-    if (keyboard.ARROWRIGHT && !prevKeyboard.ARROWRIGHT) {
-      currentLandType = Math.min(currentLandType + 1, landTypes.length - 1)
+    if (keyboard.X && !prevKeyboard.X) {
+      currentLandType = landTypes[Math.min(landTypes.indexOf(currentLandType) + 1, landTypes.length - 1)]
     }
-    if (keyboard[' '] || (mouse.buttons[0] && currentMouseAction === MOUSE_ACTION_PAINT)) {
+    if (keyboard.Q || (mouse.buttons[0] && currentActionType === 'paint')) {
       landPoints.forEach(landPoint => {
-        landPoint.type = landTypes[currentLandType]
+        landPoint.type = currentLandType
       })
       updateColorMap()
+    }
+
+    const landPointAtPlayer = land.points[Math.round(playerPosition[0]) + Math.round(playerPosition[2]) * land.size]
+    if (landPointAtPlayer && landPointAtPlayer.prop) {
+      switch(landPointAtPlayer.prop) {
+        case 'stone_tablet': 
+          propText = 'An old stone tablet with some markings on it'
+          break
+        default:
+          propText = null
+      }
+    } else {
+      propText = null
     }
   }
 

@@ -5,7 +5,9 @@ import { createRender_Sea } from '../renders/Sea.js'
 import { createRender_Terrain } from '../renders/Terrain.js'
 import { createRender_TerrainMarker } from '../renders/TerrainMarker.js'
 import { createRender_TestModel } from '../renders/TestModel.js'
-import { createRender_Tree } from '../renders/Tree.js'
+
+import { createRender_StoneTablet } from '../renders/props/StoneTablet.js'
+import { createRender_Tree } from '../renders/props/Tree.js'
 
 export function createScene_EditingLand(gl, landSize) {
   const render_Sky = createRender_Sky(gl)
@@ -13,6 +15,8 @@ export function createScene_EditingLand(gl, landSize) {
   const render_Terrain = createRender_Terrain(gl, landSize)
   const render_TerrainMarker = createRender_TerrainMarker(gl)
   const render_TestModel = createRender_TestModel(gl)
+  
+  const render_StoneTablet = createRender_StoneTablet(gl)
   const render_Tree = createRender_Tree(gl)
 
   let currentHeightMap
@@ -40,37 +44,37 @@ export function createScene_EditingLand(gl, landSize) {
 
     render_Sky()
 
-    // Left Top to Bottom
-    render_Terrain({ 
-      time, 
-      cameraView, 
-      heightMap, 
-      colorMap, 
-      position: [-landSize, 0, landSize] 
-    })
-    render_Terrain({ 
-      time, 
-      cameraView, 
-      heightMap, 
-      colorMap, 
-      position: [-landSize, 0, 0] 
-    })
-    render_Terrain({ 
-      time, 
-      cameraView, 
-      heightMap, 
-      colorMap, 
-      position: [-landSize, 0, -landSize] 
-    })
+    // // Left Top to Bottom
+    // render_Terrain({ 
+    //   time, 
+    //   cameraView, 
+    //   heightMap, 
+    //   colorMap, 
+    //   position: [-landSize, 0, landSize] 
+    // })
+    // render_Terrain({ 
+    //   time, 
+    //   cameraView, 
+    //   heightMap, 
+    //   colorMap, 
+    //   position: [-landSize, 0, 0] 
+    // })
+    // render_Terrain({ 
+    //   time, 
+    //   cameraView, 
+    //   heightMap, 
+    //   colorMap, 
+    //   position: [-landSize, 0, -landSize] 
+    // })
 
-    // Middle Top to Bottom
-    render_Terrain({ 
-      time, 
-      cameraView, 
-      heightMap, 
-      colorMap, 
-      position: [0, 0, landSize] 
-    })
+    // // Middle Top to Bottom
+    // render_Terrain({ 
+    //   time, 
+    //   cameraView, 
+    //   heightMap, 
+    //   colorMap, 
+    //   position: [0, 0, landSize] 
+    // })
     render_Terrain({ // Main Land
       time, 
       cameraView, 
@@ -78,36 +82,36 @@ export function createScene_EditingLand(gl, landSize) {
       colorMap, 
       position: [0, 0, 0] 
     })
-    render_Terrain({ 
-      time, 
-      cameraView, 
-      heightMap, 
-      colorMap, 
-      position: [0, 0, -landSize] 
-    })
+    // render_Terrain({ 
+    //   time, 
+    //   cameraView, 
+    //   heightMap, 
+    //   colorMap, 
+    //   position: [0, 0, -landSize] 
+    // })
 
-    // Right Top to Bottom
-    render_Terrain({ 
-      time, 
-      cameraView, 
-      heightMap, 
-      colorMap, 
-      position: [landSize, 0, landSize] 
-    })
-    render_Terrain({ 
-      time, 
-      cameraView, 
-      heightMap, 
-      colorMap, 
-      position: [landSize, 0, 0] 
-    })
-    render_Terrain({ 
-      time, 
-      cameraView, 
-      heightMap, 
-      colorMap, 
-      position: [landSize, 0, -landSize] 
-    })
+    // // Right Top to Bottom
+    // render_Terrain({ 
+    //   time, 
+    //   cameraView, 
+    //   heightMap, 
+    //   colorMap, 
+    //   position: [landSize, 0, landSize] 
+    // })
+    // render_Terrain({ 
+    //   time, 
+    //   cameraView, 
+    //   heightMap, 
+    //   colorMap, 
+    //   position: [landSize, 0, 0] 
+    // })
+    // render_Terrain({ 
+    //   time, 
+    //   cameraView, 
+    //   heightMap, 
+    //   colorMap, 
+    //   position: [landSize, 0, -landSize] 
+    // })
     
     render_TerrainMarker(cameraView, markerPosition, [1, 0, 0])
 
@@ -127,6 +131,9 @@ export function createScene_EditingLand(gl, landSize) {
       const x = i % landSize
       const y = (i - x) / landSize
       switch(prop) {
+        case 'stone_tablet':
+          render_StoneTablet(cameraView, [x, currentHeightMap[i], y])
+          break
         case 'tree':
           render_Tree(cameraView, [x, currentHeightMap[i], y])
           break

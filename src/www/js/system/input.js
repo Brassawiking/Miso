@@ -5,9 +5,10 @@ export const prevKeyboard = jsonCopy(keyboard)
 document.addEventListener('keydown', e => { keyboard[e.key.toUpperCase()] = true; })
 document.addEventListener('keyup', e => { keyboard[e.key.toUpperCase()] = false })
 
-export const mouse = { x: 0, y: 0, buttons: [] }
+export const mouse = { x: 0, y: 0, buttons: [], wheel: 0 }
 export const prevMouse = jsonCopy(mouse)
 document.addEventListener('contextmenu', e => { e.preventDefault() })
+document.addEventListener('wheel', e => { mouse.wheel = e.deltaY })
 document.addEventListener('mousedown', e => { mouse.buttons[e.button] = true })
 document.addEventListener('mouseup', e => { mouse.buttons[e.button] = false })
 document.addEventListener('mousemove', e => {
@@ -26,4 +27,5 @@ export function updatePrevInput() {
   }
   Object.assign(prevMouse, mouse)
   prevMouse.buttons = jsonCopy(prevMouse.buttons)
+  mouse.wheel = 0
 }

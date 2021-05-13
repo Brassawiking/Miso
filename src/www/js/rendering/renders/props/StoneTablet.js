@@ -1,7 +1,7 @@
-import { createShader } from '../shaders.js'
-import { createArrayBuffer } from '../buffers.js'
+import { createShader } from '../../shaders.js'
+import { createArrayBuffer } from '../../buffers.js'
 
-export function createRender_Tree(gl) {
+export function createRender_StoneTablet(gl) {
   const Shader = createShader(gl, {
     attributes: {
       vertexPosition: 'vec4',
@@ -36,62 +36,62 @@ export function createRender_Tree(gl) {
     `
   })
 
-  const rootLevel = -0.5
-  const rootWidth = -0.25
-  const treeHeight = 10;
+  const root = -0.5
+  const width = 1
+  const height = 1.5
+  const depth = 0.1
   const mesh = [
-    -rootWidth, rootLevel, -rootWidth,
-    rootWidth, rootLevel, -rootWidth,
-    0, treeHeight, 0,
+    -width, root, -depth,
+    width, root, -depth,
+    width, height, 0,
 
-    -rootWidth, rootLevel, rootWidth,
-    rootWidth, rootLevel, rootWidth,
-    0, treeHeight, 0,
+    -width, root, -depth,
+    width, height, 0,
+    -width, height, 0,
 
-    -rootWidth, rootLevel, -rootWidth,
-    -rootWidth, rootLevel, rootWidth,
-    0, treeHeight, 0,
+    -width, root, depth,
+    width, root, depth,
+    width, height, 0,
 
-    rootWidth, rootLevel, -rootWidth,
-    rootWidth, rootLevel, rootWidth,
-    0, treeHeight, 0,
+    -width, root, depth,
+    width, height, 0,
+    -width, height, 0,
 
-    -2, treeHeight, -2,
-    2, treeHeight-2, -2,
-    2, treeHeight, 2,
+    -width, root, -depth,
+    -width, root, depth,
+    -width, height, 0,
 
-    -2, treeHeight, -2,
-    2, treeHeight, 2,
-    -2, treeHeight-2, 2,
+    width, root, -depth,
+    width, root, depth,
+    width, height, 0,
   ]
   const positionBuffer = createArrayBuffer(gl, mesh)
 
-  const trunkColor = [97/255, 59/255, 22/255, 1]
-  const leafColor = [0.76, 0.04, 0.31, 0.8]
+  const stoneColor = [0.75, 0.76, 0.65, 1]
   const colorBuffer = createArrayBuffer(gl, [
-    ...trunkColor,
-    ...trunkColor,
-    ...trunkColor,
+    ...stoneColor,
+    ...stoneColor,
+    ...stoneColor,
 
-    ...trunkColor,
-    ...trunkColor,
-    ...trunkColor,
-    
-    ...trunkColor,
-    ...trunkColor,
-    ...trunkColor,
+    ...stoneColor,
+    ...stoneColor,
+    ...stoneColor,
 
-    ...trunkColor,
-    ...trunkColor,
-    ...trunkColor,
-    
-    ...leafColor,
-    ...leafColor,
-    ...leafColor,
+    ...stoneColor,
+    ...stoneColor,
+    ...stoneColor,
 
-    ...leafColor,
-    ...leafColor,
-    ...leafColor,
+    ...stoneColor,
+    ...stoneColor,
+    ...stoneColor,
+
+    ...stoneColor,
+    ...stoneColor,
+    ...stoneColor,
+
+    ...stoneColor,
+    ...stoneColor,
+    ...stoneColor,
   ])
 
   const attributes = {
