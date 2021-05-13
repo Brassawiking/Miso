@@ -24,6 +24,7 @@ export function createLoop_EditingLand ({
   let cameraOrbitHorisontal = 0
   let cameraOrbitVertical = Math.PI / 5
   
+  let prevPropText
   let propText
 
   const actionTypes = [
@@ -277,8 +278,11 @@ export function createLoop_EditingLand ({
     ui_gravity.checked = gravity
 
     const ui_propText = ui.querySelector('.propText')
-    ui_propText.hidden = !propText
-    ui_propText.textContent = propText
+    if (prevPropText != propText) {
+      ui_propText.hidden = !propText
+      ui_propText.innerHTML = propText
+      prevPropText = propText
+    }
 
     scene_EditingLand({
       cameraView: camera.matrix,
@@ -308,10 +312,11 @@ export function createLoop_EditingLand ({
         <tr><th style="text-align: left;"> Shift / Control </th><td> Fly up / down </td><tr>
         <tr><th style="text-align: left;"> Up / Down </th><td> Land height </td><tr>
         <tr><th style="text-align: left;"> Left / Right </th><td> Brush size </td><tr>
-        <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
         <tr><th style="text-align: left;"> Mouse left </th><td> Action </td><tr>
         <tr><th style="text-align: left;"> Mouse right </th><td> Rotate camera </td><tr>
         <tr><th style="text-align: left;"> Mouse wheel </th><td> Zoom </td><tr>
+        <tr><th style="text-align: left;"> Space </th><td> Edit prop </td><tr>
+        <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
         <tr><th style="text-align: left;"> K </th><td> Go to game over </td><tr>
         <tr><th style="text-align: left;"> [A/B/C/...] </th><td> Shortcuts </td><tr>
       </table>
@@ -462,7 +467,10 @@ export function createLoop_EditingLand ({
             }
             propCount++
           }
-          landPoint.prop = currentPropType
+          landPoint.prop = {
+            type: currentPropType,
+            text: '' 
+          }
         } else if (landPoint.prop != null) {
           landPoint.prop = null
           propCount--
@@ -484,15 +492,20 @@ export function createLoop_EditingLand ({
       updateColorMap()
     }
 
+    if (keyboard[' ']) {
+      const props = landPoints.filter(x => x.prop).map(x => x.prop)
+      if (props.length) {
+        const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text)
+        if (text != null) {
+          props.forEach(prop => { prop.text = text })
+        }
+        keyboard[' '] = false
+      }
+    }
+
     const landPointAtPlayer = land.points[Math.round(playerPosition[0]) + Math.round(playerPosition[2]) * land.size]
     if (landPointAtPlayer && landPointAtPlayer.prop) {
-      switch(landPointAtPlayer.prop) {
-        case 'stone_tablet': 
-          propText = 'An old stone tablet with some markings on it'
-          break
-        default:
-          propText = null
-      }
+      propText = landPointAtPlayer.prop.text
     } else {
       propText = null
     }

@@ -44,37 +44,37 @@ export function createScene_EditingLand(gl, landSize) {
 
     render_Sky()
 
-    // // Left Top to Bottom
-    // render_Terrain({ 
-    //   time, 
-    //   cameraView, 
-    //   heightMap, 
-    //   colorMap, 
-    //   position: [-landSize, 0, landSize] 
-    // })
-    // render_Terrain({ 
-    //   time, 
-    //   cameraView, 
-    //   heightMap, 
-    //   colorMap, 
-    //   position: [-landSize, 0, 0] 
-    // })
-    // render_Terrain({ 
-    //   time, 
-    //   cameraView, 
-    //   heightMap, 
-    //   colorMap, 
-    //   position: [-landSize, 0, -landSize] 
-    // })
+    // Left Top to Bottom
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [-landSize, 0, landSize] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [-landSize, 0, 0] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [-landSize, 0, -landSize] 
+    })
 
-    // // Middle Top to Bottom
-    // render_Terrain({ 
-    //   time, 
-    //   cameraView, 
-    //   heightMap, 
-    //   colorMap, 
-    //   position: [0, 0, landSize] 
-    // })
+    // Middle Top to Bottom
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [0, 0, landSize] 
+    })
     render_Terrain({ // Main Land
       time, 
       cameraView, 
@@ -82,36 +82,36 @@ export function createScene_EditingLand(gl, landSize) {
       colorMap, 
       position: [0, 0, 0] 
     })
-    // render_Terrain({ 
-    //   time, 
-    //   cameraView, 
-    //   heightMap, 
-    //   colorMap, 
-    //   position: [0, 0, -landSize] 
-    // })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [0, 0, -landSize] 
+    })
 
-    // // Right Top to Bottom
-    // render_Terrain({ 
-    //   time, 
-    //   cameraView, 
-    //   heightMap, 
-    //   colorMap, 
-    //   position: [landSize, 0, landSize] 
-    // })
-    // render_Terrain({ 
-    //   time, 
-    //   cameraView, 
-    //   heightMap, 
-    //   colorMap, 
-    //   position: [landSize, 0, 0] 
-    // })
-    // render_Terrain({ 
-    //   time, 
-    //   cameraView, 
-    //   heightMap, 
-    //   colorMap, 
-    //   position: [landSize, 0, -landSize] 
-    // })
+    // Right Top to Bottom
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [landSize, 0, landSize] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [landSize, 0, 0] 
+    })
+    render_Terrain({ 
+      time, 
+      cameraView, 
+      heightMap, 
+      colorMap, 
+      position: [landSize, 0, -landSize] 
+    })
     
     render_TerrainMarker(cameraView, markerPosition, [1, 0, 0])
 
@@ -130,7 +130,7 @@ export function createScene_EditingLand(gl, landSize) {
       }
       const x = i % landSize
       const y = (i - x) / landSize
-      switch(prop) {
+      switch(prop.type) {
         case 'stone_tablet':
           render_StoneTablet(cameraView, [x, currentHeightMap[i], y])
           break
