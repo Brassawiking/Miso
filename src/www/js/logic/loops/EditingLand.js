@@ -12,7 +12,7 @@ export function createLoop_EditingLand ({
   mouse,
   prevMouse 
 }) {
-  const landSize = 256
+  const landSize = 512
   const land = createLand(landSize)
   const camera = new Camera()
     

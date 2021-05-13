@@ -131,29 +131,32 @@ export function createRender_Terrain(gl, gridSize) {
   const mesh = []
   const texCoords = []
 
+  for (var y = 0; y < gridSize; ++y) {
+    for (var x = 0; x < gridSize; ++x) {
+      mesh.push(x, y)
+      texCoords.push((x+0.5) / gridSize, (y+0.5) / gridSize)
+    }
+  }
+
+  const indices = []
   for (var y = 0; y < gridSize-1; ++y) {
     for (var x = 0; x < gridSize-1; ++x) {
-      mesh.push(
-        x, y,
-        x+1, y,
-        x+1, y+1,
-        x+1, y+1,
-        x, y+1,
-        x, y
-      )
-      texCoords.push(
-        (x+0.5) / gridSize, (y+0.5) / gridSize,
-        (x+1.5) / gridSize, (y+0.5) / gridSize,
-        (x+1.5) / gridSize, (y+1.5) / gridSize,
-        (x+1.5) / gridSize, (y+1.5) / gridSize,
-        (x+0.5) / gridSize, (y+1.5) / gridSize,
-        (x+0.5) / gridSize, (y+0.5) / gridSize
+      indices.push(
+        x + y * gridSize,
+        (x+1) + y * gridSize,
+        (x+1) + (y+1) * gridSize,
+        (x+1) + (y+1) * gridSize,
+        x + (y+1) * gridSize,
+        x + y * gridSize
       )
     }
   }
 
   const positionBuffer = createArrayBuffer(gl, mesh)
   const texCoordBuffer = createArrayBuffer(gl, texCoords)
+  const indexBuffer = gl.createBuffer()
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indices), gl.STATIC_DRAW)
 
   const heightTexture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, heightTexture)
@@ -243,7 +246,8 @@ export function createRender_Terrain(gl, gridSize) {
         colorMap
       )
     }
- 
-    gl.drawArrays(gl.TRIANGLES, 0, mesh.length)
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0)
   }
 }
