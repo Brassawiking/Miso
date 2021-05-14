@@ -40,7 +40,16 @@ export function createScene_World(gl, landSize) {
     gl.clear(gl.DEPTH_BUFFER_BIT)
 
     render_Sky()
+    terrain(lands, cameraView, time)
+    props(lands, cameraView)
+    brush(markerPosition, cameraView, brushSize)
+    render_TestModel(cameraView, playerPosition)
 
+    // Transparent renders
+    render_Sea(cameraView)  
+  }
+
+  function terrain(lands, cameraView, time) {
     lands.forEach((land, index) => {
       let heightMapTexture = heightMapTextureCache[index]
       if (!heightMapTexture) {
@@ -108,7 +117,9 @@ export function createScene_World(gl, landSize) {
 
       landCache[index] = land
     })
+  }
 
+  function props(lands, cameraView) {
     lands.forEach(land => {
       const propMap = land.propMap
       for (let i = 0, len = propMap.length; i < len; ++i) {
@@ -116,8 +127,10 @@ export function createScene_World(gl, landSize) {
         if (prop == null) {
           continue
         }
-        const x = i % landSize + land.x * landSize
-        const y = (i - x) / landSize + land.y * landSize
+        let x = i % landSize
+        let y = (i - x) / landSize
+        x += land.x * landSize
+        y += land.y * landSize
         switch(prop.type) {
           case 'stone_tablet':
             render_StoneTablet(cameraView, [x, land.heightMap[i], y])
@@ -128,7 +141,9 @@ export function createScene_World(gl, landSize) {
         }
       }
     })
+  }
 
+  function brush(markerPosition, cameraView, brushSize) {
     const markerOutlineOffset = brushSize - 1
     const markerOutlineColor = [1, 1, 0]
     render_TerrainMarker(cameraView, markerPosition, [1, 0, 0])
@@ -136,10 +151,5 @@ export function createScene_World(gl, landSize) {
     render_TerrainMarker(cameraView, v3.add(markerPosition, [markerOutlineOffset, 0, -markerOutlineOffset]) , markerOutlineColor)
     render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOutlineOffset, 0, -markerOutlineOffset]) , markerOutlineColor)
     render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOutlineOffset, 0, markerOutlineOffset]) , markerOutlineColor)
-
-    render_TestModel(cameraView, playerPosition)
-
-    // Transparent renders
-    render_Sea(cameraView)  
   }
 }

@@ -24,7 +24,7 @@ export function createLoop_MainGame ({
   }
   window.world = world
 
-  let land
+  let activeLand
   const camera = new Camera()
 
   const state = {}
@@ -284,17 +284,17 @@ export function createLoop_MainGame ({
     }
 
     const lands = [
-      getOrCreateLand(land.x-1, land.y+1),
-      getOrCreateLand(land.x-1, land.y),
-      getOrCreateLand(land.x-1, land.y-1),
+      getOrCreateLand(activeLand.x-1, activeLand.y+1),
+      getOrCreateLand(activeLand.x-1, activeLand.y),
+      getOrCreateLand(activeLand.x-1, activeLand.y-1),
 
-      getOrCreateLand(land.x, land.y+1),
-      land,
-      getOrCreateLand(land.x, land.y-1),
+      getOrCreateLand(activeLand.x, activeLand.y+1),
+      activeLand,
+      getOrCreateLand(activeLand.x, activeLand.y-1),
 
-      getOrCreateLand(land.x+1, land.y+1),
-      getOrCreateLand(land.x+1, land.y),
-      getOrCreateLand(land.x+1, land.y-1),
+      getOrCreateLand(activeLand.x+1, activeLand.y+1),
+      getOrCreateLand(activeLand.x+1, activeLand.y),
+      getOrCreateLand(activeLand.x+1, activeLand.y-1),
     ]
 
     scene_World({
@@ -315,7 +315,7 @@ export function createLoop_MainGame ({
       <table style="width: 100%;">
         <tr><th style="text-align: left;"> Brush size </th><td> ${(brushSize-1)*2 + 1} </td><tr>
         <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
-        <tr><th style="text-align: left;"> Prop count </th><td> ${land.propCount} / ${maxPropCount} </td><tr>
+        <tr><th style="text-align: left;"> Prop count </th><td> ${activeLand.propCount} / ${maxPropCount} </td><tr>
       </table>
       <br/>
 
@@ -348,7 +348,7 @@ export function createLoop_MainGame ({
   function logic(t, dt) {
     const worldLandX = Math.floor(playerPosition[0] / landSize)
     const worldLandY = Math.floor(playerPosition[2] / landSize)
-    land = getOrCreateLand(worldLandX, worldLandY)
+    activeLand = getOrCreateLand(worldLandX, worldLandY)
 
     const speed = 10.5 * dt / 1000;
     if (keyboard.D) {
@@ -374,11 +374,11 @@ export function createLoop_MainGame ({
       gravity = !gravity
     }
     if (gravity) {
-      const x = Math.round(playerPosition[0]) - land.x * landSize
-      const y = Math.round(playerPosition[2]) - land.y * landSize
+      const x = Math.round(playerPosition[0]) - activeLand.x * landSize
+      const y = Math.round(playerPosition[2]) - activeLand.y * landSize
       playerPosition = v3.add(playerPosition, [
         0, 
-        (land.points[y * land.size + x].height - playerPosition[1]) / 10, 
+        (activeLand.points[y * activeLand.size + x].height - playerPosition[1]) / 10, 
         0
       ])
     }
@@ -421,9 +421,9 @@ export function createLoop_MainGame ({
   
     if (planeIntersection) {
       markerPosition = [
-        clamp(Math.round(planeIntersection[0]), worldLandX*landSize, worldLandX*landSize + landSize - 1),
+        Math.round(planeIntersection[0]),
         0, 
-        clamp(Math.round(planeIntersection[2]), worldLandY*landSize, worldLandY*landSize + landSize - 1),
+        Math.round(planeIntersection[2]),
       ]
     }
   
@@ -445,14 +445,14 @@ export function createLoop_MainGame ({
     if (keyboard.ARROWUP || (mouse.buttons[0] && currentActionType === 'raise')) {
       landPoints.forEach(landPoint => {
         landPoint.height += heightDelta
+        updateHeightMap(landPoint.land)
       })
-      updateHeightMap(land)
     }
     if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentActionType === 'lower')) {
       landPoints.forEach(landPoint => {
         landPoint.height -= heightDelta
+        updateHeightMap(landPoint.land)
       })
-      updateHeightMap(land)
     }
     if (keyboard.DELETE || (mouse.buttons[0] && currentActionType === 'reset')) {
       landPoints.forEach(landPoint => {
@@ -460,12 +460,12 @@ export function createLoop_MainGame ({
         landPoint.type = 'grass'
         if (landPoint.prop) {
           landPoint.prop = null
-          land.propCount--
+          landPoint.land.propCount--
         }
+        updateHeightMap(landPoint.land)
+        updateColorMap(landPoint.land)
+        updatePropMap(landPoint.land)
       })
-      updateHeightMap(land)
-      updateColorMap(land)
-      updatePropMap(land)
     }
 
     if (keyboard.C && !prevKeyboard.C) {
@@ -478,10 +478,10 @@ export function createLoop_MainGame ({
       landPoints.forEach(landPoint => {
         if (currentPropType) {
           if (!landPoint.prop) {
-            if (land.propCount >= maxPropCount) {
+            if (landPoint.land.propCount >= maxPropCount) {
               return
             }
-            land.propCount++
+            landPoint.land.propCount++
           }
           landPoint.prop = {
             type: currentPropType,
@@ -489,10 +489,10 @@ export function createLoop_MainGame ({
           }
         } else if (landPoint.prop) {
           landPoint.prop = null
-          land.propCount--
+          landPoint.land.propCount--
         }
+        updatePropMap(landPoint.land)
       })
-      updatePropMap(land)
     }
 
     if (keyboard.Z && !prevKeyboard.Z) {
@@ -504,13 +504,14 @@ export function createLoop_MainGame ({
     if (keyboard.Q || (mouse.buttons[0] && currentActionType === 'paint')) {
       landPoints.forEach(landPoint => {
         landPoint.type = currentLandType
+        updateColorMap(landPoint.land)
       })
-      updateColorMap(land)
     }
 
     if (keyboard[' ']) {
       const props = landPoints.filter(x => x.prop).map(x => x.prop)
       if (props.length) {
+        debugger
         const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text)
         if (text != null) {
           props.forEach(prop => { prop.text = text })
@@ -519,7 +520,9 @@ export function createLoop_MainGame ({
       }
     }
 
-    const landPointAtPlayer = land.points[Math.round(playerPosition[0]) + Math.round(playerPosition[2]) * land.size]
+    const landPointAtPlayer = activeLand.points[
+      Math.round(playerPosition[0] - activeLand.x * activeLand.size) + 
+      Math.round(playerPosition[2] - activeLand.y * activeLand.size) * activeLand.size]
     if (landPointAtPlayer && landPointAtPlayer.prop) {
       propText = landPointAtPlayer.prop.text
     } else {
@@ -528,16 +531,21 @@ export function createLoop_MainGame ({
   }
 
   function getAllLandsPointsWithinBrush() {
-    const landOffsetX = Math.floor(markerPosition[0] / landSize) * landSize
-    const landOffsetY = Math.floor(markerPosition[2] / landSize) * landSize
     const landPoints = []
     for (let i = 0 ; i < 2 * (brushSize - 1) + 1; ++i) {
       for (let j = 0 ; j < 2 * (brushSize - 1) + 1; ++j) {
-        const x = clamp(markerPosition[0] - landOffsetX + (i - brushSize + 1), 0, landSize-1) 
-        const y = clamp(markerPosition[2] - landOffsetY + (j - brushSize + 1), 0, landSize-1)
-        const landPoint = land.points[y * land.size + x]
-        if (!landPoints.includes(landPoint)) {
-          landPoints.push(landPoint)
+        const brushOffsetX = i - brushSize + 1
+        const brushOffsetY = j - brushSize + 1
+        const worldLandX = Math.floor((markerPosition[0] + brushOffsetX) / landSize)
+        const worldLandY = Math.floor((markerPosition[2] + brushOffsetY) / landSize)
+        const land = world.lands[`${worldLandX}_${worldLandY}`]
+        if (land) {
+          const x = markerPosition[0] - land.x * landSize + brushOffsetX 
+          const y = markerPosition[2] - land.y * landSize + brushOffsetY
+          const landPoint = land.points[y * land.size + x]
+          if (!landPoints.includes(landPoint)) {
+            landPoints.push(landPoint)
+          }
         }
       }
     }
@@ -629,6 +637,7 @@ export function createLoop_MainGame ({
 
     for (let i = 0; i < mapSize; ++i) {
       land.points[i] = {
+        land,
         height: 0,
         type: 'grass',
         prop: null
