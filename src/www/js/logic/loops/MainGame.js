@@ -1,9 +1,9 @@
 import { v3, linePlaneIntersectionPoint, clamp } from '../../common/math.js'
 import { Camera } from '../entities/Camera.js'
-import { createScene_EditingLand } from '../../rendering/scenes/EditingLand.js'
+import { createScene_World } from '../../rendering/scenes/World.js'
 import { createLoop_GameOver } from './GameOver.js'
 
-export function createLoop_EditingLand ({ 
+export function createLoop_MainGame ({ 
   gl,
   ui,  
   output,
@@ -12,10 +12,21 @@ export function createLoop_EditingLand ({
   mouse,
   prevMouse 
 }) {
-  const landSize = 512
-  const land = createLand(landSize)
+  const landSize = 256
+  const maxPropCount = 1500
+
+  const user = {
+    name: 'Brassawiking'
+  }
+
+  const world = {
+    lands: {}
+  }
+  window.world = world
+
+  let land
   const camera = new Camera()
-    
+
   const state = {}
   let gravity = false
   let playerPosition = [0, 0, 0]
@@ -49,22 +60,9 @@ export function createLoop_EditingLand ({
     'stone_tablet',
   ]
   let currentPropType = propTypes[0]
- 
-  let propCount = 0
-  let maxPropCount = 1500
-
   let brushSize = 1
-
-  let heightMapDirty = false
-  let colorMapDirty = false
-  let heightMap = new Float32Array(new Array(land.points.length))
-  let colorMap = new Uint8Array(new Array(land.points.length * 3))
-  let propMap = new Array(land.points.length)
-  updateHeightMap()
-  updateColorMap()
-  updatePropMap()
-
-  const scene_EditingLand = createScene_EditingLand(gl, landSize)
+ 
+  const scene_World = createScene_World(gl, landSize)
 
   ui.innerHTML = `
     <style>
@@ -74,6 +72,7 @@ export function createLoop_EditingLand ({
         left: 100px;
         max-width: calc(100vw - 200px);
         font-family: "Gothic A1", sans-serif;
+        font-size: 14px;
       }
       .toolbar label {
         margin: 2px; 10px;
@@ -93,11 +92,11 @@ export function createLoop_EditingLand ({
         <select class="js-action-type" tabindex="-1"></select>
       </label>
       <label>
-        Land [Q/Z/X]: 
+        Land [Q / Z / X]: 
         <select class="js-land-type" tabindex="-1"></select>
       </label>
       <label>
-        Prop [E/C/V]: 
+        Prop [E / C / V]: 
         <select class="js-prop-type" tabindex="-1"></select>
       </label>
       <label>
@@ -278,31 +277,45 @@ export function createLoop_EditingLand ({
     ui_gravity.checked = gravity
 
     const ui_propText = ui.querySelector('.propText')
-    if (prevPropText != propText) {
+    if (prevPropText !== propText) {
       ui_propText.hidden = !propText
       ui_propText.innerHTML = propText
       prevPropText = propText
     }
 
-    scene_EditingLand({
+    const lands = [
+      getOrCreateLand(land.x-1, land.y+1),
+      getOrCreateLand(land.x-1, land.y),
+      getOrCreateLand(land.x-1, land.y-1),
+
+      getOrCreateLand(land.x, land.y+1),
+      land,
+      getOrCreateLand(land.x, land.y-1),
+
+      getOrCreateLand(land.x+1, land.y+1),
+      getOrCreateLand(land.x+1, land.y),
+      getOrCreateLand(land.x+1, land.y-1),
+    ]
+
+    scene_World({
       cameraView: camera.matrix,
       time: t,
       markerPosition,
       brushSize,
       playerPosition,
-      heightMap: heightMapDirty ? heightMap : null,
-      colorMap: colorMapDirty ? colorMap : null,
-      propMap
+      lands
     })
 
-    heightMapDirty = false
-    colorMapDirty = false
+    lands.forEach(land => {
+      land.heightMapDirty = false
+      land.colorMapDirty = false
+    })
      
     const outputContent = `
       <table style="width: 100%;">
         <tr><th style="text-align: left;"> Brush size </th><td> ${(brushSize-1)*2 + 1} </td><tr>
         <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
-        <tr><th style="text-align: left;"> Prop count </th><td> ${propCount} / ${maxPropCount} </td><tr>
+        <tr><th style="text-align: left;"> Prop count </th><td> ${land.propCount} / ${maxPropCount} </td><tr>
       </table>
       <br/>
 
@@ -318,7 +331,7 @@ export function createLoop_EditingLand ({
         <tr><th style="text-align: left;"> Space </th><td> Edit prop </td><tr>
         <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
         <tr><th style="text-align: left;"> K </th><td> Go to game over </td><tr>
-        <tr><th style="text-align: left;"> [A/B/C/...] </th><td> Shortcuts </td><tr>
+        <tr><th style="text-align: left;"> [A / B / C / ...] </th><td> Shortcuts </td><tr>
       </table>
     `.trim()
 
@@ -333,8 +346,11 @@ export function createLoop_EditingLand ({
   }
 
   function logic(t, dt) {
+    const worldLandX = Math.floor(playerPosition[0] / landSize)
+    const worldLandY = Math.floor(playerPosition[2] / landSize)
+    land = getOrCreateLand(worldLandX, worldLandY)
+
     const speed = 10.5 * dt / 1000;
-  
     if (keyboard.D) {
       playerPosition = v3.add(playerPosition, v3.multiply(v3.normalize([camera.x[0], 0, camera.x[2]]), speed))
     }
@@ -405,9 +421,9 @@ export function createLoop_EditingLand ({
   
     if (planeIntersection) {
       markerPosition = [
-        clamp(Math.round(planeIntersection[0]), 0, landSize - 1),
+        clamp(Math.round(planeIntersection[0]), worldLandX*landSize, worldLandX*landSize + landSize - 1),
         0, 
-        clamp(Math.round(planeIntersection[2]), 0, landSize - 1),
+        clamp(Math.round(planeIntersection[2]), worldLandY*landSize, worldLandY*landSize + landSize - 1),
       ]
     }
   
@@ -430,26 +446,26 @@ export function createLoop_EditingLand ({
       landPoints.forEach(landPoint => {
         landPoint.height += heightDelta
       })
-      updateHeightMap()
+      updateHeightMap(land)
     }
     if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentActionType === 'lower')) {
       landPoints.forEach(landPoint => {
         landPoint.height -= heightDelta
       })
-      updateHeightMap()
+      updateHeightMap(land)
     }
     if (keyboard.DELETE || (mouse.buttons[0] && currentActionType === 'reset')) {
       landPoints.forEach(landPoint => {
         landPoint.height = 0
         landPoint.type = 'grass'
-        if (landPoint.prop != null) {
+        if (landPoint.prop) {
           landPoint.prop = null
-          propCount--
+          land.propCount--
         }
       })
-      updateHeightMap()
-      updateColorMap()
-      updatePropMap()
+      updateHeightMap(land)
+      updateColorMap(land)
+      updatePropMap(land)
     }
 
     if (keyboard.C && !prevKeyboard.C) {
@@ -461,22 +477,22 @@ export function createLoop_EditingLand ({
     if (keyboard.E || (mouse.buttons[0] && currentActionType === 'prop')) {
       landPoints.forEach(landPoint => {
         if (currentPropType) {
-          if (landPoint.prop == null) {
-            if (propCount >= maxPropCount) {
+          if (!landPoint.prop) {
+            if (land.propCount >= maxPropCount) {
               return
             }
-            propCount++
+            land.propCount++
           }
           landPoint.prop = {
             type: currentPropType,
             text: '' 
           }
-        } else if (landPoint.prop != null) {
+        } else if (landPoint.prop) {
           landPoint.prop = null
-          propCount--
+          land.propCount--
         }
       })
-      updatePropMap()
+      updatePropMap(land)
     }
 
     if (keyboard.Z && !prevKeyboard.Z) {
@@ -489,7 +505,7 @@ export function createLoop_EditingLand ({
       landPoints.forEach(landPoint => {
         landPoint.type = currentLandType
       })
-      updateColorMap()
+      updateColorMap(land)
     }
 
     if (keyboard[' ']) {
@@ -512,11 +528,13 @@ export function createLoop_EditingLand ({
   }
 
   function getAllLandsPointsWithinBrush() {
+    const landOffsetX = Math.floor(markerPosition[0] / landSize) * landSize
+    const landOffsetY = Math.floor(markerPosition[2] / landSize) * landSize
     const landPoints = []
     for (let i = 0 ; i < 2 * (brushSize - 1) + 1; ++i) {
       for (let j = 0 ; j < 2 * (brushSize - 1) + 1; ++j) {
-        const x = clamp(markerPosition[0] + (i - brushSize + 1), 0, landSize-1)
-        const y = clamp(markerPosition[2] + (j - brushSize + 1), 0, landSize-1)
+        const x = clamp(markerPosition[0] - landOffsetX + (i - brushSize + 1), 0, landSize-1) 
+        const y = clamp(markerPosition[2] - landOffsetY + (j - brushSize + 1), 0, landSize-1)
         const landPoint = land.points[y * land.size + x]
         if (!landPoints.includes(landPoint)) {
           landPoints.push(landPoint)
@@ -542,33 +560,15 @@ export function createLoop_EditingLand ({
     camera.update()
   }
 
-  function createLand(size) {
-    const land = {
-      size: size,
-      points: []
-    }
-
-    for (let y = 0; y < size; ++y) {
-      for (let x = 0; x < size; ++x) {
-        land.points.push({
-          height: 0,
-          type: 'grass',
-          prop: null
-        })
-      }  
-    }
-
-    return land
-  }
-
-  function updateHeightMap () {
+  function updateHeightMap (land) {
     for (let i = 0; i < land.points.length; ++i) {
-      heightMap[i] = land.points[i].height
+      land.heightMap[i] = land.points[i].height
     }
-    heightMapDirty = true
+    land.heightMapDirty = true
   }
 
-  function updateColorMap () {
+  function updateColorMap (land) {
+    const colorMap = land.colorMap
     for (let i = 0; i < land.points.length; ++i) {
       switch(land.points[i].type) {
         case 'grass':
@@ -592,12 +592,55 @@ export function createLoop_EditingLand ({
           colorMap[3*i + 2] = 255
       }
     }
-    colorMapDirty = true
+    land.colorMapDirty = true
   }
 
-  function updatePropMap () {
+  function updatePropMap (land) {
     for (let i = 0; i < land.points.length; ++i) {
-      propMap[i] = land.points[i].prop
+      land.propMap[i] = land.points[i].prop
     }
+  }
+
+  function getOrCreateLand(worldLandX, worldLandY) {
+    const worldLandKey = `${worldLandX}_${worldLandY}`
+    if (!world.lands[worldLandKey]) {
+      world.lands[worldLandKey] = createLand(landSize, worldLandX, worldLandY)
+    }
+    return world.lands[worldLandKey]
+  }
+
+  function createLand(size, x, y) {
+    const mapSize = size*size
+    const land = {
+      name: '',
+      owner: user.name,
+      authors: [user.name],
+      size,
+      x,
+      y,
+      points: [],
+      heightMap: new Float32Array(new Array(mapSize)),
+      colorMap: new Uint8Array(new Array(mapSize * 3)),
+      propMap: new Array(mapSize),
+      heightMapDirty: false,
+      colorMapDirty: false,
+      propCount: 0,
+    }
+
+    for (let y = 0; y < size; ++y) {
+      for (let x = 0; x < size; ++x) {
+        land.points.push({
+          height: 0,
+          type: 'grass',
+          prop: null
+        })
+      }  
+    }
+
+    updateHeightMap(land)
+    updateColorMap(land)
+    updatePropMap(land)
+
+    return land
   }
 }

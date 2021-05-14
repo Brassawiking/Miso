@@ -1,4 +1,4 @@
-import { createLoop_EditingLand } from './EditingLand.js'
+import { createLoop_MainGame } from './MainGame.js'
 
 export function createLoop_StartScreen ({ 
   ui,
@@ -28,10 +28,10 @@ export function createLoop_StartScreen ({
 
   return () => {
     if (touchStart) {
-      return createLoop_EditingLand
+      return createLoop_MainGame
     } 
     if (keyboard.ENTER && !prevKeyboard.ENTER) {
-      return createLoop_EditingLand
+      return createLoop_MainGame
     }
   }
 }

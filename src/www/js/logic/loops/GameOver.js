@@ -1,4 +1,4 @@
-import { createLoop_EditingLand } from './EditingLand.js'
+import { createLoop_MainGame } from './MainGame.js'
 
 export function createLoop_GameOver ({ 
   gl, 
@@ -17,7 +17,7 @@ export function createLoop_GameOver ({
 
   return () => {   
     if (keyboard.ENTER && !prevKeyboard.ENTER) {
-      return createLoop_EditingLand
+      return createLoop_MainGame
     }
   }
 }
