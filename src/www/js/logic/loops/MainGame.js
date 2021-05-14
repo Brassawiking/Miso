@@ -12,7 +12,7 @@ export function createLoop_MainGame ({
   prevMouse,
   data: { user } 
 }) {
-  const LAND_SIZE = 512
+  const LAND_SIZE = 256
   const MAX_PROP_COUNT = 1500
 
   const world = {

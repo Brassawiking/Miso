@@ -16,6 +16,23 @@ document.addEventListener('mousemove', e => {
   mouse.y = (1 - (e.clientY / window.innerHeight)) * 2 - 1
 })
 
+document.addEventListener('touchstart', e => {
+  const touch = e.changedTouches[0]
+  mouse.x = (touch.clientX / window.innerWidth) * 2 - 1
+  mouse.y = (1 - (touch.clientY / window.innerHeight)) * 2 - 1
+  mouse.buttons[0] = true
+})
+document.addEventListener('touchmove', e => {
+  e.preventDefault()
+  const touch = e.changedTouches[0]
+  mouse.x = (touch.clientX / window.innerWidth) * 2 - 1
+  mouse.y = (1 - (touch.clientY / window.innerHeight)) * 2 - 1
+})
+document.addEventListener('touchend', e => {
+  mouse.buttons[0] = false
+})
+
+
 export function updatePrevInput() {
   for (let prop in prevKeyboard) {
     delete prevKeyboard[prop]
