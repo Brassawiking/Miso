@@ -12,7 +12,7 @@ export function createLoop_MainGame ({
   mouse,
   prevMouse 
 }) {
-  const landSize = 512
+  const landSize = 256
   const maxPropCount = 1500
 
   const user = {
@@ -374,8 +374,8 @@ export function createLoop_MainGame ({
       gravity = !gravity
     }
     if (gravity) {
-      const x = clamp(Math.round(playerPosition[0]), 0, landSize-1)
-      const y = clamp(Math.round(playerPosition[2]), 0, landSize-1)
+      const x = Math.round(playerPosition[0]) - land.x * landSize
+      const y = Math.round(playerPosition[2]) - land.y * landSize
       playerPosition = v3.add(playerPosition, [
         0, 
         (land.points[y * land.size + x].height - playerPosition[1]) / 10, 
