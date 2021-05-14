@@ -1,7 +1,6 @@
 import { v3, linePlaneIntersectionPoint, clamp } from '../../common/math.js'
 import { Camera } from '../entities/Camera.js'
 import { createScene_World } from '../../rendering/scenes/World.js'
-import { createLoop_GameOver } from './GameOver.js'
 
 export function createLoop_MainGame ({ 
   gl,
@@ -332,7 +331,6 @@ export function createLoop_MainGame ({
         <tr><th style="text-align: left;"> Mouse wheel </th><td> Zoom </td><tr>
         <tr><th style="text-align: left;"> Space </th><td> Edit prop </td><tr>
         <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
-        <tr><th style="text-align: left;"> K </th><td> Go to game over </td><tr>
         <tr><th style="text-align: left;"> [A / B / C / ...] </th><td> Shortcuts </td><tr>
       </table>
     `.trim()
@@ -340,10 +338,6 @@ export function createLoop_MainGame ({
     if (outputContent !== state.prevOutputContent) {
       output.innerHTML = outputContent
       state.prevOutputContent = outputContent
-    }
-
-    if (keyboard.K && !prevKeyboard.K) {
-      return createLoop_GameOver
     }
   }
 
@@ -534,6 +528,7 @@ export function createLoop_MainGame ({
       }
     }
 
+    // TODO: Look ahead and remove activeLand dependency
     const landPointAtPlayer = activeLand.points[
       Math.round(playerPosition[0] - activeLand.x * activeLand.size) + 
       Math.round(playerPosition[2] - activeLand.y * activeLand.size) * activeLand.size]
