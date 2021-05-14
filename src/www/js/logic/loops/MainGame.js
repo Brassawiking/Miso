@@ -24,7 +24,6 @@ export function createLoop_MainGame ({
   }
   window.world = world
 
-  let activeLand
   const camera = new Camera()
 
   const state = {}
@@ -269,7 +268,11 @@ export function createLoop_MainGame ({
   })
 
   return ({t, dt}) => {
-    logic(t, dt)
+    const worldLandX = Math.floor(playerPosition[0] / landSize)
+    const worldLandY = Math.floor(playerPosition[2] / landSize)
+    const activeLand = getOrCreateLand(worldLandX, worldLandY)
+
+    logic(t, dt, activeLand)
 
     ui_landType.value = currentLandType
     ui_propType.value = currentPropType
@@ -345,11 +348,7 @@ export function createLoop_MainGame ({
     }
   }
 
-  function logic(t, dt) {
-    const worldLandX = Math.floor(playerPosition[0] / landSize)
-    const worldLandY = Math.floor(playerPosition[2] / landSize)
-    activeLand = getOrCreateLand(worldLandX, worldLandY)
-
+  function logic(t, dt, activeLand) {
     const speed = 10.5 * dt / 1000;
     if (keyboard.D) {
       playerPosition = v3.add(playerPosition, v3.multiply(v3.normalize([camera.x[0], 0, camera.x[2]]), speed))
@@ -445,13 +444,17 @@ export function createLoop_MainGame ({
     if (keyboard.ARROWUP || (mouse.buttons[0] && currentActionType === 'raise')) {
       landPoints.forEach(landPoint => {
         landPoint.height += heightDelta
-        updateHeightMap(landPoint.land)
+      })
+      new Set(landPoints.map(x => x.land)).forEach(land => {
+        updateHeightMap(land)
       })
     }
     if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentActionType === 'lower')) {
       landPoints.forEach(landPoint => {
         landPoint.height -= heightDelta
-        updateHeightMap(landPoint.land)
+      })
+      new Set(landPoints.map(x => x.land)).forEach(land => {
+        updateHeightMap(land)
       })
     }
     if (keyboard.DELETE || (mouse.buttons[0] && currentActionType === 'reset')) {
@@ -462,9 +465,12 @@ export function createLoop_MainGame ({
           landPoint.prop = null
           landPoint.land.propCount--
         }
-        updateHeightMap(landPoint.land)
-        updateColorMap(landPoint.land)
-        updatePropMap(landPoint.land)
+      })
+
+      new Set(landPoints.map(x => x.land)).forEach(land => {
+        updateHeightMap(land)
+        updateColorMap(land)
+        updatePropMap(land)
       })
     }
 
@@ -491,7 +497,10 @@ export function createLoop_MainGame ({
           landPoint.prop = null
           landPoint.land.propCount--
         }
-        updatePropMap(landPoint.land)
+      })
+
+      new Set(landPoints.map(x => x.land)).forEach(land => {
+        updatePropMap(land)
       })
     }
 
@@ -504,7 +513,9 @@ export function createLoop_MainGame ({
     if (keyboard.Q || (mouse.buttons[0] && currentActionType === 'paint')) {
       landPoints.forEach(landPoint => {
         landPoint.type = currentLandType
-        updateColorMap(landPoint.land)
+      })
+      new Set(landPoints.map(x => x.land)).forEach(land => {
+        updateColorMap(land)
       })
     }
 
