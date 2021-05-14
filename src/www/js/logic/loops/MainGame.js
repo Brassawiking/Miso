@@ -312,13 +312,15 @@ export function createLoop_MainGame ({
       land.colorMapDirty = false
     })
      
+    const landAtBrush = getLandAtBrushCenter() || {}
     const outputContent = `
       <table style="width: 100%;">
-        <tr><th style="text-align: left;"> Land name </th><td> ${activeLand.name} </td><tr>
-        <tr><th style="text-align: left;"> Land owner </th><td> ${activeLand.owner != null ? activeLand.owner : 'NOT CLAIMED'} </td><tr>
-        <tr><th style="text-align: left;"> Brush size </th><td> ${(brushSize-1)*2 + 1} </td><tr>
-        <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
-        <tr><th style="text-align: left;"> Prop count </th><td> ${activeLand.propCount} / ${maxPropCount} </td><tr>
+        <tr><th colspan="2" style="text-align: center;"> ----- Brush info ----- </th><tr>
+        <tr><th style="text-align: left;"> Size </th><td> ${(brushSize-1)*2 + 1} </td><tr>
+        <tr><th style="text-align: left;"> Position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
+        <tr><th style="text-align: left;"> Land name </th><td> ${landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'} </td><tr>
+        <tr><th style="text-align: left;"> Land owner </th><td> ${landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'} </td><tr>
+        <tr><th style="text-align: left;"> Land prop count </th><td> ${landAtBrush.propCount} / ${maxPropCount} </td><tr>
       </table>
       <br/>
 
