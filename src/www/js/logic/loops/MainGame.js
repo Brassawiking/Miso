@@ -268,11 +268,7 @@ export function createLoop_MainGame ({
   })
 
   return ({t, dt}) => {
-    const worldLandX = Math.floor(playerPosition[0] / landSize)
-    const worldLandY = Math.floor(playerPosition[2] / landSize)
-    const activeLand = getOrCreateLand(worldLandX, worldLandY)
-
-    logic(t, dt, activeLand)
+    logic(t, dt)
 
     ui_landType.value = currentLandType
     ui_propType.value = currentPropType
@@ -286,6 +282,9 @@ export function createLoop_MainGame ({
       prevPropText = propText
     }
 
+    const worldLandX = Math.floor(playerPosition[0] / landSize)
+    const worldLandY = Math.floor(playerPosition[2] / landSize)
+    const activeLand = getOrCreateLand(worldLandX, worldLandY)
     const lands = [
       getOrCreateLand(activeLand.x-1, activeLand.y+1),
       getOrCreateLand(activeLand.x-1, activeLand.y),
@@ -348,7 +347,7 @@ export function createLoop_MainGame ({
     }
   }
 
-  function logic(t, dt, activeLand) {
+  function logic(t, dt) {
     const speed = 10.5 * dt / 1000;
     if (keyboard.D) {
       playerPosition = v3.add(playerPosition, v3.multiply(v3.normalize([camera.x[0], 0, camera.x[2]]), speed))
@@ -369,12 +368,16 @@ export function createLoop_MainGame ({
       playerPosition[1] -= speed
     }
 
+    const worldLandX = Math.floor(playerPosition[0] / landSize)
+    const worldLandY = Math.floor(playerPosition[2] / landSize)
+    const activeLand = getOrCreateLand(worldLandX, worldLandY)
+
     if (keyboard.G && !prevKeyboard.G) {
       gravity = !gravity
     }
     if (gravity) {
-      const x = Math.round(playerPosition[0]) - activeLand.x * landSize
-      const y = Math.round(playerPosition[2]) - activeLand.y * landSize
+      const x = Math.floor(playerPosition[0] - activeLand.x * landSize)
+      const y = Math.floor(playerPosition[2] - activeLand.y * landSize)
       playerPosition = v3.add(playerPosition, [
         0, 
         (activeLand.points[y * activeLand.size + x].height - playerPosition[1]) / 10, 
