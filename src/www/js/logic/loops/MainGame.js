@@ -27,7 +27,7 @@ export function createLoop_MainGame ({
 
   const state = {}
   let gravity = false
-  let playerPosition = [0, 0, 0]
+  let playerPosition = [0, 1, 0]
   let markerPosition = [0, 0, 0]
   let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = 0
@@ -314,6 +314,8 @@ export function createLoop_MainGame ({
      
     const outputContent = `
       <table style="width: 100%;">
+        <tr><th style="text-align: left;"> Land name </th><td> ${activeLand.name} </td><tr>
+        <tr><th style="text-align: left;"> Land owner </th><td> ${activeLand.owner != null ? activeLand.owner : 'NOT CLAIMED'} </td><tr>
         <tr><th style="text-align: left;"> Brush size </th><td> ${(brushSize-1)*2 + 1} </td><tr>
         <tr><th style="text-align: left;"> Marker position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
         <tr><th style="text-align: left;"> Prop count </th><td> ${activeLand.propCount} / ${maxPropCount} </td><tr>
@@ -322,6 +324,7 @@ export function createLoop_MainGame ({
 
       <table style="width: 100%;">
         <tr><th colspan="2" style="text-align: center;"> ----- Controls ----- </th><tr>
+        <tr><th style="text-align: left;"> Enter </th><td> Claim / Rename land </td><tr>
         <tr><th style="text-align: left;"> WASD </th><td> Move </td><tr>
         <tr><th style="text-align: left;"> Shift / Control </th><td> Fly up / down </td><tr>
         <tr><th style="text-align: left;"> Up / Down </th><td> Land height </td><tr>
@@ -436,7 +439,7 @@ export function createLoop_MainGame ({
       brushSize++
     }
   
-    const landPoints = getAllLandsPointsWithinBrush()
+    const landPoints = getAllOwnedLandsPointsWithinBrush()
     const heightDelta = 0.1
     if (keyboard.ARROWUP || (mouse.buttons[0] && currentActionType === 'raise')) {
       landPoints.forEach(landPoint => {
@@ -516,10 +519,31 @@ export function createLoop_MainGame ({
       })
     }
 
+    if (keyboard.ENTER && !prevKeyboard.ENTER) {
+      const land = getLandAtBrushCenter()
+      if (land.owner == null) {
+        const landName = prompt('Claim and name this land')
+        if (landName != null) {
+          land.owner = user.name
+          land.name = landName
+
+          const mapSize = landSize * landSize
+          for (let i = 0; i < mapSize; ++i) {
+            land.points[i].height = 1
+          }
+          updateHeightMap(land)
+        }
+      } else if (land.owner == user.name) {
+        const landName = prompt('Rename this land', land.name)
+        if (landName != null) {
+          land.name = landName
+        }
+      }
+    }
+
     if (keyboard[' ']) {
       const props = landPoints.filter(x => x.prop).map(x => x.prop)
       if (props.length) {
-        debugger
         const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text)
         if (text != null) {
           props.forEach(prop => { prop.text = text })
@@ -539,7 +563,7 @@ export function createLoop_MainGame ({
     }
   }
 
-  function getAllLandsPointsWithinBrush() {
+  function getAllOwnedLandsPointsWithinBrush() {
     const landPoints = []
     for (let i = 0 ; i < 2 * (brushSize - 1) + 1; ++i) {
       for (let j = 0 ; j < 2 * (brushSize - 1) + 1; ++j) {
@@ -548,7 +572,7 @@ export function createLoop_MainGame ({
         const worldLandX = Math.floor((markerPosition[0] + brushOffsetX) / landSize)
         const worldLandY = Math.floor((markerPosition[2] + brushOffsetY) / landSize)
         const land = world.lands[`${worldLandX}_${worldLandY}`]
-        if (land) {
+        if (land && land.owner === user.name) {
           const x = markerPosition[0] - land.x * landSize + brushOffsetX 
           const y = markerPosition[2] - land.y * landSize + brushOffsetY
           const landPoint = land.points[y * land.size + x]
@@ -559,6 +583,12 @@ export function createLoop_MainGame ({
       }
     }
     return landPoints
+  }
+
+  function getLandAtBrushCenter() {
+    const worldLandX = Math.floor(markerPosition[0] / landSize)
+    const worldLandY = Math.floor(markerPosition[2] / landSize)
+    return world.lands[`${worldLandX}_${worldLandY}`]
   }
 
   function updateCamera(playerPosition) {
@@ -630,8 +660,8 @@ export function createLoop_MainGame ({
     const mapSize = size*size
     const land = {
       name: '',
-      owner: user.name,
-      authors: [user.name],
+      owner: null,
+      authors: [],
       size,
       x,
       y,
@@ -647,7 +677,7 @@ export function createLoop_MainGame ({
     for (let i = 0; i < mapSize; ++i) {
       land.points[i] = {
         land,
-        height: 0,
+        height: -1,
         type: 'grass',
         prop: null
       }

@@ -12,7 +12,7 @@ export function createRender_Sea(gl) {
     varyings: {},
     vertex: `
       void main() {
-        vec4 position = vec4(a_pos.x, -1, a_pos.y, 1);
+        vec4 position = vec4(a_pos.x, 0, a_pos.y, 1);
 
         mat4 toWorldSpace = mat4(
           10000.0, 0, 0, 0,
