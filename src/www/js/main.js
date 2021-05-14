@@ -23,6 +23,8 @@ const updateResolution = () => {
 updateResolution()
 window.addEventListener('resize', updateResolution)
 
+const data = {}
+
 let currentLoop
 const setCurrentLoop = (createLoop) => {
   currentLoop = createLoop({
@@ -32,7 +34,8 @@ const setCurrentLoop = (createLoop) => {
     keyboard,
     prevKeyboard,
     mouse,
-    prevMouse  
+    prevMouse,
+    data  
   })
 }
 

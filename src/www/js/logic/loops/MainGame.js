@@ -9,19 +9,15 @@ export function createLoop_MainGame ({
   keyboard,
   prevKeyboard,
   mouse,
-  prevMouse 
+  prevMouse,
+  data: { user } 
 }) {
-  const landSize = 256
-  const maxPropCount = 1500
-
-  const user = {
-    name: 'Brassawiking'
-  }
+  const LAND_SIZE = 512
+  const MAX_PROP_COUNT = 1500
 
   const world = {
     lands: {}
   }
-  window.world = world
 
   const camera = new Camera()
 
@@ -60,7 +56,7 @@ export function createLoop_MainGame ({
   let currentPropType = propTypes[0]
   let brushSize = 1
  
-  const scene_World = createScene_World(gl, landSize)
+  const scene_World = createScene_World(gl, LAND_SIZE)
 
   ui.innerHTML = `
     <style>
@@ -281,8 +277,8 @@ export function createLoop_MainGame ({
       prevPropText = propText
     }
 
-    const worldLandX = Math.floor(playerPosition[0] / landSize)
-    const worldLandY = Math.floor(playerPosition[2] / landSize)
+    const worldLandX = Math.floor(playerPosition[0] / LAND_SIZE)
+    const worldLandY = Math.floor(playerPosition[2] / LAND_SIZE)
     const activeLand = getOrCreateLand(worldLandX, worldLandY)
     const lands = [
       getOrCreateLand(activeLand.x-1, activeLand.y+1),
@@ -320,7 +316,7 @@ export function createLoop_MainGame ({
         <tr><th style="text-align: left;"> Position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
         <tr><th style="text-align: left;"> Land name </th><td> ${landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'} </td><tr>
         <tr><th style="text-align: left;"> Land owner </th><td> ${landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'} </td><tr>
-        <tr><th style="text-align: left;"> Land prop count </th><td> ${landAtBrush.propCount} / ${maxPropCount} </td><tr>
+        <tr><th style="text-align: left;"> Land prop count </th><td> ${landAtBrush.propCount} / ${MAX_PROP_COUNT} </td><tr>
       </table>
       <br/>
 
@@ -367,19 +363,19 @@ export function createLoop_MainGame ({
       playerPosition[1] -= speed
     }
 
-    const worldLandX = Math.floor(playerPosition[0] / landSize)
-    const worldLandY = Math.floor(playerPosition[2] / landSize)
+    const worldLandX = Math.floor(playerPosition[0] / LAND_SIZE)
+    const worldLandY = Math.floor(playerPosition[2] / LAND_SIZE)
     const activeLand = getOrCreateLand(worldLandX, worldLandY)
 
     if (keyboard.G && !prevKeyboard.G) {
       gravity = !gravity
     }
     if (gravity) {
-      const x = Math.floor(playerPosition[0] - activeLand.x * landSize)
-      const y = Math.floor(playerPosition[2] - activeLand.y * landSize)
+      const x = Math.floor(playerPosition[0] - activeLand.x * LAND_SIZE)
+      const y = Math.floor(playerPosition[2] - activeLand.y * LAND_SIZE)
       playerPosition = v3.add(playerPosition, [
         0, 
-        (activeLand.points[y * activeLand.size + x].height - playerPosition[1]) / 10, 
+        (activeLand.points[y * LAND_SIZE + x].height - playerPosition[1]) / 10, 
         0
       ])
     }
@@ -486,7 +482,7 @@ export function createLoop_MainGame ({
       landPoints.forEach(landPoint => {
         if (currentPropType) {
           if (!landPoint.prop) {
-            if (landPoint.land.propCount >= maxPropCount) {
+            if (landPoint.land.propCount >= MAX_PROP_COUNT) {
               return
             }
             landPoint.land.propCount++
@@ -529,7 +525,7 @@ export function createLoop_MainGame ({
           land.owner = user.name
           land.name = landName
 
-          const mapSize = landSize * landSize
+          const mapSize = LAND_SIZE * LAND_SIZE
           for (let i = 0; i < mapSize; ++i) {
             land.points[i].height = 1
           }
@@ -556,8 +552,8 @@ export function createLoop_MainGame ({
 
     // TODO: Look ahead and remove activeLand dependency
     const landPointAtPlayer = activeLand.points[
-      Math.round(playerPosition[0] - activeLand.x * activeLand.size) + 
-      Math.round(playerPosition[2] - activeLand.y * activeLand.size) * activeLand.size]
+      Math.round(playerPosition[0] - activeLand.x * LAND_SIZE) + 
+      Math.round(playerPosition[2] - activeLand.y * LAND_SIZE) * LAND_SIZE]
     if (landPointAtPlayer && landPointAtPlayer.prop) {
       propText = landPointAtPlayer.prop.text
     } else {
@@ -571,13 +567,13 @@ export function createLoop_MainGame ({
       for (let j = 0 ; j < 2 * (brushSize - 1) + 1; ++j) {
         const brushOffsetX = i - brushSize + 1
         const brushOffsetY = j - brushSize + 1
-        const worldLandX = Math.floor((markerPosition[0] + brushOffsetX) / landSize)
-        const worldLandY = Math.floor((markerPosition[2] + brushOffsetY) / landSize)
+        const worldLandX = Math.floor((markerPosition[0] + brushOffsetX) / LAND_SIZE)
+        const worldLandY = Math.floor((markerPosition[2] + brushOffsetY) / LAND_SIZE)
         const land = world.lands[`${worldLandX}_${worldLandY}`]
         if (land && land.owner === user.name) {
-          const x = markerPosition[0] - land.x * landSize + brushOffsetX 
-          const y = markerPosition[2] - land.y * landSize + brushOffsetY
-          const landPoint = land.points[y * land.size + x]
+          const x = markerPosition[0] - land.x * LAND_SIZE + brushOffsetX 
+          const y = markerPosition[2] - land.y * LAND_SIZE + brushOffsetY
+          const landPoint = land.points[y * LAND_SIZE + x]
           if (!landPoints.includes(landPoint)) {
             landPoints.push(landPoint)
           }
@@ -588,8 +584,8 @@ export function createLoop_MainGame ({
   }
 
   function getLandAtBrushCenter() {
-    const worldLandX = Math.floor(markerPosition[0] / landSize)
-    const worldLandY = Math.floor(markerPosition[2] / landSize)
+    const worldLandX = Math.floor(markerPosition[0] / LAND_SIZE)
+    const worldLandY = Math.floor(markerPosition[2] / LAND_SIZE)
     return world.lands[`${worldLandX}_${worldLandY}`]
   }
 
@@ -653,7 +649,7 @@ export function createLoop_MainGame ({
   function getOrCreateLand(worldLandX, worldLandY) {
     const worldLandKey = `${worldLandX}_${worldLandY}`
     if (!world.lands[worldLandKey]) {
-      world.lands[worldLandKey] = createLand(landSize, worldLandX, worldLandY)
+      world.lands[worldLandKey] = createLand(LAND_SIZE, worldLandX, worldLandY)
     }
     return world.lands[worldLandKey]
   }
@@ -664,7 +660,6 @@ export function createLoop_MainGame ({
       name: '',
       owner: null,
       authors: [],
-      size,
       x,
       y,
       points: new Array(mapSize),
