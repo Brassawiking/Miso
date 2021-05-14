@@ -19,6 +19,10 @@ export function createScene_World(gl, landSize) {
   const render_StoneTablet = createRender_StoneTablet(gl)
   const render_Tree = createRender_Tree(gl)
 
+  const landCache = []
+  const heightMapTextureCache = []
+  const colorMapTextureCache = []
+
   return ({
     cameraView, 
     time,
@@ -37,14 +41,72 @@ export function createScene_World(gl, landSize) {
 
     render_Sky()
 
-    lands.forEach(land => {
+    lands.forEach((land, index) => {
+      let heightMapTexture = heightMapTextureCache[index]
+      if (!heightMapTexture) {
+        heightMapTexture = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, heightMapTexture)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        heightMapTextureCache[index] = heightMapTexture
+      }
+
+      let colorMapTexture = colorMapTextureCache[index]
+      if (!colorMapTexture) {
+        colorMapTexture = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, colorMapTexture)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        colorMapTextureCache[index] = colorMapTexture
+      }    
+
+      if (land != landCache[index] || land.heightMapDirty) {
+        const heightMap = land.heightMap
+        const heightMapSize = Math.sqrt(heightMap.length)
+        gl.bindTexture(gl.TEXTURE_2D, heightMapTexture)
+        gl.texImage2D(
+          gl.TEXTURE_2D, 
+          0, 
+          gl.R32F, 
+          heightMapSize,
+          heightMapSize,
+          0, 
+          gl.RED, 
+          gl.FLOAT,
+          heightMap
+        )
+      }
+
+      if (land != landCache[index] || land.colorMapDirty) {
+        const colorMap = land.colorMap
+        const colorMapSize = Math.sqrt(colorMap.length / 3)
+        gl.bindTexture(gl.TEXTURE_2D, colorMapTexture)
+        gl.texImage2D(
+          gl.TEXTURE_2D, 
+          0, 
+          gl.RGB, 
+          colorMapSize, 
+          colorMapSize, 
+          0, 
+          gl.RGB, 
+          gl.UNSIGNED_BYTE,
+          colorMap
+        )
+      }
+
       render_Terrain({
         time, 
         cameraView, 
-        heightMap:  land.heightMap, 
-        colorMap: land.colorMap, 
+        heightMapTexture, 
+        colorMapTexture, 
         position: [land.x * landSize, 0, land.y * landSize] 
       })
+
+      landCache[index] = land
     })
 
     lands.forEach(land => {

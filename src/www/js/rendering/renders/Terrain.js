@@ -158,20 +158,6 @@ export function createRender_Terrain(gl, gridSize) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indices), gl.STATIC_DRAW)
 
-  const heightTexture = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, heightTexture)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-
-  const colorTexture = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, colorTexture)      
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-
   const attributes = {
     a_pos: {
       size: 2,
@@ -194,8 +180,8 @@ export function createRender_Terrain(gl, gridSize) {
   return ({
     time, 
     cameraView,
-    heightMap,
-    colorMap,
+    heightMapTexture,
+    colorMapTexture,
     position
   }) => {
     Shader({
@@ -210,42 +196,11 @@ export function createRender_Terrain(gl, gridSize) {
       }
     })
 
-    for (let i = 0; i < 1; ++i) {
-      gl.activeTexture(gl['TEXTURE' + i])
-      gl.bindTexture(gl.TEXTURE_2D, heightTexture)
-
-      if (heightMap) {
-        const heightMapSize = Math.sqrt(heightMap.length)
-        gl.texImage2D(
-          gl.TEXTURE_2D, 
-          0, 
-          gl.R32F, 
-          heightMapSize,
-          heightMapSize,
-          0, 
-          gl.RED, 
-          gl.FLOAT,
-          heightMap
-        )
-      }
-    }
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, heightMapTexture)
 
     gl.activeTexture(gl.TEXTURE1)
-    gl.bindTexture(gl.TEXTURE_2D, colorTexture)
-    if (colorMap) {
-      const colorMapSize = Math.sqrt(colorMap.length / 3)
-      gl.texImage2D(
-        gl.TEXTURE_2D, 
-        0, 
-        gl.RGB, 
-        colorMapSize, 
-        colorMapSize, 
-        0, 
-        gl.RGB, 
-        gl.UNSIGNED_BYTE,
-        colorMap
-      )
-    }
+    gl.bindTexture(gl.TEXTURE_2D, colorMapTexture)
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0)

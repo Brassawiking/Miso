@@ -12,7 +12,7 @@ export function createLoop_MainGame ({
   mouse,
   prevMouse 
 }) {
-  const landSize = 256
+  const landSize = 512
   const maxPropCount = 1500
 
   const user = {
@@ -618,7 +618,7 @@ export function createLoop_MainGame ({
       size,
       x,
       y,
-      points: [],
+      points: new Array(mapSize),
       heightMap: new Float32Array(new Array(mapSize)),
       colorMap: new Uint8Array(new Array(mapSize * 3)),
       propMap: new Array(mapSize),
@@ -627,14 +627,12 @@ export function createLoop_MainGame ({
       propCount: 0,
     }
 
-    for (let y = 0; y < size; ++y) {
-      for (let x = 0; x < size; ++x) {
-        land.points.push({
-          height: 0,
-          type: 'grass',
-          prop: null
-        })
-      }  
+    for (let i = 0; i < mapSize; ++i) {
+      land.points[i] = {
+        height: 0,
+        type: 'grass',
+        prop: null
+      }
     }
 
     updateHeightMap(land)
