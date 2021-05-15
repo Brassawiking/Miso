@@ -8,5 +8,6 @@ export const changeLog = `
 🔹 Mostly code cleanup and restructuring
 🔹 Next up is data loading!
 🔹 Can now toggle help text
+🔹 Added a welcome land ⭐
 
 `.trim();

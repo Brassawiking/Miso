@@ -17,17 +17,17 @@ const ui = createUI()
 const stats = createStats()
 
 let currentLoop
-setCurrentLoop(createLoop_StartScreen)
+await setCurrentLoop(createLoop_StartScreen)
 
 stats.begin()
 let prevT = performance.now()
-requestAnimationFrame (function update(t) {
+requestAnimationFrame (async function update(t) {
   stats.end()
   stats.begin()
 
   const createNextLoop = currentLoop({ t, dt: t-prevT })
   if (createNextLoop) {
-    setCurrentLoop(createNextLoop)
+    await setCurrentLoop(createNextLoop)
   }
   updatePrevInput()
   prevT = t
@@ -72,8 +72,8 @@ function createStats() {
   return stats  
 }
 
-function setCurrentLoop(createLoop) {
-  currentLoop = createLoop({
+async function setCurrentLoop(createLoop) {
+  currentLoop = await createLoop({
     gl,
     ui, 
     keyboard,

@@ -65,5 +65,8 @@ function getContentType (path) {
   if (path.includes('.svg')) {
     return 'image/svg+xml'
   }
+  if (path.includes('.json')) {
+    return 'application/json'
+  }
   return 'text/plain'
 }

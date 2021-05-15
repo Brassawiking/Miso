@@ -3,7 +3,7 @@ import { createScene_World } from '../../rendering/scenes/World.js'
 import { WORLD, LAND, LANDPOINT, CAMERA, BRUSH, updateHeightMap, updateColorMap, updatePropMap } from '../entities.js'
 import { markup } from '../../rendering/ui.js'
 
-export function createLoop_MainGame ({ 
+export async function createLoop_MainGame ({ 
   gl,
   ui,  
   keyboard,
@@ -20,6 +20,29 @@ export function createLoop_MainGame ({
   const camera = CAMERA.identity()
  
   const scene_World = createScene_World(gl, LAND_SIZE)
+
+  const loadData = async url => (await fetch(url)).json()
+  const loadedLands = await Promise.all([
+    loadData('data/welcome.json')
+  ])
+  loadedLands.forEach(data => {
+    const land = LAND.identity(LAND_SIZE)
+    land.name = data.name
+    land.owner = data.owner
+    land.authors = data.authors
+    land.x = data.x
+    land.y = data.y
+    land.points.forEach((p, i) => {
+      Object.assign(p, data.points[i])
+    })
+
+    updateHeightMap(land)
+    updateColorMap(land)
+    updatePropMap(land)
+
+    console.log(land.x, land.y)
+    LAND.add(land, world, land.x, land.y)
+  })
 
   const state = {}
   let gravity = true
@@ -64,6 +87,8 @@ export function createLoop_MainGame ({
     ui_brushLandName,
     ui_brushLandOwner,
     ui_brushLandPropCount,
+
+    ui_save
   }] = markup(`
     <div>
       <div class="toolbar" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()">
@@ -90,6 +115,7 @@ export function createLoop_MainGame ({
       <ul class="menu" onmousedown="event.stopPropagation()">
         <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>
         <li onclick="ui_char.hidden = !ui_char.hidden; this.classList.toggle('selected')">Char</li>
+        <li ref="save">Save</li>
         <li onclick="ui_help.hidden = !ui_help.hidden; this.classList.toggle('selected')" class="selected">Help</li>
       </ul>
 
@@ -164,6 +190,33 @@ export function createLoop_MainGame ({
   ui_gravity.addEventListener('input', e => { 
     gravity = e.target.checked 
     e.target.blur()
+  })
+
+  ui_save.addEventListener('click', e => {
+    const land = LAND.at(playerPosition, world)
+    if (land && land.owner == user.name) {
+      const data = { 
+        name: land.name,
+        owner: land.owner,
+        authors: land.authors,
+        x: land.x,
+        y: land.y,
+        points: land.points.map(x => {
+          const point = { ...x }
+          delete point.land
+          return point
+        })
+      }
+
+      var download = document.createElement('a')
+      download.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data)))
+      download.setAttribute('download', `miso_land_${land.x}_${land.y}.json`)
+      download.setAttribute('target', '_blank')
+      download.style.display = 'none'
+      document.body.appendChild(download)
+      download.click()
+      document.body.removeChild(download)
+    }
   })
 
   return ({t, dt}) => {
