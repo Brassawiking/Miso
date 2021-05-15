@@ -5,6 +5,7 @@ import { routes } from './infrastructure/router.js'
 import './api/index.js'
 import './persistence/entities.js'
 
+const PORT = 1337
 const server = http.createServer((req, res) => {
   let requestBody = ''
 
@@ -46,7 +47,7 @@ const server = http.createServer((req, res) => {
   })
 })
 
-server.listen(8080, null, null, () => {
+server.listen(PORT, '0.0.0.0', null, () => {
   const address = server.address()
   console.log(`Running server at port: ${address.port}`)
 })

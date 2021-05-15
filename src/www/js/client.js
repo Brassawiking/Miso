@@ -1,7 +1,6 @@
 import { gl } from './rendering/glCanvas.js'
 import { ui } from './rendering/uiLayer.js'
 import { keyboard, prevKeyboard, mouse, prevMouse, updatePrevInput} from './system/input.js'
-import { output } from './system/output.js'
 import { createLoop_StartScreen } from './logic/loops/StartScreen.js'
 import { Stats } from './external/stats.js'
 
@@ -11,7 +10,6 @@ stats.showPanel(1)
 document.body.appendChild(gl.canvas)
 document.body.appendChild(ui)
 document.body.appendChild(stats.dom)
-document.body.appendChild(output)
 
 // Internal resolution
 const updateResolution = () => {
@@ -30,7 +28,6 @@ const setCurrentLoop = (createLoop) => {
   currentLoop = createLoop({
     gl,
     ui, 
-    output,
     keyboard,
     prevKeyboard,
     mouse,

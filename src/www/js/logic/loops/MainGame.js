@@ -5,7 +5,6 @@ import { createScene_World } from '../../rendering/scenes/World.js'
 export function createLoop_MainGame ({ 
   gl,
   ui,  
-  output,
   keyboard,
   prevKeyboard,
   mouse,
@@ -231,6 +230,24 @@ export function createLoop_MainGame ({
         }
       </div>
     </div>
+
+
+    <style>
+      .info {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 10px;
+        text-align: right;
+        font-size: 12px;
+        line-height: 12px;
+        font-family: "Gothic A1", sans-serif;
+        border-radius: 4px;
+      }
+    </style>
+    <div class="js-info info"></div>
   `
 
   const ui_actionType = ui.querySelector('.js-action-type')
@@ -261,6 +278,8 @@ export function createLoop_MainGame ({
     gravity = e.target.checked 
     e.target.blur()
   })
+
+  const ui_info = ui.querySelector('.js-info')
 
   return ({t, dt}) => {
     logic(t, dt)
@@ -309,7 +328,7 @@ export function createLoop_MainGame ({
     })
      
     const landAtBrush = getLandAtBrushCenter() || {}
-    const outputContent = `
+    const infoContent = `
       <table style="width: 100%;">
         <tr><th colspan="2" style="text-align: center;"> ----- Brush info ----- </th><tr>
         <tr><th style="text-align: left;"> Size </th><td> ${(brushSize-1)*2 + 1} </td><tr>
@@ -336,9 +355,9 @@ export function createLoop_MainGame ({
       </table>
     `.trim()
 
-    if (outputContent !== state.prevOutputContent) {
-      output.innerHTML = outputContent
-      state.prevOutputContent = outputContent
+    if (infoContent !== state.prevInfoContent) {
+      ui_info.innerHTML = infoContent
+      state.prevInfoContent = infoContent
     }
   }
 
