@@ -119,7 +119,7 @@ export function createLoop_MainGame ({
           <tr><th> Position </th><td ref="brushPosition"> </td><tr>
           <tr><th> Land name </th><td ref="brushLandName">  </td><tr>
           <tr><th> Land owner </th><td ref="brushLandOwner"> </td><tr>
-          <tr><th> Land prop count </th><td ref="brushLandPropCount"> </td><tr>
+          <tr><th> Land props </th><td ref="brushLandPropCount"> </td><tr>
         </table>
 
         <table id="ui_help">
