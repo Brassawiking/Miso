@@ -10,7 +10,7 @@ export function createLoop_StartScreen ({
       <form class="ui-box ui-bottom ui-right ui-rows" ref="form">
         <label>
           Player name <br/>
-          <input type="text" required name="username" autofocus spellcheck="false" />
+          <input type="text" required name="username" spellcheck="false" />
         </label>
         
         <fieldset>
@@ -45,6 +45,7 @@ export function createLoop_StartScreen ({
       root.remove()
     }, 1000)
   })
+  ui_form.elements.username.focus()
 
   return () => {
     if (data.gameMode) {
