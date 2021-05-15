@@ -23,7 +23,7 @@ export async function createLoop_MainGame ({
 
   const loadData = async url => (await fetch(url)).json()
   const loadedLands = await Promise.all([
-    loadData('data/welcome.json')
+    loadData('data/miso_land_-1_0.json')
   ])
   loadedLands.forEach(data => {
     const land = LAND.identity(LAND_SIZE)
@@ -34,6 +34,9 @@ export async function createLoop_MainGame ({
     land.y = data.y
     land.points.forEach((p, i) => {
       Object.assign(p, data.points[i])
+      if (data.points[i].prop) {
+        land.propCount++
+      }
     })
 
     updateHeightMap(land)
@@ -297,11 +300,9 @@ export async function createLoop_MainGame ({
       gravity = !gravity
     }
     if (gravity) {
-      const x = Math.floor(playerPosition[0] - activeLand.x * LAND_SIZE)
-      const y = Math.floor(playerPosition[2] - activeLand.y * LAND_SIZE)
       playerPosition = v3.add(playerPosition, [
         0, 
-        (activeLand.points[y * LAND_SIZE + x].height - playerPosition[1]) / 10, 
+        (Math.max(LANDPOINT.at(v3.add(playerPosition, [0.5, 0, 0.5]), world).height, -1) - playerPosition[1]) / 10, 
         0
       ])
     }

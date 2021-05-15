@@ -136,7 +136,7 @@ export const LANDPOINT = {
   identity() {
     return {
       land: null,
-      height: -1,
+      height: -10,
       type: 'grass',
       prop: null
     }
