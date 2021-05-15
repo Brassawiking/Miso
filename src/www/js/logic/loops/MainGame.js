@@ -89,7 +89,7 @@ export function createLoop_MainGame ({
 
       <ul class="menu" onmousedown="event.stopPropagation()">
         <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>
-        <li>Char</li>
+        <li onclick="ui_char.hidden = !ui_char.hidden; this.classList.toggle('selected')">Char</li>
         <li onclick="ui_help.hidden = !ui_help.hidden; this.classList.toggle('selected')" class="selected">Help</li>
       </ul>
 
@@ -106,6 +106,10 @@ export function createLoop_MainGame ({
             Array(24 * 10).fill('<div class="slot"> </div>').join('')
           }
         </div>
+      </div>
+
+      <div id="ui_char" class="inventory ui-box ui-rows" onmousedown="event.stopPropagation()" hidden>
+        <h1>Character</h1>
       </div>
 
       <div class="ui-box ui-bottom ui-right">
