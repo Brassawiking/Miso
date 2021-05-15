@@ -1,12 +1,18 @@
 import { createLoop_MainGame } from './MainGame.js'
 import { markup } from '../../rendering/ui.js'
+import { changeLog } from '../../changeLog.js'
 
 export function createLoop_StartScreen ({ 
   ui,
   data,
 }) {
-  const [root, { ui_form }] =  markup(`
+  const [root, { 
+    ui_form, 
+    ui_changeLog 
+  }] =  markup(`
     <miso-start-screen>
+      <div ref="changeLog"class="ui-box ui-bottom ui-left" style="font-size: 13px; white-space: pre-line; height: 300px; width: 300px; overflow: auto;"></div>
+
       <form class="ui-box ui-bottom ui-right ui-rows" ref="form">
         <label>
           Player name <br/>
@@ -30,6 +36,8 @@ export function createLoop_StartScreen ({
   `) 
   ui.innerHTML = ''
   ui.appendChild(root)
+
+  ui_changeLog.textContent = changeLog
 
   ui_form.elements.username.value = localStorage.getItem('user-name')
   ui_form.addEventListener('submit', e => {
