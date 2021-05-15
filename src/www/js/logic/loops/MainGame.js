@@ -85,12 +85,12 @@ export function createLoop_MainGame ({
         </label>
       </div>
 
-      <div ref="propText" class="ui-box ui-bottom ui-left"></div>
+      <div ref="propText" class="ui-box ui-bottom ui-left" style="white-space: pre;"></div>
 
       <ul class="menu" onmousedown="event.stopPropagation()">
         <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>
         <li>Char</li>
-        <li>Help</li>
+        <li onclick="ui_help.hidden = !ui_help.hidden; this.classList.toggle('selected')" class="selected">Help</li>
       </ul>
 
       <div id="ui_inventory" class="inventory ui-box ui-rows" onmousedown="event.stopPropagation()" hidden>
@@ -118,7 +118,7 @@ export function createLoop_MainGame ({
           <tr><th> Land prop count </th><td ref="brushLandPropCount"> </td><tr>
         </table>
 
-        <table>
+        <table id="ui_help">
           <tr><th colspan="2"> ----- Controls ----- </th><tr>
           <tr><th> Enter </th><td> Claim / Rename land </td><tr>
           <tr><th> WASD </th><td> Move </td><tr>

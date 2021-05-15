@@ -7,5 +7,6 @@ export const changeLog = `
 🔹 Change log added to start screen
 🔹 Mostly code cleanup and restructuring
 🔹 Next up is data loading!
+🔹 Can now toggle help text
 
 `.trim();
