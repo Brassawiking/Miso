@@ -56,6 +56,9 @@ function getContentType (path) {
   if (path.includes('.js')) {
     return 'text/javascript'
   }
+  if (path.includes('.css')) {
+    return 'text/css'
+  }
   if (path.includes('.html')) {
     return 'text/html'
   }

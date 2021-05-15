@@ -1,6 +1,7 @@
 import { v3, linePlaneIntersectionPoint, clamp } from '../../common/math.js'
 import { createScene_World } from '../../rendering/scenes/World.js'
-import { WORLD, LAND, CAM, BRUSH, updateHeightMap, updateColorMap, updatePropMap } from '../entities.js'
+import { WORLD, LAND, LANDPOINT, CAMERA, BRUSH, updateHeightMap, updateColorMap, updatePropMap } from '../entities.js'
+import { markup } from '../../rendering/ui.js'
 
 export function createLoop_MainGame ({ 
   gl,
@@ -16,14 +17,12 @@ export function createLoop_MainGame ({
 
   const world = WORLD.landSize(WORLD.identity(), LAND_SIZE)
   const brush = BRUSH.identity()
-  const camera = CAM.identity()
+  const camera = CAMERA.identity()
  
-  window.world = world
-
   const scene_World = createScene_World(gl, LAND_SIZE)
 
   const state = {}
-  let gravity = false
+  let gravity = true
   let playerPosition = [0, 1, 0]
   let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = 0
@@ -55,201 +54,92 @@ export function createLoop_MainGame ({
   ]
   let currentPropType = propTypes[0]
   
+  const [root, { 
+    ui_actionType, 
+    ui_landType, 
+    ui_propType, 
+    ui_gravity, 
+    ui_propText,
 
-  ui.innerHTML = `
-    <style>
-      .toolbar {
-        position: absolute;
-        top: 10px;
-        left: 100px;
-        max-width: calc(100vw - 200px);
-        font-family: "Gothic A1", sans-serif;
-        font-size: 14px;
-      }
-      .toolbar label {
-        margin: 2px; 10px;
-        display: inline-block;
-      }
-      .toolbar select {
-        border-radius: 5px;
-        border: none;
-        padding: 5px;
-        background: rgba(0, 0, 0, 0.3);
-        color: #fff;
-      }
-    </style>
-    <div class="toolbar" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()">
-      <label>
-        Mouse: 
-        <select class="js-action-type" tabindex="-1"></select>
-      </label>
-      <label>
-        Land [Q / Z / X]: 
-        <select class="js-land-type" tabindex="-1"></select>
-      </label>
-      <label>
-        Prop [E / C / V]: 
-        <select class="js-prop-type" tabindex="-1"></select>
-      </label>
-      <label>
-        Gravity [G]:
-        <input class="js-gravity" type="checkbox" tabindex="-1"/>
-      </label>
-    </div>
+    ui_brushSize,
+    ui_brushPosition,
+    ui_brushLandName,
+    ui_brushLandOwner,
+    ui_brushLandPropCount,
+  }] = markup(`
+    <div>
+      <div class="toolbar" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()">
+        <label>
+          Mouse: 
+          <select ref="actionType" tabindex="-1"></select>
+        </label>
+        <label>
+          Land [Q / Z / X]: 
+          <select ref="landType" tabindex="-1"></select>
+        </label>
+        <label>
+          Prop [E / C / V]: 
+          <select ref="propType" tabindex="-1"></select>
+        </label>
+        <label>
+          Gravity [G]:
+          <input ref="gravity" type="checkbox" tabindex="-1"/>
+        </label>
+      </div>
 
-    <style>
-      .propText {
-        position: absolute; 
-        margin: 0;
-        padding: 20px;
-        left: 20px; 
-        bottom: 20px;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 5px;
-        color: #fff;
-        font-family: "Gothic A1", sans-serif;
-      }
-    </style>
+      <div ref="propText" class="ui-box ui-bottom ui-left"></div>
 
-    <div class="propText"></div>
+      <ul class="menu" onmousedown="event.stopPropagation()">
+        <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>
+        <li>Char</li>
+        <li>Help</li>
+      </ul>
 
-    <style>
-      .menu {
-        position: absolute; 
-        margin: 0;
-        padding: 0;
-        right: 15px; 
-        top: 20px;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 9999px;
-        padding: 0px 10px;
-      }
-      .menu li {
-        cursor: pointer;
-        display: flex;
-        margin: 10px 0;
-        border-radius: 100%;
-        border: 1px solid #fff;
-        height: 45px;
-        width: 45px;
-        box-sizing:border-box;
-        color: #fff;
-        align-items: center;
-        justify-content: center;
+      <div id="ui_inventory" class="inventory ui-box ui-rows" onmousedown="event.stopPropagation()" hidden>
+        <h1>Inventory</h1>
+        <div class="grid">
+          ${
+            Array(24 * 1).fill('<div class="slot"> <img src="https://i.pinimg.com/originals/40/ed/8e/40ed8e381cf0876d77b540144c1247e0.png"/> </div>').join('')
+          }
+          ${
+            Array(24 * 1).fill('<div class="slot"> <img src="https://i.pinimg.com/originals/3b/37/86/3b37860fb69293ef99bba496fe9cb1d5.png"/> </div>').join('')
+          }
+          ${
+            Array(24 * 10).fill('<div class="slot"> </div>').join('')
+          }
+        </div>
+      </div>
 
-        font-size: 14px;
-        font-family: "Gothic A1", sans-serif;
-        font-weight: bold;
-      }
-      .menu li:hover {        
-        background: rgba(1, 1, 1, 0.3);
-      }
-      .menu li.selected {
-        background: #fff;
-        border-color: #fff;
-        color: #343a4a;
-      }
+      <div class="ui-box ui-bottom ui-right">
+        <table>
+          <tr><th colspan="2"> ----- Brush info ----- </th><tr>
+          <tr><th> Size </th><td ref="brushSize"> </td><tr>
+          <tr><th> Position </th><td ref="brushPosition"> </td><tr>
+          <tr><th> Land name </th><td ref="brushLandName">  </td><tr>
+          <tr><th> Land owner </th><td ref="brushLandOwner"> </td><tr>
+          <tr><th> Land prop count </th><td ref="brushLandPropCount"> </td><tr>
+        </table>
 
-    </style>
-    <ul class="menu" onmousedown="event.stopPropagation()">
-      <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>
-      <li>Char</li>
-      <li>Help</li>
-    </ul>
-
-    <style>
-      [hidden] {
-        display: none !important;
-      }
-
-      .inventory {
-        position: absolute; 
-        margin: 0;
-        padding: 0;
-        left: 20px; 
-        right: 100px; 
-        top: 20px;
-        bottom: 20px;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 5px;
-        color: #fff;
-        padding: 20px;
-        font-family: "Gothic A1", sans-serif;
-
-        display: flex;
-        flex-direction: column;
-      }
-
-      .inventory h1 {
-        font-family: inherit;
-        font-weight: 100;
-        margin: 0px;
-        font-size: 44px;
-      }
-
-      .inventory .grid {
-        flex: 1 1 0px;
-        display: grid;
-        grid-template-columns: repeat(24, 1fr);
-        grid-template-rows: repeat(12, 1fr);
-        gap: 2px;
-        overflow: hidden;
-      }
-
-      .inventory .slot {
-        overflow: hidden;
-        border-radius: 4px;
-        border: 1px solid #777;
-        background: linear-gradient(142deg, rgba(2,0,36,1) 0%, rgba(52,58,74,1) 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .inventory .slot:hover {
-        background: #343a4a;
-      }
-
-      .inventory .slot img {
-        max-width: 100%;
-        max-height: 100%;
-      }
-    </style>
-    <div id="ui_inventory" class="inventory" onmousedown="event.stopPropagation()" hidden>
-      <h1>Inventory</h1>
-      <div class="grid">
-        ${
-          Array(24 * 1).fill('<div class="slot"> <img src="https://i.pinimg.com/originals/40/ed/8e/40ed8e381cf0876d77b540144c1247e0.png"/> </div>').join('')
-        }
-        ${
-          Array(24 * 1).fill('<div class="slot"> <img src="https://i.pinimg.com/originals/3b/37/86/3b37860fb69293ef99bba496fe9cb1d5.png"/> </div>').join('')
-        }
-        ${
-          Array(24 * 10).fill('<div class="slot"> </div>').join('')
-        }
+        <table>
+          <tr><th colspan="2"> ----- Controls ----- </th><tr>
+          <tr><th> Enter </th><td> Claim / Rename land </td><tr>
+          <tr><th> WASD </th><td> Move </td><tr>
+          <tr><th> Shift / Control </th><td> Fly up / down </td><tr>
+          <tr><th> Up / Down </th><td> Land height </td><tr>
+          <tr><th> Left / Right </th><td> Brush size </td><tr>
+          <tr><th> Mouse left </th><td> Action </td><tr>
+          <tr><th> Mouse right </th><td> Rotate camera </td><tr>
+          <tr><th> Mouse wheel </th><td> Zoom </td><tr>
+          <tr><th> Space </th><td> Edit prop </td><tr>
+          <tr><th> Delete </th><td> Reset land </td><tr>
+          <tr><th> [A / B / C / ...] </th><td> Shortcuts </td><tr>
+        </table>
       </div>
     </div>
+  `)
+  ui.innerHTML = ''
+  ui.appendChild(root)
 
-
-    <style>
-      .info {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        color: #fff;
-        background: rgba(0, 0, 0, 0.3);
-        padding: 10px;
-        text-align: right;
-        font-size: 12px;
-        line-height: 12px;
-        font-family: "Gothic A1", sans-serif;
-        border-radius: 4px;
-      }
-    </style>
-    <div class="js-info info"></div>
-  `
-
-  const ui_actionType = ui.querySelector('.js-action-type')
   actionTypes.forEach((mouseAction, index) => { 
     ui_actionType.add(new Option(`[${index+1}] ${mouseAction.toUpperCase()}`, mouseAction)) 
   })
@@ -258,46 +148,29 @@ export function createLoop_MainGame ({
     e.target.blur()
   })
 
-  const ui_landType = ui.querySelector('.js-land-type')
   landTypes.forEach(landType => { ui_landType.add(new Option(landType.toUpperCase(), landType)) })
   ui_landType.addEventListener('input', e => { 
     currentLandType = e.target.value
     e.target.blur()
   })
 
-  const ui_propType = ui.querySelector('.js-prop-type')
   propTypes.forEach(propType => { ui_propType.add(new Option(propType.toUpperCase() || '(remove prop)', propType)) })
   ui_propType.addEventListener('input', e => { 
     currentPropType = e.target.value
     e.target.blur()
   })
 
-  const ui_gravity = ui.querySelector('.js-gravity')
   ui_gravity.addEventListener('input', e => { 
     gravity = e.target.checked 
     e.target.blur()
   })
 
-  const ui_info = ui.querySelector('.js-info')
-
   return ({t, dt}) => {
     logic(t, dt)
 
-    ui_landType.value = currentLandType
-    ui_propType.value = currentPropType
-    ui_actionType.value = currentActionType
-    ui_gravity.checked = gravity
-
-    const ui_propText = ui.querySelector('.propText')
-    if (prevPropText !== propText) {
-      ui_propText.hidden = !propText
-      ui_propText.innerHTML = propText
-      prevPropText = propText
-    }
-
-    const worldLandX = Math.floor(playerPosition[0] / LAND_SIZE)
-    const worldLandY = Math.floor(playerPosition[2] / LAND_SIZE)
-    const activeLand = getOrCreateLand(worldLandX, worldLandY)
+    const activeLandIndexX = Math.floor(playerPosition[0] / LAND_SIZE)
+    const activeLandIndexY = Math.floor(playerPosition[2] / LAND_SIZE)
+    const activeLand = getOrCreateLand(activeLandIndexX, activeLandIndexY)
     const lands = [
       getOrCreateLand(activeLand.x-1, activeLand.y+1),
       getOrCreateLand(activeLand.x-1, activeLand.y),
@@ -315,8 +188,7 @@ export function createLoop_MainGame ({
     scene_World({
       cameraView: camera.matrix,
       time: t,
-      markerPosition: brush.position,
-      brushSize: brush.size,
+      brush,
       playerPosition,
       lands
     })
@@ -327,37 +199,19 @@ export function createLoop_MainGame ({
     })
      
     const landAtBrush = LAND.at(brush.position, world) || {}
-    const infoContent = `
-      <table style="width: 100%;">
-        <tr><th colspan="2" style="text-align: center;"> ----- Brush info ----- </th><tr>
-        <tr><th style="text-align: left;"> Size </th><td> ${(brush.size-1)*2 + 1} </td><tr>
-        <tr><th style="text-align: left;"> Position </th><td> ${brush.position[0]}, ${brush.position[2]} </td><tr>
-        <tr><th style="text-align: left;"> Land name </th><td> ${landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'} </td><tr>
-        <tr><th style="text-align: left;"> Land owner </th><td> ${landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'} </td><tr>
-        <tr><th style="text-align: left;"> Land prop count </th><td> ${landAtBrush.propCount} / ${MAX_PROP_COUNT} </td><tr>
-      </table>
-      <br/>
+    ui_brushSize.textContent = (brush.size-1)*2 + 1
+    ui_brushPosition.textContent = brush.position[0] + ', ' + brush.position[2]
+    ui_brushLandName.textContent = landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'
+    ui_brushLandOwner.textContent = landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'
+    ui_brushLandPropCount.textContent = landAtBrush.propCount + ' / ' + MAX_PROP_COUNT
 
-      <table style="width: 100%;">
-        <tr><th colspan="2" style="text-align: center;"> ----- Controls ----- </th><tr>
-        <tr><th style="text-align: left;"> Enter </th><td> Claim / Rename land </td><tr>
-        <tr><th style="text-align: left;"> WASD </th><td> Move </td><tr>
-        <tr><th style="text-align: left;"> Shift / Control </th><td> Fly up / down </td><tr>
-        <tr><th style="text-align: left;"> Up / Down </th><td> Land height </td><tr>
-        <tr><th style="text-align: left;"> Left / Right </th><td> Brush size </td><tr>
-        <tr><th style="text-align: left;"> Mouse left </th><td> Action </td><tr>
-        <tr><th style="text-align: left;"> Mouse right </th><td> Rotate camera </td><tr>
-        <tr><th style="text-align: left;"> Mouse wheel </th><td> Zoom </td><tr>
-        <tr><th style="text-align: left;"> Space </th><td> Edit prop </td><tr>
-        <tr><th style="text-align: left;"> Delete </th><td> Reset land </td><tr>
-        <tr><th style="text-align: left;"> [A / B / C / ...] </th><td> Shortcuts </td><tr>
-      </table>
-    `.trim()
+    ui_landType.value = currentLandType
+    ui_propType.value = currentPropType
+    ui_actionType.value = currentActionType
+    ui_gravity.checked = gravity
 
-    if (infoContent !== state.prevInfoContent) {
-      ui_info.innerHTML = infoContent
-      state.prevInfoContent = infoContent
-    }
+    ui_propText.hidden = !propText
+    ui_propText.textContent = propText
   }
 
   function logic(t, dt) {
@@ -572,10 +426,7 @@ export function createLoop_MainGame ({
       }
     }
 
-    // TODO: Look ahead and remove activeLand dependency
-    const landPointAtPlayer = activeLand.points[
-      Math.round(playerPosition[0] - activeLand.x * LAND_SIZE) + 
-      Math.round(playerPosition[2] - activeLand.y * LAND_SIZE) * LAND_SIZE]
+    const landPointAtPlayer = LANDPOINT.at(v3.add(playerPosition, [0.5, 0, 0.5]), world)
     if (landPointAtPlayer && landPointAtPlayer.prop) {
       propText = landPointAtPlayer.prop.text
     } else {
@@ -586,7 +437,7 @@ export function createLoop_MainGame ({
   function updateCamera(playerPosition) {
     camera.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
     camera.target = v3.add(playerPosition, [0, 1.5, 0])
-    CAM.orbit(camera, playerPosition, cameraOrbitDistance, cameraOrbitHorisontal, cameraOrbitVertical)
+    CAMERA.orbit(camera, playerPosition, cameraOrbitDistance, cameraOrbitHorisontal, cameraOrbitVertical)
   }
 
   function getOrCreateLand(iX, iY) {

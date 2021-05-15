@@ -1,41 +1,22 @@
-import { gl } from './rendering/glCanvas.js'
-import { ui } from './rendering/uiLayer.js'
 import { keyboard, prevKeyboard, mouse, prevMouse, updatePrevInput} from './system/input.js'
 import { createLoop_StartScreen } from './logic/loops/StartScreen.js'
 import { Stats } from './external/stats.js'
 
-const stats = new Stats()
-stats.showPanel(1)
-
-document.body.appendChild(gl.canvas)
-document.body.appendChild(ui)
-document.body.appendChild(stats.dom)
-
-// Internal resolution
-const updateResolution = () => {
-  const fixedResolution = false
-  gl.canvas.width = fixedResolution ? 800 : gl.canvas.clientWidth
-  gl.canvas.height = fixedResolution ? 600 : gl.canvas.clientHeight
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+const data = {
+  settings: {
+    resolution: {
+      fixed: false,
+      width: 800,
+      height: 600,
+    }
+  }
 }
-updateResolution()
-window.addEventListener('resize', updateResolution)
 
-const data = {}
+const gl = createGL(data)
+const ui = createUI()
+const stats = createStats()
 
 let currentLoop
-const setCurrentLoop = (createLoop) => {
-  currentLoop = createLoop({
-    gl,
-    ui, 
-    keyboard,
-    prevKeyboard,
-    mouse,
-    prevMouse,
-    data  
-  })
-}
-
 setCurrentLoop(createLoop_StartScreen)
 
 stats.begin()
@@ -53,3 +34,52 @@ requestAnimationFrame (function update(t) {
   
   requestAnimationFrame(update)
 })
+
+function createGL(data) {
+  const canvas = document.body.appendChild(document.createElement('canvas'))
+  canvas.classList.add('glCanvas')
+  
+  const gl = canvas.getContext('webgl2', {
+    preserveDrawingBuffer: true,
+    alpha: false,
+    //desynchronized: true,
+    //powerPreference: 'high-performance'
+  })
+
+  // Internal resolution
+  const updateResolution = () => {
+    const resolution = data.settings.resolution
+    gl.canvas.width = resolution.fixed ? resolution.width : gl.canvas.clientWidth
+    gl.canvas.height = resolution.fixed ? resolution.height : gl.canvas.clientHeight
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+  }
+  updateResolution()
+  window.addEventListener('resize', updateResolution)
+
+  window.gl = gl
+  return gl
+}
+
+function createUI() {
+  return document.body.appendChild(document.createElement('miso-ui'))
+}
+
+function createStats() {
+  const stats = new Stats()
+  stats.showPanel(1)
+  document.body.appendChild(stats.dom)
+  stats.dom.classList.add('stats')
+  return stats  
+}
+
+function setCurrentLoop(createLoop) {
+  currentLoop = createLoop({
+    gl,
+    ui, 
+    keyboard,
+    prevKeyboard,
+    mouse,
+    prevMouse,
+    data  
+  })
+} 

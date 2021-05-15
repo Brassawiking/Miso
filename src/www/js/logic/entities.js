@@ -1,7 +1,6 @@
 import { v3, m4 } from '../common/math.js'
 
-
-export const CAM = {
+export const CAMERA = {
   identity() {
     const c = {
       position: [0, 0, 0],
@@ -12,7 +11,7 @@ export const CAM = {
       aspect: 1,
       matrix: m4.identity(),
     }
-    CAM.update(c)
+    CAMERA.update(c)
     return c
   },
 
@@ -23,7 +22,8 @@ export const CAM = {
       -dist * Math.cos(horiz) * Math.cos(vert),
     ]
     c.position = v3.add(pivot, offset)
-    CAM.update(c)
+    CAMERA.update(c)
+    return c
   },
 
   update(c) {
@@ -57,6 +57,7 @@ export const CAM = {
     ]
     
     c.matrix = m4.multiply(projection, m4.multiply(rotation, translation))
+    return c
   }
 }
 
@@ -157,17 +158,17 @@ export const LANDPOINT = {
   }
 }
 
-export function updateHeightMap (land) {
-  for (let i = 0; i < land.points.length; ++i) {
-    land.heightMap[i] = land.points[i].height
+export function updateHeightMap (l) {
+  for (let i = 0; i < l.points.length; ++i) {
+    l.heightMap[i] = l.points[i].height
   }
-  land.heightMapDirty = true
+  l.heightMapDirty = true
 }
 
-export function updateColorMap (land) {
-  const colorMap = land.colorMap
-  for (let i = 0; i < land.points.length; ++i) {
-    switch(land.points[i].type) {
+export function updateColorMap (l) {
+  const colorMap = l.colorMap
+  for (let i = 0; i < l.points.length; ++i) {
+    switch(l.points[i].type) {
       case 'grass':
         colorMap[3*i + 0] = 71 
         colorMap[3*i + 1] = 176 
@@ -189,12 +190,12 @@ export function updateColorMap (land) {
         colorMap[3*i + 2] = 255
     }
   }
-  land.colorMapDirty = true
+  l.colorMapDirty = true
 }
 
-export function updatePropMap (land) {
-  for (let i = 0; i < land.points.length; ++i) {
-    land.propMap[i] = land.points[i].prop
+export function updatePropMap (l) {
+  for (let i = 0; i < l.points.length; ++i) {
+    l.propMap[i] = l.points[i].prop
   }
 }
 

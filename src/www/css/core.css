@@ -1,0 +1,267 @@
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body,
+miso-start-screen {
+  background-image: linear-gradient(0deg, #baf1fa 0%, #79e4f5 100%);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain; 
+}
+
+.glCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+miso-ui {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  user-select: none;
+}
+
+miso-start-screen {
+  display: block;
+  height: 100%;
+  position: relative;
+}
+
+miso-start-screen:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+
+  background-image: url(../svg/logo.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.stats,
+miso-start-screen:before,
+miso-start-screen > * {
+  animation: fadeIn 1s;
+}
+
+.ui-box {
+  padding: 20px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-family: "Gothic A1", sans-serif;
+}
+
+.ui-top,
+.ui-bottom,
+.ui-left,
+.ui-right {
+  position: absolute;
+  z-index: 1;
+}
+
+.ui-top { top: 20px; }
+.ui-bottom { bottom: 20px; }
+.ui-left { left: 20px; }
+.ui-right { right: 20px; }
+
+.ui-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"] {
+  border-radius: 5px;
+  border: none;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 9999px;
+  border: none;
+
+  align-self: center;
+  padding: 5px 20px;
+  font-family: "Gothic A1", sans-serif;
+  font-weight: bold;
+
+  background: #fff;
+  color: #343a4a;
+}
+
+/*********************
+  Dump from JS files
+*********************/
+
+miso-start-screen input[type="text"] {
+  width: 100%;
+}
+
+miso-start-screen fieldset {
+  border: none;
+  padding: 0;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.toolbar {
+  position: absolute;
+  top: 10px;
+  left: 100px;
+  max-width: calc(100vw - 200px);
+  font-family: "Gothic A1", sans-serif;
+  font-size: 14px;
+}
+
+.toolbar label {
+  margin: 0 5px;
+  display: inline-block;
+}
+
+.toolbar select {
+  border-radius: 5px;
+  border: none;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+.propText {
+  position: absolute; 
+  margin: 0;
+  padding: 20px;
+  left: 20px; 
+  bottom: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  color: #fff;
+  font-family: "Gothic A1", sans-serif;
+}
+
+.menu {
+  position: absolute; 
+  margin: 0;
+  padding: 0;
+  right: 15px; 
+  top: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 9999px;
+  padding: 0px 10px;
+}
+
+.menu li {
+  cursor: pointer;
+  display: flex;
+  margin: 10px 0;
+  border-radius: 100%;
+  border: 1px solid #fff;
+  height: 45px;
+  width: 45px;
+  box-sizing:border-box;
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  font-family: "Gothic A1", sans-serif;
+  font-weight: bold;
+}
+
+.menu li:hover {        
+  background: rgba(1, 1, 1, 0.3);
+}
+
+.menu li.selected {
+  background: #fff;
+  border-color: #fff;
+  color: #343a4a;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.inventory {
+  position: absolute; 
+  left: 20px; 
+  right: 100px; 
+  top: 20px;
+  bottom: 20px;
+}
+
+.inventory h1 {
+  font-family: inherit;
+  font-weight: 100;
+  margin: 0px;
+  font-size: 44px;
+}
+
+.inventory .grid {
+  flex: 1 1 0px;
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  gap: 2px;
+  overflow: hidden;
+}
+
+.inventory .slot {
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid #777;
+  background: linear-gradient(142deg, rgba(2,0,36,1) 0%, rgba(52,58,74,1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inventory .slot:hover {
+  background: #343a4a;
+}
+
+.inventory .slot img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+
+table {
+  width: 100%;
+  font-size: 14px;
+  line-height: 12px;
+}
+
+th {
+  text-align: left;
+}
+
+th[colspan] {
+  text-align: center;
+}
+
+td {
+  text-align: right;
+}

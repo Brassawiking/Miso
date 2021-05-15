@@ -26,8 +26,7 @@ export function createScene_World(gl, landSize) {
   return ({
     cameraView, 
     time,
-    markerPosition,
-    brushSize, 
+    brush, 
     playerPosition,
     lands
   }) => {
@@ -40,16 +39,16 @@ export function createScene_World(gl, landSize) {
     gl.clear(gl.DEPTH_BUFFER_BIT)
 
     render_Sky()
-    terrain(lands, cameraView, time)
-    props(lands, cameraView)
-    brush(markerPosition, cameraView, brushSize)
+    handleTerrain(cameraView, lands, time)
+    handleProps(cameraView, lands)
+    handleBrush(cameraView, brush)
     render_TestModel(cameraView, playerPosition)
 
     // Transparent renders
     render_Sea(cameraView)  
   }
 
-  function terrain(lands, cameraView, time) {
+  function handleTerrain(cameraView, lands, time) {
     lands.forEach((land, index) => {
       let heightMapTexture = heightMapTextureCache[index]
       if (!heightMapTexture) {
@@ -119,7 +118,7 @@ export function createScene_World(gl, landSize) {
     })
   }
 
-  function props(lands, cameraView) {
+  function handleProps(cameraView, lands) {
     lands.forEach(land => {
       const propMap = land.propMap
       for (let i = 0, len = propMap.length; i < len; ++i) {
@@ -143,13 +142,13 @@ export function createScene_World(gl, landSize) {
     })
   }
 
-  function brush(markerPosition, cameraView, brushSize) {
-    const markerOutlineOffset = brushSize - 1
-    const markerOutlineColor = [1, 1, 0]
-    render_TerrainMarker(cameraView, markerPosition, [1, 0, 0])
-    render_TerrainMarker(cameraView, v3.add(markerPosition, [markerOutlineOffset, 0, markerOutlineOffset]) , markerOutlineColor)
-    render_TerrainMarker(cameraView, v3.add(markerPosition, [markerOutlineOffset, 0, -markerOutlineOffset]) , markerOutlineColor)
-    render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOutlineOffset, 0, -markerOutlineOffset]) , markerOutlineColor)
-    render_TerrainMarker(cameraView, v3.add(markerPosition, [-markerOutlineOffset, 0, markerOutlineOffset]) , markerOutlineColor)
+  function handleBrush(cameraView, brush) {
+    const outlineOffset = brush.size - 1
+    const outlineColor = [1, 1, 0]
+    render_TerrainMarker(cameraView, brush.position, [1, 0, 0])
+    render_TerrainMarker(cameraView, v3.add(brush.position, [outlineOffset, 0, outlineOffset]) , outlineColor)
+    render_TerrainMarker(cameraView, v3.add(brush.position, [outlineOffset, 0, -outlineOffset]) , outlineColor)
+    render_TerrainMarker(cameraView, v3.add(brush.position, [-outlineOffset, 0, -outlineOffset]) , outlineColor)
+    render_TerrainMarker(cameraView, v3.add(brush.position, [-outlineOffset, 0, outlineOffset]) , outlineColor)
   }
 }
