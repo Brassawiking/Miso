@@ -27,8 +27,6 @@ export function createLoop_MainGame ({
   let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = 0
   let cameraOrbitVertical = Math.PI / 5
-  
-  let prevPropText
   let propText
 
   const actionTypes = [
@@ -137,8 +135,7 @@ export function createLoop_MainGame ({
       </div>
     </div>
   `)
-  ui.innerHTML = ''
-  ui.appendChild(root)
+  ui.insertBefore(root, ui.firstChild)
 
   actionTypes.forEach((mouseAction, index) => { 
     ui_actionType.add(new Option(`[${index+1}] ${mouseAction.toUpperCase()}`, mouseAction)) 

@@ -37,6 +37,13 @@ export function createLoop_StartScreen ({
     data.user = { name: e.target.elements.username.value }
     data.gameMode = e.target.elements.mode.value
     localStorage.setItem('user-name', data.user.name)
+
+    document.body.focus()
+    root.classList.add('ui-fade-out')
+
+    setTimeout(() => {
+      root.remove()
+    }, 1000)
   })
 
   return () => {

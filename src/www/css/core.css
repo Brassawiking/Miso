@@ -3,6 +3,11 @@
   to   { opacity: 1; }
 }
 
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
 html,
 body {
   margin: 0;
@@ -40,6 +45,7 @@ miso-start-screen {
   display: block;
   height: 100%;
   position: relative;
+  z-index: 1;
 }
 
 miso-start-screen:before {
@@ -59,8 +65,13 @@ miso-start-screen:before {
 
 .stats,
 miso-start-screen:before,
-miso-start-screen > * {
-  animation: fadeIn 1s;
+miso-start-screen > *,
+.ui-fade-in {
+  animation: fadeIn 1s forwards;
+}
+
+.ui-fade-out {
+  animation: fadeOut 1s forwards;
 }
 
 .ui-box {
