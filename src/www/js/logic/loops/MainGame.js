@@ -1,6 +1,6 @@
 import { v3, linePlaneIntersectionPoint, clamp } from '../../common/math.js'
-import { Camera } from '../entities/Camera.js'
 import { createScene_World } from '../../rendering/scenes/World.js'
+import { WORLD, LAND, CAM, BRUSH, updateHeightMap, updateColorMap, updatePropMap } from '../entities.js'
 
 export function createLoop_MainGame ({ 
   gl,
@@ -14,16 +14,17 @@ export function createLoop_MainGame ({
   const LAND_SIZE = 256
   const MAX_PROP_COUNT = 1500
 
-  const world = {
-    lands: {}
-  }
+  const world = WORLD.landSize(WORLD.identity(), LAND_SIZE)
+  const brush = BRUSH.identity()
+  const camera = CAM.identity()
+ 
+  window.world = world
 
-  const camera = new Camera()
+  const scene_World = createScene_World(gl, LAND_SIZE)
 
   const state = {}
   let gravity = false
   let playerPosition = [0, 1, 0]
-  let markerPosition = [0, 0, 0]
   let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = 0
   let cameraOrbitVertical = Math.PI / 5
@@ -53,9 +54,7 @@ export function createLoop_MainGame ({
     'stone_tablet',
   ]
   let currentPropType = propTypes[0]
-  let brushSize = 1
- 
-  const scene_World = createScene_World(gl, LAND_SIZE)
+  
 
   ui.innerHTML = `
     <style>
@@ -316,8 +315,8 @@ export function createLoop_MainGame ({
     scene_World({
       cameraView: camera.matrix,
       time: t,
-      markerPosition,
-      brushSize,
+      markerPosition: brush.position,
+      brushSize: brush.size,
       playerPosition,
       lands
     })
@@ -327,12 +326,12 @@ export function createLoop_MainGame ({
       land.colorMapDirty = false
     })
      
-    const landAtBrush = getLandAtBrushCenter() || {}
+    const landAtBrush = LAND.at(brush.position, world) || {}
     const infoContent = `
       <table style="width: 100%;">
         <tr><th colspan="2" style="text-align: center;"> ----- Brush info ----- </th><tr>
-        <tr><th style="text-align: left;"> Size </th><td> ${(brushSize-1)*2 + 1} </td><tr>
-        <tr><th style="text-align: left;"> Position </th><td> ${markerPosition[0]}, ${markerPosition[2]} </td><tr>
+        <tr><th style="text-align: left;"> Size </th><td> ${(brush.size-1)*2 + 1} </td><tr>
+        <tr><th style="text-align: left;"> Position </th><td> ${brush.position[0]}, ${brush.position[2]} </td><tr>
         <tr><th style="text-align: left;"> Land name </th><td> ${landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'} </td><tr>
         <tr><th style="text-align: left;"> Land owner </th><td> ${landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'} </td><tr>
         <tr><th style="text-align: left;"> Land prop count </th><td> ${landAtBrush.propCount} / ${MAX_PROP_COUNT} </td><tr>
@@ -436,7 +435,7 @@ export function createLoop_MainGame ({
     )
   
     if (planeIntersection) {
-      markerPosition = [
+      brush.position = [
         Math.round(planeIntersection[0]),
         0, 
         Math.round(planeIntersection[2]),
@@ -450,13 +449,13 @@ export function createLoop_MainGame ({
     })
 
     if (keyboard.ARROWLEFT && !prevKeyboard.ARROWLEFT) {
-      brushSize = Math.max(brushSize - 1, 1)
+      brush.size = Math.max(brush.size - 1, 1)
     }
     if (keyboard.ARROWRIGHT && !prevKeyboard.ARROWRIGHT) {
-      brushSize++
+      brush.size++
     }
   
-    const landPoints = getAllOwnedLandsPointsWithinBrush()
+    const landPoints = BRUSH.ownedLandPoints(brush, world, user)
     const heightDelta = 0.1
     if (keyboard.ARROWUP || (mouse.buttons[0] && currentActionType === 'raise')) {
       landPoints.forEach(landPoint => {
@@ -476,7 +475,7 @@ export function createLoop_MainGame ({
     }
     if (keyboard.DELETE || (mouse.buttons[0] && currentActionType === 'reset')) {
       landPoints.forEach(landPoint => {
-        landPoint.height = 0
+        landPoint.height = 1
         landPoint.type = 'grass'
         if (landPoint.prop) {
           landPoint.prop = null
@@ -537,7 +536,11 @@ export function createLoop_MainGame ({
     }
 
     if (keyboard.ENTER && !prevKeyboard.ENTER) {
-      const land = getLandAtBrushCenter()
+      const land = LAND.at(brush.position, world)
+      if (!land) {
+        return
+      }
+
       if (land.owner == null) {
         const landName = prompt('Claim and name this land')
         if (landName != null) {
@@ -580,129 +583,16 @@ export function createLoop_MainGame ({
     }
   }
 
-  function getAllOwnedLandsPointsWithinBrush() {
-    const landPoints = []
-    for (let i = 0 ; i < 2 * (brushSize - 1) + 1; ++i) {
-      for (let j = 0 ; j < 2 * (brushSize - 1) + 1; ++j) {
-        const brushOffsetX = i - brushSize + 1
-        const brushOffsetY = j - brushSize + 1
-        const worldLandX = Math.floor((markerPosition[0] + brushOffsetX) / LAND_SIZE)
-        const worldLandY = Math.floor((markerPosition[2] + brushOffsetY) / LAND_SIZE)
-        const land = world.lands[`${worldLandX}_${worldLandY}`]
-        if (land && land.owner === user.name) {
-          const x = markerPosition[0] - land.x * LAND_SIZE + brushOffsetX 
-          const y = markerPosition[2] - land.y * LAND_SIZE + brushOffsetY
-          const landPoint = land.points[y * LAND_SIZE + x]
-          if (!landPoints.includes(landPoint)) {
-            landPoints.push(landPoint)
-          }
-        }
-      }
-    }
-    return landPoints
-  }
-
-  function getLandAtBrushCenter() {
-    const worldLandX = Math.floor(markerPosition[0] / LAND_SIZE)
-    const worldLandY = Math.floor(markerPosition[2] / LAND_SIZE)
-    return world.lands[`${worldLandX}_${worldLandY}`]
-  }
-
   function updateCamera(playerPosition) {
-    camera.near = 1
-    camera.far = 1000
     camera.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
     camera.target = v3.add(playerPosition, [0, 1.5, 0])
-  
-    let offset = [
-      cameraOrbitDistance * Math.sin(cameraOrbitHorisontal) * Math.cos(cameraOrbitVertical), 
-      cameraOrbitDistance * Math.sin(cameraOrbitVertical),
-      -cameraOrbitDistance * Math.cos(cameraOrbitHorisontal) * Math.cos(cameraOrbitVertical),
-    ]
-  
-    camera.position = v3.add(playerPosition, offset)
-    camera.update()
+    CAM.orbit(camera, playerPosition, cameraOrbitDistance, cameraOrbitHorisontal, cameraOrbitVertical)
   }
 
-  function updateHeightMap (land) {
-    for (let i = 0; i < land.points.length; ++i) {
-      land.heightMap[i] = land.points[i].height
-    }
-    land.heightMapDirty = true
-  }
-
-  function updateColorMap (land) {
-    const colorMap = land.colorMap
-    for (let i = 0; i < land.points.length; ++i) {
-      switch(land.points[i].type) {
-        case 'grass':
-          colorMap[3*i + 0] = 71 
-          colorMap[3*i + 1] = 176 
-          colorMap[3*i + 2] = 20
-          break
-        case 'dirt':
-          colorMap[3*i + 0] = 118 
-          colorMap[3*i + 1] = 85 
-          colorMap[3*i + 2] = 10
-          break
-        case 'sand':
-          colorMap[3*i + 0] = 246 
-          colorMap[3*i + 1] = 228 
-          colorMap[3*i + 2] = 173
-          break
-        default:
-          colorMap[3*i + 0] = 255 
-          colorMap[3*i + 1] = 255 
-          colorMap[3*i + 2] = 255
-      }
-    }
-    land.colorMapDirty = true
-  }
-
-  function updatePropMap (land) {
-    for (let i = 0; i < land.points.length; ++i) {
-      land.propMap[i] = land.points[i].prop
-    }
-  }
-
-  function getOrCreateLand(worldLandX, worldLandY) {
-    const worldLandKey = `${worldLandX}_${worldLandY}`
-    if (!world.lands[worldLandKey]) {
-      world.lands[worldLandKey] = createLand(LAND_SIZE, worldLandX, worldLandY)
-    }
-    return world.lands[worldLandKey]
-  }
-
-  function createLand(size, x, y) {
-    const mapSize = size*size
-    const land = {
-      name: '',
-      owner: null,
-      authors: [],
-      x,
-      y,
-      points: new Array(mapSize),
-      heightMap: new Float32Array(new Array(mapSize)),
-      colorMap: new Uint8Array(new Array(mapSize * 3)),
-      propMap: new Array(mapSize),
-      heightMapDirty: false,
-      colorMapDirty: false,
-      propCount: 0,
-    }
-
-    for (let i = 0; i < mapSize; ++i) {
-      land.points[i] = {
-        land,
-        height: -1,
-        type: 'grass',
-        prop: null
-      }
-    }
-
-    updateHeightMap(land)
-    updateColorMap(land)
-    updatePropMap(land)
-
-    return land
+  function getOrCreateLand(iX, iY) {
+    return (
+      LAND.at_index(iX, iY, world) ||
+      LAND.add(LAND.identity(world.landSize), world, iX, iY)
+    )  
   }
 }
