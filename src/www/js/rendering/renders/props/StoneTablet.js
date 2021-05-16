@@ -184,6 +184,6 @@ export function createRender_StoneTablet(gl) {
       uniforms
     })
 
-    gl.drawArrays(gl.TRIANGLES, 0, mesh.length)
+    gl.drawArrays(gl.TRIANGLES, 0, mesh.length / 3)
   }
 }

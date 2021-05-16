@@ -15,25 +15,29 @@ const data = {
 const gl = createGL(data)
 const ui = createUI()
 const stats = createStats()
-
 let currentLoop
-await setCurrentLoop(createLoop_StartScreen)
 
-stats.begin()
-let prevT = performance.now()
-requestAnimationFrame (async function update(t) {
-  stats.end()
+init()
+async function init() {
+  await setCurrentLoop(createLoop_StartScreen)
+
   stats.begin()
-
-  const createNextLoop = currentLoop({ t, dt: t-prevT })
-  if (createNextLoop) {
-    await setCurrentLoop(createNextLoop)
-  }
-  updatePrevInput()
-  prevT = t
+  let prevT = performance.now()
+  requestAnimationFrame (async function update(t) {
+    stats.end()
+    stats.begin()
   
-  requestAnimationFrame(update)
-})
+    const createNextLoop = currentLoop({ t, dt: t-prevT })
+    if (createNextLoop) {
+      await setCurrentLoop(createNextLoop)
+    }
+    updatePrevInput()
+    prevT = t
+    
+    requestAnimationFrame(update)
+  })
+  
+}
 
 function createGL(data) {
   const canvas = document.body.appendChild(document.createElement('canvas'))

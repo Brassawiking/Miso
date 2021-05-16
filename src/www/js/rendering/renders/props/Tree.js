@@ -197,6 +197,6 @@ export function createRender_Tree(gl) {
       uniforms
     })
 
-    gl.drawArrays(gl.TRIANGLES, 0, mesh.length)
+    gl.drawArrays(gl.TRIANGLES, 0, mesh.length / 3)
   }
 }
