@@ -17,3 +17,4 @@ export const changeLog = `
 🔹 Prototype client is almost done, should give a feel of what is to come 🚀
 
 `.trim();
+
