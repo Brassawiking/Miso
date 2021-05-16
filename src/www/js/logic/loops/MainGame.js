@@ -245,6 +245,7 @@ export async function createLoop_MainGame ({
     const sunRay = [Math.sin(t / 1000), -1, Math.cos(t / 1000)]
     scene_World({
       cameraView: camera.matrix,
+      camera,
       time: t,
       brush,
       playerPosition,
@@ -470,6 +471,8 @@ export async function createLoop_MainGame ({
         if (landName != null) {
           land.name = landName
         }
+      } else {
+        alert(`This land is already claimed by "${land.owner}", try another claiming another land!` )
       }
     }
 

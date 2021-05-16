@@ -2,6 +2,7 @@ export const changeLog = `
 
 🗓️ May 16, 2021
 
+🔹 Added a message if you try to claim a land owned by someone else
 🔹 Added lighting to props
 🔹 Fixed camera so it doesn't go haywire when looking completely up/down
 🔹 Added land type STONE
