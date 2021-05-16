@@ -2,6 +2,7 @@ export const changeLog = `
 
 🗓️ May 16, 2021
 
+🔹 Added lighting to props
 🔹 Fixed camera so it doesn't go haywire when looking completely up/down
 🔹 Added land type STONE
 
