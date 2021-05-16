@@ -1,6 +1,6 @@
 import { v3, linePlaneIntersectionPoint, clamp } from '../../common/math.js'
 import { createScene_World } from '../../rendering/scenes/World.js'
-import { WORLD, LAND, LANDPOINT, CAMERA, BRUSH, updateHeightMap, updateColorMap, updatePropMap } from '../entities.js'
+import { CAMERA, BRUSH, WORLD, LAND, LANDPOINT, PROP, } from '../entities.js'
 import { markup } from '../../rendering/ui.js'
 
 export async function createLoop_MainGame ({ 
@@ -39,9 +39,9 @@ export async function createLoop_MainGame ({
       }
     })
 
-    updateHeightMap(land)
-    updateColorMap(land)
-    updatePropMap(land)
+    LAND.updateHeightMap(land)
+    LAND.updateColorMap(land)
+    LAND.updatePropMap(land)
 
     LAND.add(land, world, land.x, land.y)
   })
@@ -376,7 +376,7 @@ export async function createLoop_MainGame ({
         landPoint.height += heightDelta
       })
       new Set(landPoints.map(x => x.land)).forEach(land => {
-        updateHeightMap(land)
+        LAND.updateHeightMap(land)
       })
     }
     if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentActionType === 'lower')) {
@@ -384,7 +384,7 @@ export async function createLoop_MainGame ({
         landPoint.height -= heightDelta
       })
       new Set(landPoints.map(x => x.land)).forEach(land => {
-        updateHeightMap(land)
+        LAND.updateHeightMap(land)
       })
     }
     if (keyboard.DELETE || (mouse.buttons[0] && currentActionType === 'reset')) {
@@ -398,9 +398,9 @@ export async function createLoop_MainGame ({
       })
 
       new Set(landPoints.map(x => x.land)).forEach(land => {
-        updateHeightMap(land)
-        updateColorMap(land)
-        updatePropMap(land)
+        LAND.updateHeightMap(land)
+        LAND.updateColorMap(land)
+        LAND.updatePropMap(land)
       })
     }
 
@@ -417,17 +417,13 @@ export async function createLoop_MainGame ({
             return
           }
           landPoint.land.propCount++
-          landPoint.prop = {
-            type: currentPropType,
-            text: '' 
-          }
-        } else {
-          landPoint.prop.type = currentPropType
-        }
+          landPoint.prop = PROP.identity()
+        } 
+        landPoint.prop.type = currentPropType
       })
 
       new Set(landPoints.map(x => x.land)).forEach(land => {
-        updatePropMap(land)
+        LAND.updatePropMap(land)
       })
     }
     if (keyboard.R || (mouse.buttons[0] && currentActionType === 'prop_remove')) {
@@ -438,7 +434,7 @@ export async function createLoop_MainGame ({
         }
       })
       new Set(landPoints.map(x => x.land)).forEach(land => {
-        updatePropMap(land)
+        LAND.updatePropMap(land)
       })
     }
 
@@ -453,7 +449,7 @@ export async function createLoop_MainGame ({
         landPoint.type = currentLandType
       })
       new Set(landPoints.map(x => x.land)).forEach(land => {
-        updateColorMap(land)
+        LAND.updateColorMap(land)
       })
     }
 
@@ -473,7 +469,7 @@ export async function createLoop_MainGame ({
           for (let i = 0; i < mapSize; ++i) {
             land.points[i].height = 1
           }
-          updateHeightMap(land)
+          LAND.updateHeightMap(land)
         }
       } else if (land.owner == user.name) {
         const landName = prompt('Rename this land', land.name)
