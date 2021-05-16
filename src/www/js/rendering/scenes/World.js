@@ -49,8 +49,8 @@ export function createScene_World(gl, landSize) {
     render_TestModel(cameraView, playerPosition)
 
     // Transparent renders
-    render_Sea(cameraView)  
     handleProps(cameraView, lands, sunRay)
+    render_Sea(cameraView)  
   }
 
   function handleTerrain(cameraView, lands, time, sunRay) {
