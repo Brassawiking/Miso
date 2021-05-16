@@ -43,7 +43,6 @@ export async function createLoop_MainGame ({
     updateColorMap(land)
     updatePropMap(land)
 
-    console.log(land.x, land.y)
     LAND.add(land, world, land.x, land.y)
   })
 
@@ -67,6 +66,7 @@ export async function createLoop_MainGame ({
   const landTypes = [
     'sand',
     'dirt',
+    'rock',
     'grass'
   ]
   let currentLandType = landTypes[0]
@@ -326,11 +326,12 @@ export async function createLoop_MainGame ({
       }
   
       const orbitSpeed = 1.5;
+      const vertBias = 0.001 // Temp fix so the camera don't go bananaz
       cameraOrbitHorisontal = state.orbitMoveStart.orbitH - (mouse.x - state.orbitMoveStart.mouseX) * orbitSpeed
       cameraOrbitVertical = clamp(
         state.orbitMoveStart.orbitV - (mouse.y - state.orbitMoveStart.mouseY) * orbitSpeed,
-        -Math.PI / 2,
-        Math.PI / 2
+        -Math.PI / 2 + vertBias,
+        Math.PI / 2 - vertBias
       )
     }
     

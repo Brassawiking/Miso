@@ -179,6 +179,11 @@ export function updateColorMap (l) {
         colorMap[3*i + 1] = 85 
         colorMap[3*i + 2] = 10
         break
+      case 'rock':
+        colorMap[3*i + 0] = 61 
+        colorMap[3*i + 1] = 53 
+        colorMap[3*i + 2] = 75
+        break
       case 'sand':
         colorMap[3*i + 0] = 246 
         colorMap[3*i + 1] = 228 

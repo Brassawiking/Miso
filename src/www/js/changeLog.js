@@ -1,8 +1,13 @@
 export const changeLog = `
 
+🗓️ May 16, 2021
+
+🔹 Fixed camera so it doesn't go haywire when looking completely up/down
+🔹 Added land type STONE
+
 🗓️ May 15, 2021
 
-🔹 Improved welcome land and tweaked gravity mode ⭐
+🔹 Improved welcome land and tweaked gravity mode
 🔹 Added a welcome land ⭐
 🔹 Can now toggle help text
 🔹 Next up is data loading!
