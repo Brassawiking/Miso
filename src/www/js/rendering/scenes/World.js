@@ -28,7 +28,8 @@ export function createScene_World(gl, landSize) {
     time,
     brush, 
     playerPosition,
-    lands
+    lands,
+    sunRay
   }) => {
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LESS)
@@ -39,8 +40,8 @@ export function createScene_World(gl, landSize) {
     gl.clear(gl.DEPTH_BUFFER_BIT)
 
     render_Sky()
-    handleTerrain(cameraView, lands, time)
-    handleProps(cameraView, lands)
+    handleTerrain(cameraView, lands, time, sunRay)
+    handleProps(cameraView, lands, sunRay)
     handleBrush(cameraView, brush)
     render_TestModel(cameraView, playerPosition)
 
@@ -48,7 +49,7 @@ export function createScene_World(gl, landSize) {
     render_Sea(cameraView)  
   }
 
-  function handleTerrain(cameraView, lands, time) {
+  function handleTerrain(cameraView, lands, time, sunRay) {
     lands.forEach((land, index) => {
       let heightMapTexture = heightMapTextureCache[index]
       if (!heightMapTexture) {
@@ -111,14 +112,15 @@ export function createScene_World(gl, landSize) {
         cameraView, 
         heightMapTexture, 
         colorMapTexture, 
-        position: [land.x * landSize, 0, land.y * landSize] 
+        position: [land.x * landSize, 0, land.y * landSize],
+        sunRay
       })
 
       landCache[index] = land
     })
   }
 
-  function handleProps(cameraView, lands) {
+  function handleProps(cameraView, lands, sunRay) {
     lands.forEach(land => {
       const propMap = land.propMap
       for (let i = 0, len = propMap.length; i < len; ++i) {
@@ -132,10 +134,10 @@ export function createScene_World(gl, landSize) {
         y += land.y * landSize
         switch(prop.type) {
           case 'stone_tablet':
-            render_StoneTablet(cameraView, [x, land.heightMap[i], y])
+            render_StoneTablet(cameraView, [x, land.heightMap[i], y], sunRay)
             break
           case 'tree':
-            render_Tree(cameraView, [x, land.heightMap[i], y])
+            render_Tree(cameraView, [x, land.heightMap[i], y], sunRay)
             break
         }
       }

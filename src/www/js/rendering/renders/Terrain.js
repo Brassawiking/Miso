@@ -13,11 +13,12 @@ export function createRender_Terrain(gl, gridSize) {
       time: 'float',
       gridSize: 'float',
       heightMap: 'sampler2D',
-      colorMap: 'sampler2D'
+      colorMap: 'sampler2D',
+      u_sunRay: 'vec3',
     },
     varyings: {
       v_uv: 'vec2',
-      v_pos: 'vec4'
+      v_pos: 'vec4',
     },
     vertex: `
       void main() {
@@ -99,9 +100,7 @@ export function createRender_Terrain(gl, gridSize) {
 
       void main() {
         vec3 normal = getSurfaceNormal();
-
-        float lightTime = time / 1.0;
-        float light = dot(-normalize(vec3(sin(lightTime) * 3.0, -3.0, vec3(cos(lightTime) * 3.0))), normal);
+        float light = dot(-normalize(u_sunRay), normal);
 
         vec2 mapXY = v_uv * gridSize;
         vec2 mapXYCorner = floor(mapXY);
@@ -182,7 +181,8 @@ export function createRender_Terrain(gl, gridSize) {
     cameraView,
     heightMapTexture,
     colorMapTexture,
-    position
+    position,
+    sunRay
   }) => {
     Shader({
       attributes,
@@ -192,7 +192,8 @@ export function createRender_Terrain(gl, gridSize) {
         gridSize: ['1f', gridSize],
         cameraView: ['Matrix4fv', false, cameraView],
         heightMap: ['1i', 0],
-        colorMap: ['1i', 1]
+        colorMap: ['1i', 1],
+        u_sunRay: ['3f', ...sunRay]
       }
     })
 

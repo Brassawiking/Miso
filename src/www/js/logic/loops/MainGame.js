@@ -242,12 +242,14 @@ export async function createLoop_MainGame ({
       getOrCreateLand(activeLand.x+1, activeLand.y-1),
     ]
 
+    const sunRay = [Math.sin(t / 1000), -1, Math.cos(t / 1000)]
     scene_World({
       cameraView: camera.matrix,
       time: t,
       brush,
       playerPosition,
-      lands
+      lands,
+      sunRay
     })
 
     lands.forEach(land => {

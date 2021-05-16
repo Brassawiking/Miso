@@ -5,14 +5,17 @@ export function createRender_StoneTablet(gl) {
   const Shader = createShader(gl, {
     attributes: {
       vertexPosition: 'vec4',
-      a_color: 'vec4'
+      a_normal: 'vec4',
+      a_color: 'vec4',
     },
     uniforms: {
       cameraView: 'mat4',
-      worldPosition: 'vec3'
+      worldPosition: 'vec3',
+      u_sunRay: 'vec3',
     },
     varyings: {
-      v_color: 'vec4'
+      v_normal: 'vec4',
+      v_color: 'vec4',
     },
     vertex: `
       void main() {
@@ -23,6 +26,7 @@ export function createRender_StoneTablet(gl) {
           0, 0, 0, 1.0
         );
 
+        v_normal = a_normal;
         v_color = a_color;
         gl_Position = vertexPosition 
           * toWorldSpace
@@ -31,7 +35,8 @@ export function createRender_StoneTablet(gl) {
     `,
     fragment: `
       void main() {
-        fragment = v_color;
+        float light = dot(-normalize(u_sunRay), normalize(v_normal.xyz));
+        fragment = vec4((v_color * max(light, 0.4)).rgb, v_color.a);
       }
     `
   })
@@ -67,7 +72,37 @@ export function createRender_StoneTablet(gl) {
   ]
   const positionBuffer = createArrayBuffer(gl, mesh)
 
-  const stoneColor = [0.75, 0.76, 0.65, 1]
+  const frontNormal = [0, 0.1, -1]
+  const backNormal = [0, 0.1, 1]
+  const leftNormal = [-1, 0, 0]
+  const rightNormal = [1, 0, 0]
+  const normalBuffer = createArrayBuffer(gl, [
+    ...frontNormal,
+    ...frontNormal,
+    ...frontNormal,
+
+    ...frontNormal,
+    ...frontNormal,
+    ...frontNormal,
+
+    ...backNormal,
+    ...backNormal,
+    ...backNormal,
+   
+    ...backNormal,
+    ...backNormal,
+    ...backNormal,
+
+    ...leftNormal,
+    ...leftNormal,
+    ...leftNormal,
+
+    ...rightNormal,
+    ...rightNormal,
+    ...rightNormal,
+  ])
+
+  const stoneColor = [0.95, 0.96, 0.85, 1]
   const colorBuffer = createArrayBuffer(gl, [
     ...stoneColor,
     ...stoneColor,
@@ -103,6 +138,14 @@ export function createRender_StoneTablet(gl) {
       offset: 0,
       buffer: positionBuffer
     },
+    a_normal: {
+      size: 3,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: normalBuffer
+    },
     a_color: {
       size: 4,
       type: gl.FLOAT,
@@ -110,17 +153,19 @@ export function createRender_StoneTablet(gl) {
       stride: 0,
       offset: 0,
       buffer: colorBuffer
-    }
+    },
   }
 
   const uniforms = {
     cameraView: null,
-    worldPosition: null
+    worldPosition: null,
+    u_sunRay: null,
   }
 
   let currentCameraView
   let currentPosition
-  return (cameraView, position) => {
+  let currentSunRay
+  return (cameraView, position, sunRay) => {
     if (currentCameraView != cameraView) {
       uniforms.cameraView = ['Matrix4fv', false, cameraView]
       currentCameraView = cameraView
@@ -128,6 +173,10 @@ export function createRender_StoneTablet(gl) {
     if (currentPosition != position) {
       uniforms.worldPosition = ['3f', ...position]
       currentPosition = position
+    }
+    if (currentSunRay != sunRay) {
+      uniforms.u_sunRay = ['3f', ...sunRay]
+      currentSunRay = sunRay      
     }
 
     Shader({
