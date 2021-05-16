@@ -6,6 +6,7 @@ import { createRender_Terrain } from '../renders/Terrain.js'
 import { createRender_TerrainMarker } from '../renders/TerrainMarker.js'
 import { createRender_TestModel } from '../renders/TestModel.js'
 
+import { createRender_Bush } from '../renders/props/Bush.js'
 import { createRender_StoneTablet } from '../renders/props/StoneTablet.js'
 import { createRender_Tree } from '../renders/props/Tree.js'
 
@@ -16,8 +17,11 @@ export function createScene_World(gl, landSize) {
   const render_TerrainMarker = createRender_TerrainMarker(gl)
   const render_TestModel = createRender_TestModel(gl)
   
-  const render_StoneTablet = createRender_StoneTablet(gl)
-  const render_Tree = createRender_Tree(gl)
+  const propRenders = {
+    'bush': createRender_Bush(gl),
+    'stone_tablet': createRender_StoneTablet(gl),
+    'tree': createRender_Tree(gl),
+  }
 
   const landCache = []
   const heightMapTextureCache = []
@@ -41,12 +45,12 @@ export function createScene_World(gl, landSize) {
 
     render_Sky()
     handleTerrain(cameraView, lands, time, sunRay)
-    handleProps(cameraView, lands, sunRay)
     handleBrush(cameraView, brush)
     render_TestModel(cameraView, playerPosition)
 
     // Transparent renders
     render_Sea(cameraView)  
+    handleProps(cameraView, lands, sunRay)
   }
 
   function handleTerrain(cameraView, lands, time, sunRay) {
@@ -132,13 +136,9 @@ export function createScene_World(gl, landSize) {
         let y = (i - x) / landSize
         x += land.x * landSize
         y += land.y * landSize
-        switch(prop.type) {
-          case 'stone_tablet':
-            render_StoneTablet(cameraView, [x, land.heightMap[i], y], sunRay)
-            break
-          case 'tree':
-            render_Tree(cameraView, [x, land.heightMap[i], y], sunRay)
-            break
+        let propRender = propRenders[prop.type]
+        if (propRender) {
+          propRender(cameraView, [x, land.heightMap[i], y], sunRay)
         }
       }
     })

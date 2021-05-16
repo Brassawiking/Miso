@@ -1,46 +1,6 @@
-import { createShader } from '../../shaders.js'
-import { createArrayBuffer } from '../../buffers.js'
+import { createRender_Prop } from './_Prop.js'
 
 export function createRender_Tree(gl) {
-  const Shader = createShader(gl, {
-    attributes: {
-      vertexPosition: 'vec4',
-      a_normal: 'vec4',
-      a_color: 'vec4',
-    },
-    uniforms: {
-      cameraView: 'mat4',
-      worldPosition: 'vec3',
-      u_sunRay: 'vec3',
-    },
-    varyings: {
-      v_normal: 'vec4',
-      v_color: 'vec4',
-    },
-    vertex: `
-      void main() {
-        mat4 toWorldSpace = mat4(
-          1.0, 0, 0, worldPosition.x,
-          0, 1.0, 0, worldPosition.y,
-          0, 0, 1.0, worldPosition.z,
-          0, 0, 0, 1.0
-        );
-
-        v_normal = a_normal;
-        v_color = a_color;
-        gl_Position = vertexPosition 
-          * toWorldSpace
-          * cameraView;
-      }
-    `,
-    fragment: `
-      void main() {
-        float light = dot(-normalize(u_sunRay), normalize(v_normal.xyz));
-        fragment = vec4((v_color * max(light, 0.4)).rgb, v_color.a);
-      }
-    `
-  })
-
   const rootLevel = -0.5
   const rootWidth = -0.25
   const treeHeight = 10;
@@ -75,7 +35,6 @@ export function createRender_Tree(gl) {
     2, treeHeight, 2,
     -2, treeHeight-2, 2,
   ]
-  const positionBuffer = createArrayBuffer(gl, mesh)
 
   const frontLeft =     [-1, 0.3, -1]
   const front =         [ 0, 0.3, -1]
@@ -88,7 +47,7 @@ export function createRender_Tree(gl) {
   const up           =  [ 0,   1,  0]
   const frontRightUp =  [ 1,   1, -1]
   const backLeftUp =    [-1,   1,  1]
-  const normalBuffer = createArrayBuffer(gl, [
+  const normals = [
     ...frontLeft,
     ...frontRight,
     ...front,
@@ -112,11 +71,11 @@ export function createRender_Tree(gl) {
     ...up,
     ...up,
     ...backLeftUp,
-  ])
+  ]
 
   const trunkColor = [0.48, 0.33, 0.19, 1]
   const leafColor = [0.76, 0.04, 0.31, 0.8]
-  const colorBuffer = createArrayBuffer(gl, [
+  const colors = [
     ...trunkColor,
     ...trunkColor,
     ...trunkColor,
@@ -140,63 +99,7 @@ export function createRender_Tree(gl) {
     ...leafColor,
     ...leafColor,
     ...leafColor,
-  ])
+  ]
 
-  const attributes = {
-    vertexPosition: {
-      size: 3,
-      type: gl.FLOAT,
-      normalized: false,
-      stride: 0,
-      offset: 0,
-      buffer: positionBuffer
-    },
-    a_normal: {
-      size: 3,
-      type: gl.FLOAT,
-      normalized: false,
-      stride: 0,
-      offset: 0,
-      buffer: normalBuffer
-    },
-    a_color: {
-      size: 4,
-      type: gl.FLOAT,
-      normalized: false,
-      stride: 0,
-      offset: 0,
-      buffer: colorBuffer
-    }
-  }
-
-  const uniforms = {
-    cameraView: null,
-    worldPosition: null,
-    u_sunRay: null,
-  }
-
-  let currentCameraView
-  let currentPosition
-  let currentSunRay
-  return (cameraView, position, sunRay) => {
-    if (currentCameraView != cameraView) {
-      uniforms.cameraView = ['Matrix4fv', false, cameraView]
-      currentCameraView = cameraView
-    }
-    if (currentPosition != position) {
-      uniforms.worldPosition = ['3f', ...position]
-      currentPosition = position
-    }
-    if (currentSunRay != sunRay) {
-      uniforms.u_sunRay = ['3f', ...sunRay]
-      currentSunRay = sunRay      
-    }
-
-    Shader({
-      attributes,
-      uniforms
-    })
-
-    gl.drawArrays(gl.TRIANGLES, 0, mesh.length / 3)
-  }
+  return createRender_Prop(gl, mesh, normals, colors)
 }

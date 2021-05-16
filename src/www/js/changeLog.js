@@ -2,6 +2,7 @@ export const changeLog = `
 
 🗓️ May 16, 2021
 
+🔹 Added prop BUSH and reworked prop controls
 🔹 Fixed a bug where props did not always render
 🔹 Added a message if you try to claim a land owned by someone else
 🔹 Added lighting to props

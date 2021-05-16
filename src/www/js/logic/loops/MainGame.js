@@ -58,7 +58,8 @@ export async function createLoop_MainGame ({
     'raise',
     'lower',
     'paint',
-    'prop',
+    'prop_add',
+    'prop_remove',
     'reset'
   ]
   let currentActionType = actionTypes[0]
@@ -72,8 +73,8 @@ export async function createLoop_MainGame ({
   let currentLandType = landTypes[0]
 
   const propTypes = [
-    '',
     'tree',
+    'bush',
     'stone_tablet',
   ]
   let currentPropType = propTypes[0]
@@ -104,7 +105,7 @@ export async function createLoop_MainGame ({
           <select ref="landType" tabindex="-1"></select>
         </label>
         <label>
-          Prop [E / C / V]: 
+          Prop [E / R / C / V]: 
           <select ref="propType" tabindex="-1"></select>
         </label>
         <label>
@@ -184,7 +185,7 @@ export async function createLoop_MainGame ({
     e.target.blur()
   })
 
-  propTypes.forEach(propType => { ui_propType.add(new Option(propType.toUpperCase() || '(remove prop)', propType)) })
+  propTypes.forEach(propType => { ui_propType.add(new Option(propType.toUpperCase(), propType)) })
   ui_propType.addEventListener('input', e => { 
     currentPropType = e.target.value
     e.target.blur()
@@ -409,25 +410,33 @@ export async function createLoop_MainGame ({
     if (keyboard.V && !prevKeyboard.V) {
       currentPropType = propTypes[Math.min(propTypes.indexOf(currentPropType) + 1, propTypes.length - 1)]
     }
-    if (keyboard.E || (mouse.buttons[0] && currentActionType === 'prop')) {
+    if (keyboard.E || (mouse.buttons[0] && currentActionType === 'prop_add')) {
       landPoints.forEach(landPoint => {
-        if (currentPropType) {
-          if (!landPoint.prop) {
-            if (landPoint.land.propCount >= MAX_PROP_COUNT) {
-              return
-            }
-            landPoint.land.propCount++
+        if (!landPoint.prop) {
+          if (landPoint.land.propCount >= MAX_PROP_COUNT) {
+            return
           }
+          landPoint.land.propCount++
           landPoint.prop = {
             type: currentPropType,
             text: '' 
           }
-        } else if (landPoint.prop) {
+        } else {
+          landPoint.prop.type = currentPropType
+        }
+      })
+
+      new Set(landPoints.map(x => x.land)).forEach(land => {
+        updatePropMap(land)
+      })
+    }
+    if (keyboard.R || (mouse.buttons[0] && currentActionType === 'prop_remove')) {
+      landPoints.forEach(landPoint => {
+        if (landPoint.prop) {
           landPoint.prop = null
           landPoint.land.propCount--
         }
       })
-
       new Set(landPoints.map(x => x.land)).forEach(land => {
         updatePropMap(land)
       })
