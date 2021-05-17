@@ -76,6 +76,7 @@ export async function createLoop_MainGame ({
     'tree',
     'bush',
     'stone_tablet',
+    'person'
   ]
   let currentPropType = propTypes[0]
   
@@ -472,7 +473,7 @@ export async function createLoop_MainGame ({
           LAND.updateHeightMap(land)
         }
       } else if (land.owner == user.name) {
-        const landName = prompt('Rename this land', land.name)
+        const landName = prompt('Rename this land', land.name || '')
         if (landName != null) {
           land.name = landName
         }
@@ -484,7 +485,7 @@ export async function createLoop_MainGame ({
     if (keyboard[' ']) {
       const props = landPoints.filter(x => x.prop).map(x => x.prop)
       if (props.length) {
-        const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text)
+        const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text || '')
         if (text != null) {
           props.forEach(prop => { prop.text = text })
         }

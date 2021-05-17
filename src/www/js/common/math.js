@@ -1,14 +1,18 @@
 export const v3 = {
   normalize(v) {
-    const length = Math.sqrt(
-      v[0] * v[0] + 
-      v[1] * v[1] + 
-      v[2] * v[2]
-    )
+    const length = v3.length(v)
     return length
       ? [v[0] / length, v[1] / length, v[2] / length]
       : [0, 0, 0]
   },
+
+  length(v) {
+    return Math.sqrt(
+      v[0] * v[0] + 
+      v[1] * v[1] + 
+      v[2] * v[2]
+    )
+  }, 
 
   add(a, b) {
     return [

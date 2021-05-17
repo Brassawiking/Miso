@@ -9,6 +9,7 @@ import { createRender_TestModel } from '../renders/TestModel.js'
 import { createRender_Bush } from '../renders/props/Bush.js'
 import { createRender_StoneTablet } from '../renders/props/StoneTablet.js'
 import { createRender_Tree } from '../renders/props/Tree.js'
+import { createRender_Person } from '../renders/props/Person.js'
 
 export function createScene_World(gl, landSize) {
   const render_Sky = createRender_Sky(gl)
@@ -20,6 +21,7 @@ export function createScene_World(gl, landSize) {
   const propRenders = {
     'bush': createRender_Bush(gl),
     'stone_tablet': createRender_StoneTablet(gl),
+    'person': createRender_Person(gl),
     'tree': createRender_Tree(gl),
   }
 

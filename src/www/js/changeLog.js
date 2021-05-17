@@ -1,5 +1,9 @@
 export const changeLog = `
 
+🗓️ May 17, 2021
+
+🔹 Added prop PERSON and put it to good use in the introduction land!
+
 🗓️ May 16, 2021
 
 🔹 Added prop BUSH and reworked prop controls
