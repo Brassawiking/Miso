@@ -212,6 +212,7 @@ export const PROP = {
     return {
       type: null,
       text: null,
+      rotation: 0
     }
   }
 }

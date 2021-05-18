@@ -15,6 +15,7 @@ export function createRender_Prop(gl, mesh, normals, colors) {
         cameraView: 'mat4',
         worldPosition: 'vec3',
         u_sunRay: 'vec3',
+        u_rotation: 'float'
       },
       varyings: {
         v_normal: 'vec4',
@@ -22,7 +23,14 @@ export function createRender_Prop(gl, mesh, normals, colors) {
       },
       vertex: `
         void main() {
-          mat4 toWorldSpace = mat4(
+          mat4 rotate = mat4(
+            cos(-u_rotation), 0, sin(-u_rotation), 0,
+            0, 1.0, 0, 0,
+            -sin(-u_rotation), 0, cos(-u_rotation), 0,
+            0, 0, 0, 1.0
+          );
+
+          mat4 translate = mat4(
             1.0, 0, 0, worldPosition.x,
             0, 1.0, 0, worldPosition.y,
             0, 0, 1.0, worldPosition.z,
@@ -31,8 +39,9 @@ export function createRender_Prop(gl, mesh, normals, colors) {
   
           v_normal = a_normal;
           v_color = a_color;
-          gl_Position = vertexPosition 
-            * toWorldSpace
+          gl_Position = vertexPosition
+            * rotate
+            * translate
             * cameraView;
         }
       `,
@@ -81,7 +90,8 @@ export function createRender_Prop(gl, mesh, normals, colors) {
   let currentCameraView
   let currentPosition
   let currentSunRay
-  return (cameraView, position, sunRay) => {
+  let currentRotation
+  return (cameraView, position, sunRay, rotation) => {
     if (currentCameraView != cameraView) {
       uniforms.cameraView = ['Matrix4fv', false, cameraView]
       currentCameraView = cameraView
@@ -93,6 +103,10 @@ export function createRender_Prop(gl, mesh, normals, colors) {
     if (currentSunRay != sunRay) {
       uniforms.u_sunRay = ['3f', ...sunRay]
       currentSunRay = sunRay      
+    }
+    if (currentRotation != rotation) {
+      uniforms.u_rotation = ['1f', rotation]
+      currentRotation = rotation      
     }
 
     Shader({

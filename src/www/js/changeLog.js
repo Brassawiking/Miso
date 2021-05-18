@@ -1,5 +1,10 @@
 export const changeLog = `
 
+🗓️ May 18, 2021
+
+🔹 Props can now be rotated
+
+
 🗓️ May 17, 2021
 
 🔹 Added prop PERSON and put it to good use in the introduction land!

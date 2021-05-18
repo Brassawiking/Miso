@@ -140,7 +140,7 @@ export function createScene_World(gl, landSize) {
         y += land.y * landSize
         let propRender = propRenders[prop.type]
         if (propRender) {
-          propRender(cameraView, [x, land.heightMap[i], y], sunRay)
+          propRender(cameraView, [x, land.heightMap[i], y], sunRay, prop.rotation)
         }
       }
     })

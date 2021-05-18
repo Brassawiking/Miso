@@ -32,9 +32,11 @@ export async function createLoop_MainGame ({
     land.authors = data.authors
     land.x = data.x
     land.y = data.y
-    land.points.forEach((p, i) => {
-      Object.assign(p, data.points[i])
-      if (data.points[i].prop) {
+    land.points.forEach((point, i) => {
+      Object.assign(point, data.points[i])
+      const prop = data.points[i].prop
+      if (prop) {
+        point.prop = Object.assign(PROP.identity(), prop)
         land.propCount++
       }
     })
@@ -164,6 +166,7 @@ export async function createLoop_MainGame ({
           <tr><th> Mouse right </th><td> Rotate camera </td><tr>
           <tr><th> Mouse wheel </th><td> Zoom </td><tr>
           <tr><th> Space </th><td> Edit prop </td><tr>
+          <tr><th> K / L </th><td> Rotate prop </td><tr>
           <tr><th> Delete </th><td> Reset land </td><tr>
           <tr><th> [A / B / C / ...] </th><td> Shortcuts </td><tr>
         </table>
@@ -432,6 +435,27 @@ export async function createLoop_MainGame ({
         if (landPoint.prop) {
           landPoint.prop = null
           landPoint.land.propCount--
+        }
+      })
+      new Set(landPoints.map(x => x.land)).forEach(land => {
+        LAND.updatePropMap(land)
+      })
+    }
+    const propRotationSpeed = 0.02
+    if (keyboard.K) {
+      landPoints.forEach(landPoint => {
+        if (landPoint.prop) {
+          landPoint.prop.rotation += propRotationSpeed
+        }
+      })
+      new Set(landPoints.map(x => x.land)).forEach(land => {
+        LAND.updatePropMap(land)
+      })
+    }
+    if (keyboard.L) {
+      landPoints.forEach(landPoint => {
+        if (landPoint.prop) {
+          landPoint.prop.rotation -= propRotationSpeed
         }
       })
       new Set(landPoints.map(x => x.land)).forEach(land => {
