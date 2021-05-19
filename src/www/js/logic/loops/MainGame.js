@@ -162,7 +162,7 @@ export async function createLoop_MainGame ({
           <tr><th colspan="2"> ----- Controls ----- </th><tr>
           <tr><th> Enter </th><td> Claim / Rename land </td><tr>
           <tr><th> WASD </th><td> Move </td><tr>
-          <tr><th> Shift / Control </th><td> Fly up / down </td><tr>
+          <tr><th> Page up / Page down </th><td> Fly up / down </td><tr>
           <tr><th> Up / Down </th><td> Land height </td><tr>
           <tr><th> Left / Right </th><td> Brush size </td><tr>
           <tr><th> Mouse left </th><td> Action </td><tr>
@@ -296,16 +296,16 @@ export async function createLoop_MainGame ({
     if (keyboard.S) {
       playerPosition = v3.subtract(playerPosition, v3.multiply(v3.normalize([camera.z[0], 0, camera.z[2]]), speed))
     }
-    if (keyboard.SHIFT) {
+    if (keyboard.PAGEUP) {
       playerPosition[1] += speed
     }
-    if (keyboard.CONTROL) {
+    if (keyboard.PAGEDOWN) {
       playerPosition[1] -= speed
     }
 
     const worldLandX = Math.floor(playerPosition[0] / LAND_SIZE)
     const worldLandY = Math.floor(playerPosition[2] / LAND_SIZE)
-    const activeLand = getOrCreateLand(worldLandX, worldLandY)
+    getOrCreateLand(worldLandX, worldLandY)
 
     if (keyboard.G && !prevKeyboard.G) {
       gravity = !gravity
