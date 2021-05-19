@@ -50,7 +50,7 @@ export async function createLoop_MainGame ({
 
   const state = {}
   let gravity = true
-  let playerPosition = [0, 1, 0]
+  let playerPosition = [0, 1, -10]
   let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = 0
   let cameraOrbitVertical = Math.PI / 5
