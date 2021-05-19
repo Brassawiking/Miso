@@ -78,7 +78,9 @@ export async function createLoop_MainGame ({
     'tree',
     'bush',
     'stone_tablet',
-    'person'
+    'person',
+    'pole_vertical',
+    'pole_horizontal',
   ]
   let currentPropType = propTypes[0]
   
@@ -441,7 +443,7 @@ export async function createLoop_MainGame ({
         LAND.updatePropMap(land)
       })
     }
-    const propRotationSpeed = 0.02
+    const propRotationSpeed = Math.PI / 90
     if (keyboard.K) {
       landPoints.forEach(landPoint => {
         if (landPoint.prop) {

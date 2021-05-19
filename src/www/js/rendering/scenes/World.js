@@ -10,6 +10,8 @@ import { createRender_Bush } from '../renders/props/Bush.js'
 import { createRender_StoneTablet } from '../renders/props/StoneTablet.js'
 import { createRender_Tree } from '../renders/props/Tree.js'
 import { createRender_Person } from '../renders/props/Person.js'
+import { createRender_PoleHorizontal } from '../renders/props/PoleHorizontal.js'
+import { createRender_PoleVertical } from '../renders/props/PoleVertical.js'
 
 export function createScene_World(gl, landSize) {
   const render_Sky = createRender_Sky(gl)
@@ -23,6 +25,8 @@ export function createScene_World(gl, landSize) {
     'stone_tablet': createRender_StoneTablet(gl),
     'person': createRender_Person(gl),
     'tree': createRender_Tree(gl),
+    'pole_horizontal': createRender_PoleHorizontal(gl),
+    'pole_vertical': createRender_PoleVertical(gl),
   }
 
   const landCache = []

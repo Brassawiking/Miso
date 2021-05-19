@@ -1,5 +1,11 @@
 export const changeLog = `
 
+🗓️ May 19, 2021
+
+🔹 Tweaked rotation amount to ensure even degrees (90, 180, 270 are now possible)
+🔹 Places some nice temple gates in the intro land
+🔹 Added prop POLE_VERTICAL and POLE_HORIZONTAL
+
 🗓️ May 18, 2021
 
 🔹 Props can now be rotated
