@@ -1,7 +1,7 @@
 export const changeLog = `
 
 🗓️ May 19, 2021
-🔹 Changed fly up/down controls to as CTRL+W closes the browser tab 
+🔹 Changed fly up/down controls as CTRL+W closes the browser tab 
 🔹 First land created by another person added!⭐ 
 🔹 Moved back starting position to better hint at unclaimed areas
 🔹 Moved prop text to center of the screen when it shows
