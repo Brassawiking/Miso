@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 19, 2021
+🔹 First land created by another person added!⭐ 
 🔹 Moved back starting position to better hint at unclaimed areas
 🔹 Moved prop text to center of the screen when it shows
 🔹 Tweaked rotation amount to ensure even degrees (90, 180, 270 are now possible)
