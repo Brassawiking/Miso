@@ -21,12 +21,7 @@ export async function createLoop_MainGame ({
  
   const scene_World = createScene_World(gl, LAND_SIZE)
 
-  const loadData = async url => (await fetch(url)).json()
-  const loadedLands = await Promise.all([
-    loadData('data/miso_land_-1_0.json'),
-    loadData('data/miso_land_-1_-1.json'),
-  ])
-  loadedLands.forEach(data => {
+  const loadLandIntoWorld = (data) => {
     const land = LAND.identity(LAND_SIZE)
     land.name = data.name
     land.owner = data.owner
@@ -47,7 +42,14 @@ export async function createLoop_MainGame ({
     LAND.updatePropMap(land)
 
     LAND.add(land, world, land.x, land.y)
-  })
+  }
+
+  const loadData = async url => (await fetch(url)).json()
+  const loadedLands = await Promise.all([
+    loadData('data/miso_land_-1_0.json'),
+    loadData('data/miso_land_-1_-1.json'),
+  ])
+  loadedLands.forEach(loadLandIntoWorld)
 
   const state = {}
   let gravity = true
@@ -98,7 +100,8 @@ export async function createLoop_MainGame ({
     ui_brushLandOwner,
     ui_brushLandPropCount,
 
-    ui_save
+    ui_save,
+    ui_load,
   }] = markup(`
     <div>
       <div class="toolbar" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()">
@@ -126,6 +129,7 @@ export async function createLoop_MainGame ({
         <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>
         <li onclick="ui_char.hidden = !ui_char.hidden; this.classList.toggle('selected')">Char</li>
         <li ref="save">Save</li>
+        <li ref="load">Load</li>
         <li onclick="ui_help.hidden = !ui_help.hidden; this.classList.toggle('selected')" class="selected">Help</li>
       </ul>
 
@@ -228,6 +232,20 @@ export async function createLoop_MainGame ({
       download.click()
       document.body.removeChild(download)
     }
+  })
+
+  ui_load.addEventListener('click', e => {
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.addEventListener('input', e => {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      reader.onload = () => {
+        loadLandIntoWorld(JSON.parse(reader.result))
+      };
+      reader.readAsText(file)
+    })
+    fileInput.click()
   })
 
   return ({t, dt}) => {
@@ -541,3 +559,4 @@ export async function createLoop_MainGame ({
     )  
   }
 }
+

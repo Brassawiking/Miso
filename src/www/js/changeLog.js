@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 19, 2021
+🔹 Can now load saved land files 
 🔹 Changed fly up/down controls as CTRL+W closes the browser tab 
 🔹 First land created by another person added!⭐ 
 🔹 Moved back starting position to better hint at unclaimed areas
