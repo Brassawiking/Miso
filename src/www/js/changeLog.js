@@ -2,6 +2,7 @@ export const changeLog = `
 
 🗓️ May 19, 2021
 
+🔹 Moved prop text to center of the screen when it shows
 🔹 Tweaked rotation amount to ensure even degrees (90, 180, 270 are now possible)
 🔹 Places some nice temple gates in the intro land
 🔹 Added prop POLE_VERTICAL and POLE_HORIZONTAL

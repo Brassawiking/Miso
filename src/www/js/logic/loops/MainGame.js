@@ -119,7 +119,7 @@ export async function createLoop_MainGame ({
         </label>
       </div>
 
-      <div ref="propText" class="ui-box ui-bottom ui-left" style="white-space: pre;"></div>
+      <div ref="propText" class="ui-box ui-center" style="white-space: pre;"></div>
 
       <ul class="menu" onmousedown="event.stopPropagation()">
         <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>

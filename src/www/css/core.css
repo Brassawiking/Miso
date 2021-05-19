@@ -120,7 +120,8 @@ miso-start-screen > *,
 .ui-top,
 .ui-bottom,
 .ui-left,
-.ui-right {
+.ui-right,
+.ui-center {
   position: absolute;
   z-index: 1;
 }
@@ -129,6 +130,7 @@ miso-start-screen > *,
 .ui-bottom { bottom: 20px; }
 .ui-left { left: 20px; }
 .ui-right { right: 20px; }
+.ui-center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
 .ui-rows {
   display: flex;
