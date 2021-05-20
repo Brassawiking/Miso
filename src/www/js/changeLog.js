@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ May 20, 2021
+🔹 Second land created by another person added!⭐ 
+
 🗓️ May 19, 2021
 🔹 Can now load saved land files 
 🔹 Changed fly up/down controls as CTRL+W closes the browser tab 

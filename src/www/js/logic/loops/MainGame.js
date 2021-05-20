@@ -48,6 +48,7 @@ export async function createLoop_MainGame ({
   const loadedLands = await Promise.all([
     loadData('data/miso_land_-1_0.json'),
     loadData('data/miso_land_-1_-1.json'),
+    loadData('data/miso_land_0_-1.json'),
   ])
   loadedLands.forEach(loadLandIntoWorld)
 
