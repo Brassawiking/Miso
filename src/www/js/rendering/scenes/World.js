@@ -61,6 +61,10 @@ export function createScene_World(gl, landSize) {
 
   function handleTerrain(cameraView, lands, time, sunRay) {
     lands.forEach((land, index) => {
+      const landTop = lands.find(l => l.x === land.x && l.y === land.y+1)
+      const landRight = lands.find(l => l.x === land.x+1 && l.y === land.y)
+      const landTopRight = lands.find(l => l.x === land.x+1 && l.y === land.y+1)
+
       let heightMapTexture = heightMapTextureCache[index]
       if (!heightMapTexture) {
         heightMapTexture = gl.createTexture()
@@ -83,9 +87,24 @@ export function createScene_World(gl, landSize) {
         colorMapTextureCache[index] = colorMapTexture
       }    
 
-      if (land != landCache[index] || land.heightMapDirty) {
+      if (land != landCache[index] || land.heightMapDirty || landTop?.heightMapDirty || landRight?.heightMapDirty || landTopRight?.heightMapDirty) {
         const heightMap = land.heightMap
         const heightMapSize = Math.sqrt(heightMap.length)
+
+        if (landTop) {
+          for (let i = 0; i < heightMapSize; ++i) {
+            heightMap[i + (heightMapSize-1) * heightMapSize] = landTop.heightMap[i] 
+          }
+        }
+        if (landRight) {
+          for (let i = 0; i < heightMapSize; ++i) {
+            heightMap[(heightMapSize-1) + i * heightMapSize] = landRight.heightMap[i * heightMapSize] 
+          }
+        }
+        if (landTopRight) {
+          heightMap[(heightMapSize-1) + (heightMapSize-1) * heightMapSize] = landTopRight.heightMap[0] 
+        }
+
         gl.bindTexture(gl.TEXTURE_2D, heightMapTexture)
         gl.texImage2D(
           gl.TEXTURE_2D, 
@@ -100,9 +119,38 @@ export function createScene_World(gl, landSize) {
         )
       }
 
-      if (land != landCache[index] || land.colorMapDirty) {
+      if (land != landCache[index] || land.colorMapDirty || landTop?.colorMapDirty || landRight?.colorMapDirty || landTopRight?.colorMapDirty) {
         const colorMap = land.colorMap
         const colorMapSize = Math.sqrt(colorMap.length / 3)
+
+        if (landTop) {
+          for (let i = 0; i <colorMapSize; ++i) {
+            colorMap[i*3 + 0 + 3*(colorMapSize-1) * colorMapSize] = landTop.colorMap[i*3 + 0] 
+            colorMap[i*3 + 1 + 3*(colorMapSize-1) * colorMapSize] = landTop.colorMap[i*3 + 1] 
+            colorMap[i*3 + 2 + 3*(colorMapSize-1) * colorMapSize] = landTop.colorMap[i*3 + 2] 
+
+            colorMap[i*3 + 0 + 3*(colorMapSize-2) * colorMapSize] = landTop.colorMap[i*3 + 0] 
+            colorMap[i*3 + 1 + 3*(colorMapSize-2) * colorMapSize] = landTop.colorMap[i*3 + 1] 
+            colorMap[i*3 + 2 + 3*(colorMapSize-2) * colorMapSize] = landTop.colorMap[i*3 + 2] 
+          }
+        }
+        if (landRight) {
+          for (let i = 0; i <colorMapSize; ++i) {
+            colorMap[(colorMapSize-1)*3 + 0 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 0] 
+            colorMap[(colorMapSize-1)*3 + 1 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 1] 
+            colorMap[(colorMapSize-1)*3 + 2 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 2] 
+
+            colorMap[(colorMapSize-2)*3 + 0 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 0] 
+            colorMap[(colorMapSize-2)*3 + 1 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 1] 
+            colorMap[(colorMapSize-2)*3 + 2 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 2] 
+          }
+        }
+        if (landTopRight) {
+          colorMap[(colorMapSize-1)*3 + 0 + 3*(colorMapSize-1)*colorMapSize] = landTopRight.colorMap[0] 
+          colorMap[(colorMapSize-1)*3 + 1 + 3*(colorMapSize-1)*colorMapSize] = landTopRight.colorMap[1] 
+          colorMap[(colorMapSize-1)*3 + 2 + 3*(colorMapSize-1)*colorMapSize] = landTopRight.colorMap[2] 
+        }
+
         gl.bindTexture(gl.TEXTURE_2D, colorMapTexture)
         gl.texImage2D(
           gl.TEXTURE_2D, 
