@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 21, 2021
+🔹 Changed player starting position to be more within the intro land 
 🔹 Lands are now stitched for a more seamless experience ⭐ 
 🔹 Made the water a bit more fancy with some reflective sunlight 
 

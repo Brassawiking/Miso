@@ -54,9 +54,9 @@ export async function createLoop_MainGame ({
 
   const state = {}
   let gravity = true
-  let playerPosition = [0, 1, -10]
+  let playerPosition = [-5, 1, 2]
   let cameraOrbitDistance = 6
-  let cameraOrbitHorisontal = 0
+  let cameraOrbitHorisontal = Math.PI / 5
   let cameraOrbitVertical = Math.PI / 5
   let propText
 
@@ -269,7 +269,7 @@ export async function createLoop_MainGame ({
       getOrCreateLand(activeLand.x+1, activeLand.y-1),
     ]
 
-    const sunSpeed = t / 5000
+    const sunSpeed = t / 5000 + Math.PI
     const sunRay = [Math.sin(sunSpeed), -1, Math.cos(sunSpeed)]
     scene_World({
       camera,
