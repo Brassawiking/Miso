@@ -92,7 +92,9 @@ export async function createLoop_MainGame ({
     ui_actionType, 
     ui_landType, 
     ui_propType, 
-    ui_gravity, 
+    ui_gravity,
+    ui_brushSoft,
+
     ui_propText,
 
     ui_brushSize,
@@ -121,6 +123,10 @@ export async function createLoop_MainGame ({
         <label>
           Gravity [G]:
           <input ref="gravity" type="checkbox" tabindex="-1"/>
+        </label>
+        <label>
+          Soft brush [T]:
+          <input ref="brushSoft" type="checkbox" tabindex="-1"/>
         </label>
       </div>
 
@@ -205,6 +211,11 @@ export async function createLoop_MainGame ({
 
   ui_gravity.addEventListener('input', e => { 
     gravity = e.target.checked 
+    e.target.blur()
+  })
+
+  ui_brushSoft.addEventListener('input', e => { 
+    brush.soft = e.target.checked 
     e.target.blur()
   })
 
@@ -296,6 +307,7 @@ export async function createLoop_MainGame ({
     ui_propType.value = currentPropType
     ui_actionType.value = currentActionType
     ui_gravity.checked = gravity
+    ui_brushSoft.checked = brush.soft
 
     ui_propText.hidden = !propText
     ui_propText.textContent = propText
@@ -394,12 +406,20 @@ export async function createLoop_MainGame ({
     if (keyboard.ARROWRIGHT && !prevKeyboard.ARROWRIGHT) {
       brush.size++
     }
+    if (keyboard.T && !prevKeyboard.T) {
+      brush.soft = !brush.soft
+    }
   
     const landPoints = BRUSH.ownedLandPoints(brush, world, user)
     const heightDelta = 0.1
     if (keyboard.ARROWUP || (mouse.buttons[0] && currentActionType === 'raise')) {
       landPoints.forEach(landPoint => {
-        landPoint.height += heightDelta
+        let factor = 1
+        if (brush.soft) {
+          const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
+          factor = Math.max(brush.size - distance, 0) / brush.size
+        }
+        landPoint.height += heightDelta * factor
       })
       new Set(landPoints.map(x => x.land)).forEach(land => {
         LAND.updateHeightMap(land)
@@ -407,7 +427,12 @@ export async function createLoop_MainGame ({
     }
     if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentActionType === 'lower')) {
       landPoints.forEach(landPoint => {
-        landPoint.height -= heightDelta
+        let factor = 1
+        if (brush.soft) {
+          const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
+          factor = Math.max(brush.size - distance, 0) / brush.size
+        }
+        landPoint.height -= heightDelta * factor
       })
       new Set(landPoints.map(x => x.land)).forEach(land => {
         LAND.updateHeightMap(land)

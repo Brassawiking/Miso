@@ -204,6 +204,20 @@ export const LANDPOINT = {
           (Math.floor(v[2]) - land.y * world.landSize) * world.landSize
         ]
       : null
+  },
+
+  position(lp) {
+    const index = lp.land.points.indexOf(lp)
+    const mapSize = Math.sqrt(lp.land.points.length)
+
+    const localX = index % mapSize
+    const localY = (index - localX) / mapSize
+
+    return [
+      localX + lp.land.x * mapSize,
+      0,
+      localY + lp.land.y * mapSize
+    ]
   }
 }
 
@@ -222,6 +236,7 @@ export const BRUSH = {
     return {
       position: [0, 0, 0],
       size: 1,
+      soft: true
     }  
   },
 
