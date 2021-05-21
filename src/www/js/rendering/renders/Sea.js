@@ -4,12 +4,17 @@ import { createArrayBuffer } from '../buffers.js'
 export function createRender_Sea(gl) {
   const Shader = createShader(gl, {
     attributes: {
-      a_pos: 'vec4'
+      a_pos: 'vec2'
     },
     uniforms: {
-      cameraView: 'mat4',
+      u_cameraView: 'mat4',
+      u_cameraPos: 'vec3',
+      u_sunRay: 'vec3',
+      u_time: 'float',
     },
-    varyings: {},
+    varyings: {
+      v_pos: 'vec4',
+    },
     vertex: `
       void main() {
         vec4 position = vec4(a_pos.x, 0, a_pos.y, 1);
@@ -21,15 +26,43 @@ export function createRender_Sea(gl) {
           0, 0, 0, 1.0
         );
 
+        v_pos = position * toWorldSpace;
 
         gl_Position = position 
           * toWorldSpace
-          * cameraView;
+          * u_cameraView;
       }  
     `,
     fragment: `
+      float getWaterHeight(float x, float y) {
+        return (sin(x*0.75 + u_time/500.0) + cos(y*0.75 + u_time/500.0)) / 8.0;
+      }
+
       void main() {
-        fragment = vec4(31.0 / 255.0, 74.0 / 255.0, 186.0 / 255.0, 0.75);
+        float sampleOffset = 0.1;
+        float h00 = getWaterHeight(v_pos.x, v_pos.z);
+        float h10 = getWaterHeight(v_pos.x + sampleOffset, v_pos.z);
+        float h01 = getWaterHeight(v_pos.x, v_pos.z  + sampleOffset);
+
+        vec3 normal = normalize(cross(
+          vec3(0, h01, sampleOffset) - vec3(0, h00, 0),
+          vec3(sampleOffset, h10, 0) - vec3(0, h00, 0)
+        ));
+
+        vec3 lightColor = vec3(253.0 / 255.0, 184.0 / 255.0, 19.0 / 255.0);
+        vec3 seaColor = vec3(31.0 / 255.0, 74.0 / 255.0, 186.0 / 255.0);
+
+        vec3 diffuse = lightColor
+          * max(dot(-normalize(u_sunRay), normal), 0.0)
+          * 0.1;
+
+        vec3 viewRay = normalize(v_pos.xyz - u_cameraPos);
+        vec3 reflectSunRay = normalize(reflect(-u_sunRay, normal));
+        vec3 specular = lightColor
+          * pow(max(dot(viewRay, reflectSunRay), 0.0), 64.0)
+          * 1.5;
+        
+        fragment = vec4((diffuse + specular) + seaColor, 0.8);
       }    
     `
   })
@@ -52,11 +85,14 @@ export function createRender_Sea(gl) {
     }
   }
 
-  return (cameraView) => {
+  return (camera, sunRay, time) => {
     Shader({
       attributes,
       uniforms: {
-        cameraView: ['Matrix4fv', false, cameraView]
+        u_cameraView: ['Matrix4fv', false, camera.matrix],
+        u_cameraPos: ['3f', ...camera.position],
+        u_sunRay: ['3f', ...sunRay],
+        u_time: ['1f', time],
       }
     })
   

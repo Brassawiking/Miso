@@ -269,9 +269,9 @@ export async function createLoop_MainGame ({
       getOrCreateLand(activeLand.x+1, activeLand.y-1),
     ]
 
-    const sunRay = [Math.sin(t / 1000), -1, Math.cos(t / 1000)]
+    const sunSpeed = t / 5000
+    const sunRay = [Math.sin(sunSpeed), -1, Math.cos(sunSpeed)]
     scene_World({
-      cameraView: camera.matrix,
       camera,
       time: t,
       brush,

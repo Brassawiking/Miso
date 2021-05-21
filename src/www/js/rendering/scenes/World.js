@@ -34,7 +34,7 @@ export function createScene_World(gl, landSize) {
   const colorMapTextureCache = []
 
   return ({
-    cameraView, 
+    camera, 
     time,
     brush, 
     playerPosition,
@@ -50,13 +50,13 @@ export function createScene_World(gl, landSize) {
     gl.clear(gl.DEPTH_BUFFER_BIT)
 
     render_Sky()
-    handleTerrain(cameraView, lands, time, sunRay)
-    handleBrush(cameraView, brush)
-    render_TestModel(cameraView, playerPosition)
+    handleTerrain(camera.matrix, lands, time, sunRay)
+    handleBrush(camera.matrix, brush)
+    render_TestModel(camera.matrix, playerPosition)
 
     // Transparent renders
-    handleProps(cameraView, lands, sunRay)
-    render_Sea(cameraView)  
+    handleProps(camera.matrix, lands, sunRay)
+    render_Sea(camera, sunRay, time)  
   }
 
   function handleTerrain(cameraView, lands, time, sunRay) {
