@@ -130,7 +130,7 @@ export async function createLoop_MainGame ({
         </label>
       </div>
 
-      <div ref="landText" class="ui-box ui-center" style="text-align: right;"></div>
+      <div ref="landText" hidden class="ui-box ui-center" style="text-align: right;"></div>
       <div ref="propText" class="ui-box ui-center" style="white-space: pre;"></div>
 
       <ul class="menu" onmousedown="event.stopPropagation()">
@@ -326,6 +326,7 @@ export async function createLoop_MainGame ({
         ui_landText.innerHTML = currentLandText
         ui_landText.classList.add('ui-fade-in')
         ui_landText.classList.remove('ui-fade-out')
+        ui_landText.hidden = false
         
         currentLandTextTimer = setTimeout(() => {
           ui_landText.classList.remove('ui-fade-in')
