@@ -94,7 +94,7 @@ export function createScene_World(gl, landSize) {
         colorMapTextureCache[index] = colorMapTexture
       }    
 
-      if (land != landCache[index] || land.heightMapDirty || landTop?.heightMapDirty || landRight?.heightMapDirty || landTopRight?.heightMapDirty) {
+      if (land.heightMapDirty || landTop?.heightMapDirty || landRight?.heightMapDirty || landTopRight?.heightMapDirty || land != landCache[index]) {
         const landSize = Math.sqrt(land.points.length)
         const mapSize = landSize + 1
         let heightMap = heightMapCache[index]
@@ -105,7 +105,7 @@ export function createScene_World(gl, landSize) {
 
         for (let i = 0; i < mapSize; ++i) {
           for (let j = 0; j < mapSize; ++j) {
-            let height = -10
+            let height = 0
 
             if (i < landSize && j < landSize) {
               height = land.points[i + j*landSize].height
@@ -138,7 +138,7 @@ export function createScene_World(gl, landSize) {
         )
       }
 
-      if (land != landCache[index] || land.colorMapDirty || landTop?.colorMapDirty || landRight?.colorMapDirty || landTopRight?.colorMapDirty) {
+      if (land.colorMapDirty || landTop?.colorMapDirty || landRight?.colorMapDirty || landTopRight?.colorMapDirty || land != landCache[index]) {
         const landSize = Math.sqrt(land.points.length)
         const mapSize = landSize + 1
         let colorMap = colorMapCache[index]
@@ -198,7 +198,7 @@ export function createScene_World(gl, landSize) {
 
   function handleProps(cameraView, lands, sunRay) {
     lands.forEach((land, index) => {
-      if (land != landCache[index] || land.propListDirty || land.heightMapDirty) {
+      if (land.propListDirty || land.heightMapDirty || land != landCache[index]) {
         const landSize = Math.sqrt(land.points.length)
 
         let propList = propListCache[index]
@@ -228,12 +228,14 @@ export function createScene_World(gl, landSize) {
         propList.sort((a, b) => a.prop.type.localeCompare(b.prop.type))
       }
 
-      propListCache[index].forEach(({ prop, position }) => {
+      const propList = propListCache[index]
+      for (let i = 0, len = propList.length; i < len; ++i) {
+        const { prop, position } = propList[i]
         let propRender = propRenders[prop.type]
         if (propRender) {
           propRender(cameraView, position, sunRay, prop.rotation)
         }
-      })
+      }
     })
   }
 
