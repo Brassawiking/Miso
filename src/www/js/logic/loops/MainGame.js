@@ -55,6 +55,8 @@ export async function createLoop_MainGame ({
   let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = Math.PI / 5
   let cameraOrbitVertical = Math.PI / 5
+  let currentLandText
+  let currentLandTextTimer
   let propText
 
   const actionTypes = [
@@ -92,6 +94,7 @@ export async function createLoop_MainGame ({
     ui_gravity,
     ui_brushSoft,
 
+    ui_landText,
     ui_propText,
 
     ui_brushSize,
@@ -127,6 +130,7 @@ export async function createLoop_MainGame ({
         </label>
       </div>
 
+      <div ref="landText" class="ui-box ui-center" style="text-align: right;"></div>
       <div ref="propText" class="ui-box ui-center" style="white-space: pre;"></div>
 
       <ul class="menu" onmousedown="event.stopPropagation()">
@@ -306,6 +310,29 @@ export async function createLoop_MainGame ({
     ui_actionType.value = currentActionType
     ui_gravity.checked = gravity
     ui_brushSoft.checked = brush.soft
+
+    const landText = `
+      <h1>${activeLand.name || '(Unclaimed Land...)'}</h1>
+      ${activeLand.owner || 'You can claim this land if you want to'} 
+    `
+    if (currentLandText != landText) {
+      currentLandText = landText
+
+      ui_landText.classList.remove('ui-fade-in')
+      ui_landText.classList.add('ui-fade-out')
+
+      clearTimeout(currentLandTextTimer)
+      currentLandTextTimer = setTimeout(() => {
+        ui_landText.innerHTML = currentLandText
+        ui_landText.classList.add('ui-fade-in')
+        ui_landText.classList.remove('ui-fade-out')
+        
+        currentLandTextTimer = setTimeout(() => {
+          ui_landText.classList.remove('ui-fade-in')
+          ui_landText.classList.add('ui-fade-out')
+        }, 4000)
+      }, 1000)
+    }
 
     ui_propText.hidden = !propText
     ui_propText.textContent = propText

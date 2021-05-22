@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 22, 2021
+🔹 Added a greeting message when you enter a land 
 🔹 Third land created by another person added!⭐ 
 🔹 Improved seam handling 
 🔹 Performance improvements 
