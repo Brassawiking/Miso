@@ -132,9 +132,7 @@ export function createRender_Terrain(gl, gridSize) {
 
   for (var y = 0; y < gridSize; ++y) {
     for (var x = 0; x < gridSize; ++x) {
-      const offsetX = x == gridSize-1 ? 1 : 0
-      const offsetY = y == gridSize-1 ? 1 : 0
-      mesh.push(x+offsetX, y+offsetY)
+      mesh.push(x, y)
       texCoords.push((x+0.5) / gridSize, (y+0.5) / gridSize)
     }
   }

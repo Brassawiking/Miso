@@ -89,22 +89,18 @@ export const LAND = {
       x: null,
       y: null,
       points: new Array(mapSize),
-      heightMap: new Float32Array(new Array(mapSize)),
-      colorMap: new Uint8Array(new Array(mapSize * 3)),
       propMap: new Array(mapSize),
-      heightMapDirty: false,
-      colorMapDirty: false,
       propCount: 0,
+
+      heightMapDirty: true,
+      colorMapDirty: true,
+      propListDirty: true,
     }
   
     for (let i = 0; i < mapSize; ++i) {
       l.points[i] = LANDPOINT.land(LANDPOINT.identity(), l)
     }
   
-    LAND.updateHeightMap(l)
-    LAND.updateColorMap(l)
-    LAND.updatePropMap(l)
-
     return l
   },
 
@@ -130,55 +126,6 @@ export const LAND = {
   at_index(iX, iY, world) {
     return world.lands[WORLD.landIndexKey(iX, iY)]
   },
-
-  updateHeightMap(land) {
-    for (let i = 0; i < land.points.length; ++i) {
-      land.heightMap[i] = land.points[i].height
-    }
-    land.heightMapDirty = true
-    return land
-  },
-  
-  updateColorMap(land) {
-    const colorMap = land.colorMap
-    for (let i = 0; i < land.points.length; ++i) {
-      switch(land.points[i].type) {
-        case 'grass':
-          colorMap[3*i + 0] = 71 
-          colorMap[3*i + 1] = 176 
-          colorMap[3*i + 2] = 20
-          break
-        case 'dirt':
-          colorMap[3*i + 0] = 118 
-          colorMap[3*i + 1] = 85 
-          colorMap[3*i + 2] = 10
-          break
-        case 'rock':
-          colorMap[3*i + 0] = 61 
-          colorMap[3*i + 1] = 53 
-          colorMap[3*i + 2] = 75
-          break
-        case 'sand':
-          colorMap[3*i + 0] = 246 
-          colorMap[3*i + 1] = 228 
-          colorMap[3*i + 2] = 173
-          break
-        default:
-          colorMap[3*i + 0] = 255 
-          colorMap[3*i + 1] = 255 
-          colorMap[3*i + 2] = 255
-      }
-    }
-    land.colorMapDirty = true
-    return land
-  },
-  
-  updatePropMap(land) {
-    for (let i = 0; i < land.points.length; ++i) {
-      land.propMap[i] = land.points[i].prop
-    }
-    return land
-  }
 }
 
 export const LANDPOINT = {

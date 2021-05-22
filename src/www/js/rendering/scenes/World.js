@@ -16,7 +16,7 @@ import { createRender_PoleVertical } from '../renders/props/PoleVertical.js'
 export function createScene_World(gl, landSize) {
   const render_Sky = createRender_Sky(gl)
   const render_Sea = createRender_Sea(gl)
-  const render_Terrain = createRender_Terrain(gl, landSize)
+  const render_Terrain = createRender_Terrain(gl, landSize+1)
   const render_TerrainMarker = createRender_TerrainMarker(gl)
   const render_TestModel = createRender_TestModel(gl)
   
@@ -30,8 +30,11 @@ export function createScene_World(gl, landSize) {
   }
 
   const landCache = []
+  const heightMapCache = []
   const heightMapTextureCache = []
+  const colorMapCache = []
   const colorMapTextureCache = []
+  const propListCache = []
 
   return ({
     camera, 
@@ -56,7 +59,11 @@ export function createScene_World(gl, landSize) {
 
     // Transparent renders
     handleProps(camera.matrix, lands, sunRay)
-    render_Sea(camera, sunRay, time)  
+    render_Sea(camera, sunRay, time)
+
+    lands.forEach((land, index) => {
+      landCache[index] = land
+    })
   }
 
   function handleTerrain(cameraView, lands, time, sunRay) {
@@ -88,21 +95,33 @@ export function createScene_World(gl, landSize) {
       }    
 
       if (land != landCache[index] || land.heightMapDirty || landTop?.heightMapDirty || landRight?.heightMapDirty || landTopRight?.heightMapDirty) {
-        const heightMap = land.heightMap
-        const heightMapSize = Math.sqrt(heightMap.length)
+        const landSize = Math.sqrt(land.points.length)
+        const mapSize = landSize + 1
+        let heightMap = heightMapCache[index]
+        if (!heightMap) {
+          heightMap = new Float32Array(new Array(Math.pow(mapSize, 2)))
+          heightMapCache[index] = heightMap
+        }
 
-        if (landTop) {
-          for (let i = 0; i < heightMapSize; ++i) {
-            heightMap[i + (heightMapSize-1) * heightMapSize] = landTop.heightMap[i] 
+        for (let i = 0; i < mapSize; ++i) {
+          for (let j = 0; j < mapSize; ++j) {
+            let height = -10
+
+            if (i < landSize && j < landSize) {
+              height = land.points[i + j*landSize].height
+            }
+            else if (landTop && i < landSize && j == landSize) {
+              height = landTop.points[i].height
+            }
+            else if (landRight && i == landSize && j < landSize) {
+              height = landRight.points[j * landSize].height
+            }
+            else if (landTopRight && i == landSize && j == landSize) {
+              height = landTopRight.points[0].height
+            }
+
+            heightMap[i + j*mapSize] = height;
           }
-        }
-        if (landRight) {
-          for (let i = 0; i < heightMapSize; ++i) {
-            heightMap[(heightMapSize-1) + i * heightMapSize] = landRight.heightMap[i * heightMapSize] 
-          }
-        }
-        if (landTopRight) {
-          heightMap[(heightMapSize-1) + (heightMapSize-1) * heightMapSize] = landTopRight.heightMap[0] 
         }
 
         gl.bindTexture(gl.TEXTURE_2D, heightMapTexture)
@@ -110,8 +129,8 @@ export function createScene_World(gl, landSize) {
           gl.TEXTURE_2D, 
           0, 
           gl.R32F, 
-          heightMapSize,
-          heightMapSize,
+          mapSize,
+          mapSize,
           0, 
           gl.RED, 
           gl.FLOAT,
@@ -120,44 +139,45 @@ export function createScene_World(gl, landSize) {
       }
 
       if (land != landCache[index] || land.colorMapDirty || landTop?.colorMapDirty || landRight?.colorMapDirty || landTopRight?.colorMapDirty) {
-        const colorMap = land.colorMap
-        const colorMapSize = Math.sqrt(colorMap.length / 3)
-
-        if (landTop) {
-          for (let i = 0; i <colorMapSize; ++i) {
-            colorMap[i*3 + 0 + 3*(colorMapSize-1) * colorMapSize] = landTop.colorMap[i*3 + 0] 
-            colorMap[i*3 + 1 + 3*(colorMapSize-1) * colorMapSize] = landTop.colorMap[i*3 + 1] 
-            colorMap[i*3 + 2 + 3*(colorMapSize-1) * colorMapSize] = landTop.colorMap[i*3 + 2] 
-
-            colorMap[i*3 + 0 + 3*(colorMapSize-2) * colorMapSize] = landTop.colorMap[i*3 + 0] 
-            colorMap[i*3 + 1 + 3*(colorMapSize-2) * colorMapSize] = landTop.colorMap[i*3 + 1] 
-            colorMap[i*3 + 2 + 3*(colorMapSize-2) * colorMapSize] = landTop.colorMap[i*3 + 2] 
-          }
+        const landSize = Math.sqrt(land.points.length)
+        const mapSize = landSize + 1
+        let colorMap = colorMapCache[index]
+        if (!colorMap) {
+          colorMap = new Uint8Array(new Array(mapSize * mapSize * 3))
+          colorMapCache[index] = colorMap
         }
-        if (landRight) {
-          for (let i = 0; i <colorMapSize; ++i) {
-            colorMap[(colorMapSize-1)*3 + 0 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 0] 
-            colorMap[(colorMapSize-1)*3 + 1 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 1] 
-            colorMap[(colorMapSize-1)*3 + 2 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 2] 
 
-            colorMap[(colorMapSize-2)*3 + 0 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 0] 
-            colorMap[(colorMapSize-2)*3 + 1 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 1] 
-            colorMap[(colorMapSize-2)*3 + 2 + 3*i*colorMapSize] = landRight.colorMap[3*i*colorMapSize + 2] 
+        for (let i = 0; i < mapSize; ++i) {
+          for (let j = 0; j < mapSize; ++j) {
+            let color = [255, 0, 0]
+
+            if (i < landSize && j < landSize) {
+              color = getColor(land.points[i + j*landSize])
+            }
+            else if (landTop && i < landSize && j == landSize) {
+              color = getColor(landTop.points[i])
+            }
+            else if (landRight && i == landSize && j < landSize) {
+              color = getColor(landRight.points[j * landSize])
+            }
+            else if (landTopRight && i == landSize && j == landSize) {
+              color = getColor(landTopRight.points[0])
+            }
+
+            colorMap[i*3 + j*3*mapSize + 0] = color[0]
+            colorMap[i*3 + j*3*mapSize + 1] = color[1]
+            colorMap[i*3 + j*3*mapSize + 2] = color[2]
           }
-        }
-        if (landTopRight) {
-          colorMap[(colorMapSize-1)*3 + 0 + 3*(colorMapSize-1)*colorMapSize] = landTopRight.colorMap[0] 
-          colorMap[(colorMapSize-1)*3 + 1 + 3*(colorMapSize-1)*colorMapSize] = landTopRight.colorMap[1] 
-          colorMap[(colorMapSize-1)*3 + 2 + 3*(colorMapSize-1)*colorMapSize] = landTopRight.colorMap[2] 
         }
 
         gl.bindTexture(gl.TEXTURE_2D, colorMapTexture)
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
         gl.texImage2D(
           gl.TEXTURE_2D, 
           0, 
           gl.RGB, 
-          colorMapSize, 
-          colorMapSize, 
+          mapSize, 
+          mapSize, 
           0, 
           gl.RGB, 
           gl.UNSIGNED_BYTE,
@@ -173,28 +193,47 @@ export function createScene_World(gl, landSize) {
         position: [land.x * landSize, 0, land.y * landSize],
         sunRay
       })
-
-      landCache[index] = land
     })
   }
 
   function handleProps(cameraView, lands, sunRay) {
-    lands.forEach(land => {
-      const propMap = land.propMap
-      for (let i = 0, len = propMap.length; i < len; ++i) {
-        const prop = propMap[i]
-        if (prop == null) {
-          continue
+    lands.forEach((land, index) => {
+      if (land != landCache[index] || land.propListDirty || land.heightMapDirty) {
+        const landSize = Math.sqrt(land.points.length)
+
+        let propList = propListCache[index]
+        if (!propList) {
+          propList = []
+          propListCache[index] = propList
         }
-        let x = i % landSize
-        let y = (i - x) / landSize
-        x += land.x * landSize
-        y += land.y * landSize
+
+        propList.length = 0
+        for (let i = 0; i < landSize; ++i) {
+          for (let j = 0; j < landSize; ++j) {
+            const landPoint = land.points[i + j*landSize]
+            const prop = landPoint.prop
+            if (!prop) {
+              continue
+            }
+            propList.push({
+              prop,
+              position: [
+                i + land.x*landSize, 
+                landPoint.height,
+                j + land.y*landSize
+              ],
+            }) 
+          }
+        }
+        propList.sort((a, b) => a.prop.type.localeCompare(b.prop.type))
+      }
+
+      propListCache[index].forEach(({ prop, position }) => {
         let propRender = propRenders[prop.type]
         if (propRender) {
-          propRender(cameraView, [x, land.heightMap[i], y], sunRay, prop.rotation)
+          propRender(cameraView, position, sunRay, prop.rotation)
         }
-      }
+      })
     })
   }
 
@@ -206,5 +245,20 @@ export function createScene_World(gl, landSize) {
     render_TerrainMarker(cameraView, v3.add(brush.position, [outlineOffset, 0, -outlineOffset]) , outlineColor)
     render_TerrainMarker(cameraView, v3.add(brush.position, [-outlineOffset, 0, -outlineOffset]) , outlineColor)
     render_TerrainMarker(cameraView, v3.add(brush.position, [-outlineOffset, 0, outlineOffset]) , outlineColor)
+  }
+}
+
+function getColor(landPoint) {
+  switch(landPoint.type) {
+    case 'grass':
+      return [71, 176, 20]
+    case 'dirt':
+      return [118, 85, 10]
+    case 'rock':
+      return [61, 53, 75]
+    case 'sand':
+      return [246, 228, 173]
+    default:
+      return [255, 255, 255]
   }
 }

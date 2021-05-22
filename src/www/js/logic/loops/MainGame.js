@@ -37,10 +37,6 @@ export async function createLoop_MainGame ({
       }
     })
 
-    LAND.updateHeightMap(land)
-    LAND.updateColorMap(land)
-    LAND.updatePropMap(land)
-
     LAND.add(land, world, land.x, land.y)
   }
 
@@ -294,6 +290,7 @@ export async function createLoop_MainGame ({
     lands.forEach(land => {
       land.heightMapDirty = false
       land.colorMapDirty = false
+      land.propListDirty = false
     })
      
     const landAtBrush = LAND.at(brush.position, world) || {}
@@ -420,9 +417,7 @@ export async function createLoop_MainGame ({
           factor = Math.max(brush.size - distance, 0) / brush.size
         }
         landPoint.height += heightDelta * factor
-      })
-      new Set(landPoints.map(x => x.land)).forEach(land => {
-        LAND.updateHeightMap(land)
+        landPoint.land.heightMapDirty = true
       })
     }
     if (keyboard.ARROWDOWN || (mouse.buttons[0] && currentActionType === 'lower')) {
@@ -433,9 +428,7 @@ export async function createLoop_MainGame ({
           factor = Math.max(brush.size - distance, 0) / brush.size
         }
         landPoint.height -= heightDelta * factor
-      })
-      new Set(landPoints.map(x => x.land)).forEach(land => {
-        LAND.updateHeightMap(land)
+        landPoint.land.heightMapDirty = true
       })
     }
     if (keyboard.DELETE || (mouse.buttons[0] && currentActionType === 'reset')) {
@@ -446,12 +439,9 @@ export async function createLoop_MainGame ({
           landPoint.prop = null
           landPoint.land.propCount--
         }
-      })
-
-      new Set(landPoints.map(x => x.land)).forEach(land => {
-        LAND.updateHeightMap(land)
-        LAND.updateColorMap(land)
-        LAND.updatePropMap(land)
+        landPoint.land.heightMapDirty = true
+        landPoint.land.colorMapDirty = true
+        landPoint.land.propListDirty = true
       })
     }
 
@@ -471,10 +461,7 @@ export async function createLoop_MainGame ({
           landPoint.prop = PROP.identity()
         } 
         landPoint.prop.type = currentPropType
-      })
-
-      new Set(landPoints.map(x => x.land)).forEach(land => {
-        LAND.updatePropMap(land)
+        landPoint.land.propListDirty = true
       })
     }
     if (keyboard.R || (mouse.buttons[0] && currentActionType === 'prop_remove')) {
@@ -482,10 +469,8 @@ export async function createLoop_MainGame ({
         if (landPoint.prop) {
           landPoint.prop = null
           landPoint.land.propCount--
+          landPoint.land.propListDirty = true
         }
-      })
-      new Set(landPoints.map(x => x.land)).forEach(land => {
-        LAND.updatePropMap(land)
       })
     }
     const propRotationSpeed = Math.PI / 90
@@ -493,20 +478,16 @@ export async function createLoop_MainGame ({
       landPoints.forEach(landPoint => {
         if (landPoint.prop) {
           landPoint.prop.rotation += propRotationSpeed
+          landPoint.land.propListDirty = true
         }
-      })
-      new Set(landPoints.map(x => x.land)).forEach(land => {
-        LAND.updatePropMap(land)
       })
     }
     if (keyboard.L) {
       landPoints.forEach(landPoint => {
         if (landPoint.prop) {
           landPoint.prop.rotation -= propRotationSpeed
+          landPoint.land.propListDirty = true
         }
-      })
-      new Set(landPoints.map(x => x.land)).forEach(land => {
-        LAND.updatePropMap(land)
       })
     }
 
@@ -519,9 +500,7 @@ export async function createLoop_MainGame ({
     if (keyboard.Q || (mouse.buttons[0] && currentActionType === 'paint')) {
       landPoints.forEach(landPoint => {
         landPoint.type = currentLandType
-      })
-      new Set(landPoints.map(x => x.land)).forEach(land => {
-        LAND.updateColorMap(land)
+        landPoint.land.colorMapDirty = true
       })
     }
 
@@ -541,7 +520,7 @@ export async function createLoop_MainGame ({
           for (let i = 0; i < mapSize; ++i) {
             land.points[i].height = 1
           }
-          LAND.updateHeightMap(land)
+          land.heightMapDirty = true
         }
       } else if (land.owner == user.name) {
         const landName = prompt('Rename this land', land.name || '')

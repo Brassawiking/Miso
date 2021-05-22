@@ -1,5 +1,9 @@
 export const changeLog = `
 
+🗓️ May 22, 2021
+🔹 Improved seam handling 
+🔹 Performance improvements 
+
 🗓️ May 21, 2021
 🔹 Added a soft brush mode (default on) for those smooth rolling hills 
 🔹 Changed player starting position to be more within the intro land 
