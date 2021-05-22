@@ -122,7 +122,7 @@ export function createRender_Terrain(gl, gridSize) {
           mapXYFractional.y
         );
 
-        fragment = vec4((color * max(light, 0.4)).rgb, 1);
+        fragment = vec4((color * max(light, 0.4)).rgb, 1.0);
       }
     `
   })
