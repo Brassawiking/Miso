@@ -45,6 +45,7 @@ export async function createLoop_MainGame ({
     loadData('data/miso_land_-1_0.json'),
     loadData('data/miso_land_-1_-1.json'),
     loadData('data/miso_land_0_-1.json'),
+    loadData('data/miso_land_-2_0.json'),
   ])
   loadedLands.forEach(loadLandIntoWorld)
 
