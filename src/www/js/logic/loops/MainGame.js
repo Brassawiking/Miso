@@ -52,6 +52,7 @@ export async function createLoop_MainGame ({
   const state = {}
   let gravity = true
   let playerPosition = [-5, 1, 2]
+  let playerVelocity = [0, 0, 0]
   let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = Math.PI / 5
   let cameraOrbitVertical = Math.PI / 5
@@ -174,7 +175,8 @@ export async function createLoop_MainGame ({
           <tr><th colspan="2"> ----- Controls ----- </th><tr>
           <tr><th> Enter </th><td> Claim / Rename land </td><tr>
           <tr><th> WASD </th><td> Move </td><tr>
-          <tr><th> Page up / Page down </th><td> Fly up / down </td><tr>
+          <tr><th> Page up </th><td> Jump / Fly up </td><tr>
+          <tr><th> Page down </th><td> Fly down </td><tr>
           <tr><th> Up / Down </th><td> Land height </td><tr>
           <tr><th> Left / Right </th><td> Brush size </td><tr>
           <tr><th> Mouse left </th><td> Action </td><tr>
@@ -281,7 +283,7 @@ export async function createLoop_MainGame ({
       getOrCreateLand(activeLand.x+1, activeLand.y-1),
     ]
 
-    const sunSpeed = t / 5000 + Math.PI
+    const sunSpeed = t / 5 + Math.PI
     const sunRay = [Math.sin(sunSpeed), -1, Math.cos(sunSpeed)]
     scene_World({
       camera,
@@ -340,39 +342,61 @@ export async function createLoop_MainGame ({
   }
 
   function logic(t, dt) {
-    const speed = 10.5 * dt / 1000;
+    const speed = 2 * dt;
+
+    if (keyboard.G && !prevKeyboard.G) {
+      gravity = !gravity
+    }
+
+    let moveDirection = [0, 0, 0]
     if (keyboard.D) {
-      playerPosition = v3.add(playerPosition, v3.multiply(v3.normalize([camera.x[0], 0, camera.x[2]]), speed))
+      moveDirection = v3.add(moveDirection, [camera.x[0], 0, camera.x[2]])
     }
     if (keyboard.A) {
-      playerPosition = v3.subtract(playerPosition, v3.multiply(v3.normalize([camera.x[0], 0, camera.x[2]]), speed))
+      moveDirection = v3.add(moveDirection, [-camera.x[0], 0, -camera.x[2]])
     }
     if (keyboard.W) {
-      playerPosition = v3.add(playerPosition, v3.multiply(v3.normalize([camera.z[0], 0, camera.z[2]]), speed))
+      moveDirection = v3.add(moveDirection, [camera.z[0], 0, camera.z[2]])
     }
     if (keyboard.S) {
-      playerPosition = v3.subtract(playerPosition, v3.multiply(v3.normalize([camera.z[0], 0, camera.z[2]]), speed))
+      moveDirection = v3.add(moveDirection, [-camera.z[0], 0, -camera.z[2]])
     }
-    if (keyboard.PAGEUP) {
-      playerPosition[1] += speed
-    }
-    if (keyboard.PAGEDOWN) {
-      playerPosition[1] -= speed
+    playerVelocity = v3.add(playerVelocity, v3.multiply(v3.normalize(moveDirection), speed))
+
+    if (gravity) {
+      if (keyboard.PAGEUP && !prevKeyboard.PAGEUP && !playerVelocity[1]) {
+        playerVelocity[1] += 0.25
+      }
+    } else {
+      if (keyboard.PAGEUP) {
+        playerVelocity[1] += speed
+      }
+      if (keyboard.PAGEDOWN) {
+        playerVelocity[1] -= speed
+      }
     }
 
     const worldLandX = Math.floor(playerPosition[0] / LAND_SIZE)
     const worldLandY = Math.floor(playerPosition[2] / LAND_SIZE)
     getOrCreateLand(worldLandX, worldLandY)
 
-    if (keyboard.G && !prevKeyboard.G) {
-      gravity = !gravity
-    }
     if (gravity) {
-      playerPosition = v3.add(playerPosition, [
-        0, 
-        (Math.max(LANDPOINT.at(v3.add(playerPosition, [0.5, 0, 0.5]), world).height, -1) - playerPosition[1]) / 10, 
-        0
-      ])
+      playerVelocity[1] -= 0.5 * dt
+    }
+
+    playerPosition = v3.add(playerPosition, playerVelocity)
+    if (gravity) {
+      const minHeight = Math.max(WORLD.heightAt(playerPosition, world), -1)
+      if (playerPosition[1] < minHeight) {
+        playerPosition[1] = minHeight
+        playerVelocity[1] = 0
+      }
+    }
+
+    playerVelocity[0] *= 0.85
+    playerVelocity[2] *= 0.85
+    if (!gravity) {
+      playerVelocity[1] *= 0.85
     }
 
     const zoomSpeed = 0.1

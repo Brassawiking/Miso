@@ -1,4 +1,4 @@
-import { v3, m4 } from '../common/math.js'
+import { v3, m4, lerp } from '../common/math.js'
 
 export const CAMERA = {
   identity() {
@@ -76,7 +76,29 @@ export const WORLD = {
 
   landIndexKey(iX, iY) {
     return iX + '_' + iY
-  }
+  },
+
+  heightAt(v, world) {
+    const defaultHeight = { height: -10 }
+    const x0y0 = (LANDPOINT.at(v3.add(v, [0, 0, 0]), world) || defaultHeight).height
+    const x1y0 = (LANDPOINT.at(v3.add(v, [1, 0, 0]), world) || defaultHeight).height
+    const x0y1 = (LANDPOINT.at(v3.add(v, [0, 0, 1]), world) || defaultHeight).height
+    const x1y1 = (LANDPOINT.at(v3.add(v, [1, 0, 1]), world) || defaultHeight).height
+    let fractX = v[0] % 1
+    let fractY = v[2] % 1
+    if (fractX < 0) {
+      fractX = 1 + fractX
+    }
+    if (fractY < 0) {
+      fractY = 1 + fractY
+    }
+
+    return lerp(
+      lerp(x0y0, x1y0, fractX),
+      lerp(x0y1, x1y1, fractX),
+      fractY
+    )
+  },
 }
 
 export const LAND = {

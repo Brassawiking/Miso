@@ -102,3 +102,4 @@ export const linePlaneIntersectionPoint = (lineDirection, linePoint, planeNormal
 }
 
 export const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
+export const lerp = (a, b, t) => a*(1-t) + b*t

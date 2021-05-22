@@ -35,7 +35,7 @@ export function createRender_Sea(gl) {
     `,
     fragment: `
       float getWaterHeight(float x, float y) {
-        return (sin(x*0.75 + u_time/500.0) + cos(y*0.75 + u_time/500.0)) / 8.0;
+        return (sin(x*0.75 + u_time*2.0) + cos(y*0.75 + u_time*2.0)) / 8.0;
       }
 
       void main() {

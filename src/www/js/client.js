@@ -27,7 +27,10 @@ async function init() {
     stats.end()
     stats.begin()
   
-    const createNextLoop = currentLoop({ t, dt: t-prevT })
+    const createNextLoop = currentLoop({ 
+      t: t / 1000, 
+      dt: (t-prevT) / 1000 
+    })
     if (createNextLoop) {
       await setCurrentLoop(createNextLoop)
     }

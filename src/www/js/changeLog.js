@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ May 23, 2021
+🔹 Reworked movement and added a jump in gravity mode 
+
 🗓️ May 22, 2021
 🔹 Added a greeting message when you enter a land 
 🔹 Third land created by another person added!⭐ 

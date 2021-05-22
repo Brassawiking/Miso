@@ -188,7 +188,7 @@ export function createRender_Terrain(gl, gridSize) {
       attributes,
       uniforms: {
         u_pos: ['3f', ...position],
-        time: ['1f', time / 1000],
+        time: ['1f', time],
         gridSize: ['1f', gridSize],
         cameraView: ['Matrix4fv', false, cameraView],
         heightMap: ['1i', 0],
