@@ -105,19 +105,25 @@ export function createScene_World(gl, landSize) {
 
         for (let i = 0; i < mapSize; ++i) {
           for (let j = 0; j < mapSize; ++j) {
-            let height = 0
+            let height
 
             if (i < landSize && j < landSize) {
               height = land.points[i + j*landSize].height
             }
-            else if (landTop && i < landSize && j == landSize) {
-              height = landTop.points[i].height
+            else if (i < landSize && j == landSize) {
+              height = landTop 
+                ? landTop.points[i].height
+                : land.points[i + (j-1)*landSize].height
             }
-            else if (landRight && i == landSize && j < landSize) {
-              height = landRight.points[j * landSize].height
+            else if (i == landSize && j < landSize) {
+              height = landRight
+                ? landRight.points[j * landSize].height
+                : height = land.points[(i-1) + j*landSize].height
             }
             else if (landTopRight && i == landSize && j == landSize) {
-              height = landTopRight.points[0].height
+              height = landTopRight
+                ? landTopRight.points[0].height
+                : height = land.points[(i-1) + (j-1)*landSize].height
             }
 
             heightMap[i + j*mapSize] = height;
@@ -149,19 +155,28 @@ export function createScene_World(gl, landSize) {
 
         for (let i = 0; i < mapSize; ++i) {
           for (let j = 0; j < mapSize; ++j) {
-            let color = [255, 0, 0]
+            let color
 
             if (i < landSize && j < landSize) {
               color = getColor(land.points[i + j*landSize])
             }
-            else if (landTop && i < landSize && j == landSize) {
-              color = getColor(landTop.points[i])
+            else if (i < landSize && j == landSize) {
+              color = getColor(landTop 
+                ? landTop.points[i]
+                : land.points[i + (j-1)*landSize]
+              )
             }
-            else if (landRight && i == landSize && j < landSize) {
-              color = getColor(landRight.points[j * landSize])
+            else if (i == landSize && j < landSize) {
+              color = getColor(landRight
+                ? landRight.points[j * landSize]
+                : land.points[(i-1) + j*landSize]
+              )
             }
-            else if (landTopRight && i == landSize && j == landSize) {
-              color = getColor(landTopRight.points[0])
+            else if (i == landSize && j == landSize) {
+              color = getColor(landTopRight 
+                ? landTopRight.points[0]
+                : land.points[(i-1) + (j-1)*landSize]
+              )
             }
 
             colorMap[i*4 + j*4*mapSize + 0] = color[0]
