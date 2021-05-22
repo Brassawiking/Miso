@@ -143,7 +143,7 @@ export function createScene_World(gl, landSize) {
         const mapSize = landSize + 1
         let colorMap = colorMapCache[index]
         if (!colorMap) {
-          colorMap = new Uint8Array(new Array(mapSize * mapSize * 3))
+          colorMap = new Uint8Array(new Array(mapSize * mapSize * 4))
           colorMapCache[index] = colorMap
         }
 
@@ -164,22 +164,22 @@ export function createScene_World(gl, landSize) {
               color = getColor(landTopRight.points[0])
             }
 
-            colorMap[i*3 + j*3*mapSize + 0] = color[0]
-            colorMap[i*3 + j*3*mapSize + 1] = color[1]
-            colorMap[i*3 + j*3*mapSize + 2] = color[2]
+            colorMap[i*4 + j*4*mapSize + 0] = color[0]
+            colorMap[i*4 + j*4*mapSize + 1] = color[1]
+            colorMap[i*4 + j*4*mapSize + 2] = color[2]
+            colorMap[i*4 + j*4*mapSize + 3] = 255
           }
         }
 
         gl.bindTexture(gl.TEXTURE_2D, colorMapTexture)
-        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
         gl.texImage2D(
           gl.TEXTURE_2D, 
           0, 
-          gl.RGB, 
+          gl.RGBA, 
           mapSize, 
           mapSize, 
           0, 
-          gl.RGB, 
+          gl.RGBA, 
           gl.UNSIGNED_BYTE,
           colorMap
         )
