@@ -243,7 +243,7 @@ export function init_UI({
         currentLandTextTimer = setTimeout(() => {
           ui_landText.classList.remove('ui-fade-in')
           ui_landText.classList.add('ui-fade-out')
-        }, 1500)
+        }, 2000)
       }, 1000)
     }
 
