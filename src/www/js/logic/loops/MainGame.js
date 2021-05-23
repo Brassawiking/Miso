@@ -53,6 +53,7 @@ export async function createLoop_MainGame ({
   let gravity = true
   let playerPosition = [-5, 1, 2]
   let playerVelocity = [0, 0, 0]
+  let playerDirection = [0, 0, 1]
   let cameraOrbitDistance = 6
   let cameraOrbitHorisontal = Math.PI / 5
   let cameraOrbitVertical = Math.PI / 5
@@ -290,6 +291,7 @@ export async function createLoop_MainGame ({
       time: t,
       brush,
       playerPosition,
+      playerDirection,
       lands,
       sunRay
     })
@@ -391,6 +393,10 @@ export async function createLoop_MainGame ({
         playerPosition[1] = minHeight
         playerVelocity[1] = 0
       }
+    }
+    
+    if (v3.length(playerVelocity) > 0) {
+      playerDirection = v3.normalize([playerVelocity[0], 0, -playerVelocity[2]])
     }
 
     playerVelocity[0] *= 0.85

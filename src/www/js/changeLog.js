@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 23, 2021
+🔹 Change of plan, player avatar now looks in the direction it is moving 
 🔹 Changed player avatar to something more fancy than a box and it now rotates with the camera 
 🔹 Reworked movement and added a jump in gravity mode 
 

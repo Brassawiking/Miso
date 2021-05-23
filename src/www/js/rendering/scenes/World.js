@@ -41,6 +41,7 @@ export function createScene_World(gl, landSize) {
     time,
     brush, 
     playerPosition,
+    playerDirection,
     lands,
     sunRay
   }) => {
@@ -57,10 +58,10 @@ export function createScene_World(gl, landSize) {
     handleBrush(camera.matrix, brush)
 
     const a = [0, 0, 1]
-    const b = v3.normalize([camera.z[0], 0, -camera.z[2]])
-    const playerRotation = v3.cross(a, b)[1] > 0
-      ? Math.acos(v3.dot(a,b))
-      : 2*Math.PI - Math.acos(v3.dot(a,b))
+    let playerRotation = Math.acos(v3.dot(a, playerDirection))
+    if (v3.cross(a, playerDirection)[1] < 0) {
+      playerRotation = 2*Math.PI - playerRotation 
+    }
     render_PlayerModel(camera.matrix, playerPosition, sunRay, playerRotation)
 
     // Transparent renders
