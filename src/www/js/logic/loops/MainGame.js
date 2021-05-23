@@ -305,6 +305,9 @@ export async function createLoop_MainGame ({
     const landAtBrush = LAND.at(brush.position, world) || {}
     ui_brushSize.textContent = (brush.size-1)*2 + 1
     ui_brushPosition.textContent = brush.position[0] + ', ' + brush.position[2]
+    if (state.normal) {
+      ui_brushPosition.textContent = state.normal.map(x => x.toFixed(2))
+    }
     ui_brushLandName.textContent = landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'
     ui_brushLandOwner.textContent = landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'
     ui_brushLandPropCount.textContent = landAtBrush.propCount + ' / ' + MAX_PROP_COUNT
@@ -345,7 +348,7 @@ export async function createLoop_MainGame ({
 
   function logic(t, dt) {
     const speed = 2;
-    const jumpSpeed = 10
+    const jumpSpeed = 12
     const jumpFallForce = 25;
     const freeFallForce = 35;
 
@@ -398,9 +401,27 @@ export async function createLoop_MainGame ({
     
     playerPosition = v3.add(playerPosition, v3.multiply(playerVelocity, dt))
     if (gravity) {
-      const minHeight = Math.max(WORLD.heightAt(playerPosition, world), -1)
-      if (playerPosition[1] < minHeight) {
-        playerPosition[1] = minHeight
+      const sampleOffset = 0.001
+      const minHeight_x0y0 = Math.max(WORLD.heightAt(playerPosition, world), -1)
+      const minHeight_x1y0 = Math.max(WORLD.heightAt(v3.add(playerPosition, [sampleOffset, 0, 0]), world), -1)
+      const minHeight_x0y1 = Math.max(WORLD.heightAt(v3.add(playerPosition, [0, 0, sampleOffset]), world), -1)
+      
+      
+      const normal = v3.normalize(
+        v3.cross(
+          v3.subtract([0, minHeight_x0y1, sampleOffset], [0, minHeight_x0y0, 0]),
+          v3.subtract([sampleOffset, minHeight_x1y0, 0], [0, minHeight_x0y0, 0])
+        )
+      )
+      const slideDirection = v3.normalize([normal[0], 0, normal[2]])
+      const stepness = (1 - v3.dot(normal, [0, 1, 0]))
+      const slideSpeed = stepness > 0.7
+        ? Math.pow(stepness + 1, 2)
+        : 0
+      playerVelocity = v3.add(playerVelocity, v3.multiply(slideDirection, slideSpeed))
+
+      if (playerPosition[1] < minHeight_x0y0) {
+        playerPosition[1] = minHeight_x0y0
         playerVelocity[1] = 0
       }
     }
