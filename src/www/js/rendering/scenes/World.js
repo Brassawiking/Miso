@@ -57,9 +57,9 @@ export function createScene_World(gl, landSize) {
     handleTerrain(camera.matrix, lands, time, sunRay)
     handleBrush(camera.matrix, brush)
 
-    const a = [0, 0, 1]
-    let playerRotation = Math.acos(v3.dot(a, playerDirection))
-    if (v3.cross(a, playerDirection)[1] < 0) {
+    const modelFacingNormal = [0, 0, -1]
+    let playerRotation = Math.acos(v3.dot(modelFacingNormal, playerDirection))
+    if (v3.cross(playerDirection, modelFacingNormal)[1] < 0) {
       playerRotation = 2*Math.PI - playerRotation 
     }
     render_PlayerModel(camera.matrix, playerPosition, sunRay, playerRotation)

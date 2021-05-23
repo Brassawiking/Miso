@@ -396,7 +396,7 @@ export async function createLoop_MainGame ({
     }
     
     if (v3.length(playerVelocity) > 0) {
-      playerDirection = v3.normalize([playerVelocity[0], 0, -playerVelocity[2]])
+      playerDirection = v3.normalize([playerVelocity[0], 0, playerVelocity[2]])
     }
 
     playerVelocity[0] *= 0.85
