@@ -41,15 +41,15 @@ export function createScene_World(gl, landSize) {
   const propListCache = []
 
   return ({
-    camera, 
     time,
-    brush, 
-    playerPosition,
-    playerDirection,
-    playerVelocity,
     lands,
-    sunRay,
-    state
+    state,
+    state: {
+      camera, 
+      brush, 
+      player,
+    },
+    sunRay
   }) => {
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LESS)
@@ -64,30 +64,38 @@ export function createScene_World(gl, landSize) {
     handleBrush(camera.matrix, brush)
 
     const modelFacingNormal = [0, 0, -1]
-    let playerRotation = Math.acos(v3.dot(modelFacingNormal, playerDirection))
-    if (v3.cross(playerDirection, modelFacingNormal)[1] < 0) {
+    let playerRotation = Math.acos(v3.dot(modelFacingNormal, player.direction))
+    if (v3.cross(player.direction, modelFacingNormal)[1] < 0) {
       playerRotation = 2*Math.PI - playerRotation 
     }
-    render_PlayerModel(camera.matrix, playerPosition, sunRay, playerRotation)
+    render_PlayerModel(camera.matrix, player.position, sunRay, playerRotation)
 
     if (state.debug) {
-      const playerCenter = v3.add(playerPosition, [0, 1, 0])
+      const playerCenter = v3.add(player.position, [0, 1, 0])
       render_Line(
         camera.matrix, 
         playerCenter, 
-        v3.add(playerCenter, playerVelocity), 
+        v3.add(playerCenter, player.velocity), 
         [0, 0, 1]
       )
       if (state.slopeNormal) {
-        const steepness = 1 - v3.dot(state.slopeNormal, [0, 1, 0])
         render_Line(
           camera.matrix, 
-          playerPosition, 
-          v3.add(playerPosition, v3.multiply(state.slopeNormal, 3)), 
-          steepness > state.steepThreshold 
+          player.position, 
+          v3.add(player.position, v3.multiply(state.slopeNormal, 3)), 
+          state.steepness > state.steepThreshold 
             ? [0, 1, 1] 
             : [1, 1, 0]
         )
+
+        if (state.slopeDown) {
+          render_Line(
+            camera.matrix, 
+            playerCenter, 
+            v3.add(playerCenter, v3.multiply(state.slopeDown, 3)), 
+            [1, 0, 0]
+          )
+        }
       }
     }
 

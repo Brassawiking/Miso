@@ -1,4 +1,5 @@
 import { v3, m4, lerp } from '../common/math.js'
+import { LAND_SIZE, MAX_PROP_COUNT } from './constants.js'
 
 export const CAMERA = {
   identity() {
@@ -64,14 +65,10 @@ export const CAMERA = {
 export const WORLD = {
   identity() {
     return {
-      landSize: 1,
+      landSize: LAND_SIZE,
+      maxPropCount: MAX_PROP_COUNT,
       lands: {},
     }
-  },
-
-  landSize(w, s) {  
-    w.landSize = s
-    return w
   },
 
   landIndexKey(iX, iY) {

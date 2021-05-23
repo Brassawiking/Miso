@@ -5,7 +5,7 @@ import { Stats } from './external/stats.js'
 const data = {
   settings: {
     resolution: {
-      fixed: false,
+      fixed: true,
       width: 1280,
       height: 720,
     }
@@ -16,30 +16,29 @@ const gl = createGL(data)
 const ui = createUI()
 const stats = createStats()
 let currentLoop
-
 init()
+
 async function init() {
   await setCurrentLoop(createLoop_StartScreen)
 
   stats.begin()
-  let prevT = performance.now()
-  requestAnimationFrame (async function update(t) {
+  let prevTime = performance.now()
+  requestAnimationFrame (async function update(time) {
     stats.end()
     stats.begin()
   
     const createNextLoop = currentLoop({ 
-      t: t / 1000, 
-      dt: (t-prevT) / 1000 
+      time: time / 1000, 
+      deltaTime: (time-prevTime) / 1000 
     })
     if (createNextLoop) {
       await setCurrentLoop(createNextLoop)
     }
     updatePrevInput()
-    prevT = t
+    prevTime = time
     
     requestAnimationFrame(update)
   })
-  
 }
 
 function createGL(data) {
@@ -53,7 +52,6 @@ function createGL(data) {
     //powerPreference: 'high-performance'
   })
 
-  // Internal resolution
   const updateResolution = () => {
     const resolution = data.settings.resolution
     gl.canvas.width = resolution.fixed ? resolution.width : gl.canvas.clientWidth
@@ -63,7 +61,6 @@ function createGL(data) {
   updateResolution()
   window.addEventListener('resize', updateResolution)
 
-  window.gl = gl
   return gl
 }
 
