@@ -5,7 +5,7 @@ import { Stats } from './external/stats.js'
 const data = {
   settings: {
     resolution: {
-      fixed: true,
+      fixed: false,
       width: 1280,
       height: 720,
     }
