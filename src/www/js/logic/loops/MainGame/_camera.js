@@ -11,7 +11,7 @@ export function init_Camera({
   prevMouse,
 }) {
   const orbitSpeed = 1.5;
-  const zoomSpeed = 0.1
+  const zoomSpeed = 0.01
   const vertBias = 0.001 // Temp fix so the camera don't go bananaz
 
   let orbitDistance = 6
