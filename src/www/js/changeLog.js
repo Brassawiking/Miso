@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 23, 2021
+🔹 Fixed a bug where jumping/falling was affected by the slope below 
 🔹 Improved slope handling and added a debug mode 
 🔹 Steep surfaces can no longer be climbed in gravity mode 
 🔹 Change of plan, player avatar now looks in the direction it is moving 

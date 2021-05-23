@@ -438,9 +438,9 @@ export async function createLoop_MainGame ({
       const slideSpeed = steepness > steepThreshold
         ? Math.pow((steepness-steepThreshold)/steepThreshold + 1, 3)
         : 0
-      playerVelocity = v3.add(playerVelocity, v3.multiply(slideDirection, slideSpeed))
 
-      if (playerPosition[1] < minHeight) {
+      if (playerPosition[1] <= minHeight) {
+        playerVelocity = v3.add(playerVelocity, v3.multiply(slideDirection, slideSpeed))
         playerPosition[1] = minHeight
         playerVelocity[1] = 0
       }
