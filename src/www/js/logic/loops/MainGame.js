@@ -344,7 +344,10 @@ export async function createLoop_MainGame ({
   }
 
   function logic(t, dt) {
-    const speed = 2 * dt;
+    const speed = 2;
+    const jumpSpeed = 10
+    const jumpFallForce = 25;
+    const freeFallForce = 35;
 
     if (keyboard.G && !prevKeyboard.G) {
       gravity = !gravity
@@ -367,7 +370,7 @@ export async function createLoop_MainGame ({
 
     if (gravity) {
       if (keyboard.PAGEUP && !prevKeyboard.PAGEUP && !playerVelocity[1]) {
-        playerVelocity[1] += 0.18
+        playerVelocity[1] += jumpSpeed
       }
     } else {
       if (keyboard.PAGEUP) {
@@ -382,11 +385,18 @@ export async function createLoop_MainGame ({
     const worldLandY = Math.floor(playerPosition[2] / LAND_SIZE)
     getOrCreateLand(worldLandX, worldLandY)
 
-    if (gravity) {
-      playerVelocity[1] -= 0.5 * dt
-    }
+    playerVelocity[0] *= 0.85
+    playerVelocity[2] *= 0.85
 
-    playerPosition = v3.add(playerPosition, playerVelocity)
+    if (gravity) {
+      playerVelocity[1] -= playerVelocity[1] > 0
+        ? jumpFallForce * dt
+        : freeFallForce * dt
+    } else {
+      playerVelocity[1] *= 0.85
+    }
+    
+    playerPosition = v3.add(playerPosition, v3.multiply(playerVelocity, dt))
     if (gravity) {
       const minHeight = Math.max(WORLD.heightAt(playerPosition, world), -1)
       if (playerPosition[1] < minHeight) {
@@ -394,15 +404,9 @@ export async function createLoop_MainGame ({
         playerVelocity[1] = 0
       }
     }
-    
+
     if (v3.length(playerVelocity) > 0) {
       playerDirection = v3.normalize([playerVelocity[0], 0, playerVelocity[2]])
-    }
-
-    playerVelocity[0] *= 0.85
-    playerVelocity[2] *= 0.85
-    if (!gravity) {
-      playerVelocity[1] *= 0.85
     }
 
     const zoomSpeed = 0.1
