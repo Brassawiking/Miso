@@ -4,7 +4,7 @@ import { createRender_Sky } from '../renders/Sky.js'
 import { createRender_Sea } from '../renders/Sea.js'
 import { createRender_Terrain } from '../renders/Terrain.js'
 import { createRender_TerrainMarker } from '../renders/TerrainMarker.js'
-import { createRender_TestModel } from '../renders/TestModel.js'
+import { createRender_PlayerModel } from '../renders/PlayerModel.js'
 
 import { createRender_Bush } from '../renders/props/Bush.js'
 import { createRender_StoneTablet } from '../renders/props/StoneTablet.js'
@@ -18,7 +18,7 @@ export function createScene_World(gl, landSize) {
   const render_Sea = createRender_Sea(gl)
   const render_Terrain = createRender_Terrain(gl, landSize+1)
   const render_TerrainMarker = createRender_TerrainMarker(gl)
-  const render_TestModel = createRender_TestModel(gl)
+  const render_PlayerModel = createRender_PlayerModel(gl)
   
   const propRenders = {
     'bush': createRender_Bush(gl),
@@ -55,7 +55,13 @@ export function createScene_World(gl, landSize) {
     render_Sky()
     handleTerrain(camera.matrix, lands, time, sunRay)
     handleBrush(camera.matrix, brush)
-    render_TestModel(camera.matrix, playerPosition)
+
+    const a = [0, 0, 1]
+    const b = v3.normalize([camera.z[0], 0, -camera.z[2]])
+    const playerRotation = v3.cross(a, b)[1] > 0
+      ? Math.acos(v3.dot(a,b))
+      : 2*Math.PI - Math.acos(v3.dot(a,b))
+    render_PlayerModel(camera.matrix, playerPosition, sunRay, playerRotation)
 
     // Transparent renders
     handleProps(camera.matrix, lands, sunRay)

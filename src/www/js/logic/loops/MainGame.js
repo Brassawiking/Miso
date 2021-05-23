@@ -314,8 +314,8 @@ export async function createLoop_MainGame ({
     ui_brushSoft.checked = brush.soft
 
     const landText = `
-      <h1>${activeLand.name || '(Unclaimed Land...)'}</h1>
-      ${activeLand.owner || 'You can claim this land if you want to'} 
+      <h1>${activeLand.name || 'Unclaimed Land...'}</h1>
+      ${activeLand.owner || '(You can claim this land if you want to)'} 
     `
     if (currentLandText != landText) {
       currentLandText = landText
@@ -365,7 +365,7 @@ export async function createLoop_MainGame ({
 
     if (gravity) {
       if (keyboard.PAGEUP && !prevKeyboard.PAGEUP && !playerVelocity[1]) {
-        playerVelocity[1] += 0.25
+        playerVelocity[1] += 0.18
       }
     } else {
       if (keyboard.PAGEUP) {

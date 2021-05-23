@@ -37,7 +37,8 @@ export function createRender_Prop(gl, mesh, normals, colors) {
             0, 0, 0, 1.0
           );
   
-          v_normal = a_normal;
+          v_normal = a_normal
+            * rotate;
           v_color = a_color;
           gl_Position = vertexPosition
             * rotate

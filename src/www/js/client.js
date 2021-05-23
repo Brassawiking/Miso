@@ -6,8 +6,8 @@ const data = {
   settings: {
     resolution: {
       fixed: false,
-      width: 800,
-      height: 600,
+      width: 1280,
+      height: 720,
     }
   }
 }
