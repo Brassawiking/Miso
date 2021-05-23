@@ -13,6 +13,8 @@ import { createRender_Person } from '../renders/props/Person.js'
 import { createRender_PoleHorizontal } from '../renders/props/PoleHorizontal.js'
 import { createRender_PoleVertical } from '../renders/props/PoleVertical.js'
 
+import { createRender_Line } from '../renders/Line.js'
+
 export function createScene_World(gl, landSize) {
   const render_Sky = createRender_Sky(gl)
   const render_Sea = createRender_Sea(gl)
@@ -29,6 +31,8 @@ export function createScene_World(gl, landSize) {
     'pole_vertical': createRender_PoleVertical(gl),
   }
 
+  const render_Line = createRender_Line(gl)
+
   const landCache = []
   const heightMapCache = []
   const heightMapTextureCache = []
@@ -42,8 +46,10 @@ export function createScene_World(gl, landSize) {
     brush, 
     playerPosition,
     playerDirection,
+    playerVelocity,
     lands,
-    sunRay
+    sunRay,
+    state
   }) => {
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LESS)
@@ -63,6 +69,27 @@ export function createScene_World(gl, landSize) {
       playerRotation = 2*Math.PI - playerRotation 
     }
     render_PlayerModel(camera.matrix, playerPosition, sunRay, playerRotation)
+
+    if (state.debug) {
+      const playerCenter = v3.add(playerPosition, [0, 1, 0])
+      render_Line(
+        camera.matrix, 
+        playerCenter, 
+        v3.add(playerCenter, playerVelocity), 
+        [0, 0, 1]
+      )
+      if (state.slopeNormal) {
+        const steepness = 1 - v3.dot(state.slopeNormal, [0, 1, 0])
+        render_Line(
+          camera.matrix, 
+          playerPosition, 
+          v3.add(playerPosition, v3.multiply(state.slopeNormal, 3)), 
+          steepness > state.steepThreshold 
+            ? [0, 1, 1] 
+            : [1, 1, 0]
+        )
+      }
+    }
 
     // Transparent renders
     handleProps(camera.matrix, lands, sunRay)

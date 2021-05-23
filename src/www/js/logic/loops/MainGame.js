@@ -95,6 +95,7 @@ export async function createLoop_MainGame ({
     ui_propType, 
     ui_gravity,
     ui_brushSoft,
+    ui_debug,
 
     ui_landText,
     ui_propText,
@@ -129,6 +130,10 @@ export async function createLoop_MainGame ({
         <label>
           Soft brush [T]:
           <input ref="brushSoft" type="checkbox" tabindex="-1"/>
+        </label>
+        <label>
+          Debug:
+          <input ref="debug" type="checkbox" tabindex="-1"/>
         </label>
       </div>
 
@@ -223,6 +228,11 @@ export async function createLoop_MainGame ({
     e.target.blur()
   })
 
+  ui_debug.addEventListener('input', e => { 
+    state.debug = e.target.checked 
+    e.target.blur()
+  })
+
   ui_save.addEventListener('click', e => {
     const land = LAND.at(playerPosition, world)
     if (land && land.owner == user.name) {
@@ -292,8 +302,10 @@ export async function createLoop_MainGame ({
       brush,
       playerPosition,
       playerDirection,
+      playerVelocity,
       lands,
-      sunRay
+      sunRay,
+      state
     })
 
     lands.forEach(land => {
@@ -317,6 +329,7 @@ export async function createLoop_MainGame ({
     ui_actionType.value = currentActionType
     ui_gravity.checked = gravity
     ui_brushSoft.checked = brush.soft
+    ui_debug.checked = state.debug
 
     const landText = `
       <h1>${activeLand.name || 'Unclaimed Land...'}</h1>
@@ -401,27 +414,34 @@ export async function createLoop_MainGame ({
     
     playerPosition = v3.add(playerPosition, v3.multiply(playerVelocity, dt))
     if (gravity) {
-      const sampleOffset = 0.001
-      const minHeight_x0y0 = Math.max(WORLD.heightAt(playerPosition, world), -1)
-      const minHeight_x1y0 = Math.max(WORLD.heightAt(v3.add(playerPosition, [sampleOffset, 0, 0]), world), -1)
-      const minHeight_x0y1 = Math.max(WORLD.heightAt(v3.add(playerPosition, [0, 0, sampleOffset]), world), -1)
-      
+      const playerRadius = 0.5
+      const seaLevel = -1
+      const minHeight = Math.max(WORLD.heightAt(playerPosition, world), seaLevel)
+      const minHeightLeft = Math.max(WORLD.heightAt(v3.add(playerPosition, [-playerRadius, 0, 0]), world), seaLevel)
+      const minHeightRight = Math.max(WORLD.heightAt(v3.add(playerPosition, [playerRadius, 0, 0]), world), seaLevel)
+      const minHeightTop = Math.max(WORLD.heightAt(v3.add(playerPosition, [0, 0, playerRadius]), world), seaLevel)
+      const minHeightBottom = Math.max(WORLD.heightAt(v3.add(playerPosition, [0, 0, -playerRadius]), world), seaLevel)
       
       const normal = v3.normalize(
         v3.cross(
-          v3.subtract([0, minHeight_x0y1, sampleOffset], [0, minHeight_x0y0, 0]),
-          v3.subtract([sampleOffset, minHeight_x1y0, 0], [0, minHeight_x0y0, 0])
+          v3.subtract([0, minHeightTop, playerRadius], [0, minHeightBottom, -playerRadius]),
+          v3.subtract([playerRadius, minHeightRight, 0], [-playerRadius, minHeightLeft, 0])
         )
       )
+      state.slopeNormal = normal
+
+      const steepThreshold = 0.4
+      state.steepThreshold = steepThreshold
+
       const slideDirection = v3.normalize([normal[0], 0, normal[2]])
-      const stepness = (1 - v3.dot(normal, [0, 1, 0]))
-      const slideSpeed = stepness > 0.7
-        ? Math.pow(stepness + 1, 2)
+      const steepness = 1 - v3.dot(normal, [0, 1, 0])
+      const slideSpeed = steepness > steepThreshold
+        ? Math.pow((steepness-steepThreshold)/steepThreshold + 1, 3)
         : 0
       playerVelocity = v3.add(playerVelocity, v3.multiply(slideDirection, slideSpeed))
 
-      if (playerPosition[1] < minHeight_x0y0) {
-        playerPosition[1] = minHeight_x0y0
+      if (playerPosition[1] < minHeight) {
+        playerPosition[1] = minHeight
         playerVelocity[1] = 0
       }
     }
