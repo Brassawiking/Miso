@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ May 24, 2021
+🔹 Added support for post-processing and made an edge silhouette effect with it 🚀
+
 🗓️ May 23, 2021
 🔹 Massive code cleanup, some bugs might pop up from this 
 🔹 Fixed a bug where jumping/falling was affected by the slope below 

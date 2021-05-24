@@ -15,12 +15,15 @@ import { createRender_PoleVertical } from '../renders/props/PoleVertical.js'
 
 import { createRender_Line } from '../renders/Line.js'
 
+import { createRender_PostProcessing } from '../renders/PostProcessing.js'
+
 export function createScene_World(gl, landSize) {
   const render_Sky = createRender_Sky(gl)
   const render_Sea = createRender_Sea(gl)
   const render_Terrain = createRender_Terrain(gl, landSize+1)
   const render_TerrainMarker = createRender_TerrainMarker(gl)
   const render_PlayerModel = createRender_PlayerModel(gl)
+  const render_PostProcessing = createRender_PostProcessing(gl)
   
   const propRenders = {
     'bush': createRender_Bush(gl),
@@ -40,6 +43,27 @@ export function createScene_World(gl, landSize) {
   const colorMapTextureCache = []
   const propListCache = []
 
+
+  const colorTexture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, colorTexture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  
+  const depthTexture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, depthTexture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+  const frameBuffer = gl.createFramebuffer()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer)
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, colorTexture, 0)
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+ 
   return ({
     time,
     lands,
@@ -51,6 +75,34 @@ export function createScene_World(gl, landSize) {
     },
     sunRay
   }) => {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer)
+
+    gl.bindTexture(gl.TEXTURE_2D, colorTexture)
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      gl.canvas.width,
+      gl.canvas.height,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      null
+    )
+
+    gl.bindTexture(gl.TEXTURE_2D, depthTexture)
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.DEPTH_COMPONENT24,
+      gl.canvas.width,
+      gl.canvas.height,
+      0,
+      gl.DEPTH_COMPONENT,
+      gl.UNSIGNED_INT,
+      null
+    )
+  
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LESS)
 
@@ -61,7 +113,6 @@ export function createScene_World(gl, landSize) {
 
     render_Sky()
     handleTerrain(camera.matrix, lands, time, sunRay)
-    handleBrush(camera.matrix, brush)
 
     const modelFacingNormal = [0, 0, -1]
     let playerRotation = Math.acos(v3.dot(modelFacingNormal, player.direction))
@@ -102,6 +153,12 @@ export function createScene_World(gl, landSize) {
     // Transparent renders
     handleProps(camera.matrix, lands, sunRay)
     render_Sea(camera, sunRay, time)
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    gl.clear(gl.DEPTH_BUFFER_BIT)
+
+    render_PostProcessing(colorTexture, depthTexture)
+    handleBrush(camera.matrix, brush)
 
     lands.forEach((land, index) => {
       landCache[index] = land
