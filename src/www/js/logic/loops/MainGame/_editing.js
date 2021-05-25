@@ -52,7 +52,7 @@ export function init_Editing({
   
     const landPoints = BRUSH.ownedLandPoints(brush, world, user)
     const heightDelta = 0.1
-    if (keyboard.ARROWUP || (mouse.buttons[0] && state.currentActionType === 'raise')) {
+    if (keyboard.ARROWUP || (mouse.buttons[0] && state.currentActionType === 'land_raise')) {
       landPoints.forEach(landPoint => {
         let factor = 1
         if (brush.soft) {
@@ -63,7 +63,8 @@ export function init_Editing({
         landPoint.land.heightMapDirty = true
       })
     }
-    if (keyboard.ARROWDOWN || (mouse.buttons[0] && state.currentActionType === 'lower')) {
+
+    if (keyboard.ARROWDOWN || (mouse.buttons[0] && state.currentActionType === 'land_lower')) {
       landPoints.forEach(landPoint => {
         let factor = 1
         if (brush.soft) {
@@ -74,6 +75,20 @@ export function init_Editing({
         landPoint.land.heightMapDirty = true
       })
     }
+
+    if (mouse.buttons[0] && state.currentActionType === 'land_even') {
+      let averageHeight = landPoints.reduce((sumHeight, land) => sumHeight + land.height, 0) / landPoints.length
+      landPoints.forEach(landPoint => {
+        let factor = 1
+        if (brush.soft) {
+          const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
+          factor = Math.max(brush.size - distance, 0) / brush.size
+        }
+        landPoint.height += ((averageHeight - landPoint.height) / 100) * factor
+        landPoint.land.heightMapDirty = true
+      })
+    }
+
     if (keyboard.DELETE || (mouse.buttons[0] && state.currentActionType === 'reset')) {
       landPoints.forEach(landPoint => {
         landPoint.height = 1

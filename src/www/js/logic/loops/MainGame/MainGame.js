@@ -16,8 +16,9 @@ export async function createLoop_MainGame ({
   data 
 }) {
   const actionTypes = [
-    'raise',
-    'lower',
+    'land_raise',
+    'land_lower',
+    'land_even',
     'paint',
     'prop_add',
     'prop_remove',

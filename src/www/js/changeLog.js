@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 25, 2021
+🔹 Added a new mouse action to even out lands
 🔹 Fixed a bug crash when changing land/prop types with keyboard 🐛
 🔹 Added some error handling so the game does not crash completely at any errors
 
