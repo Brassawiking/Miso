@@ -1,7 +1,7 @@
 export const changeLog = `
 
 🗓️ May 25, 2021
-🔹 Fixed a bug crash when changing land/prop types with keyboard
+🔹 Fixed a bug crash when changing land/prop types with keyboard 🐛
 🔹 Added some error handling so the game does not crash completely at any errors
 
 🗓️ May 24, 2021
@@ -9,7 +9,7 @@ export const changeLog = `
 
 🗓️ May 23, 2021
 🔹 Massive code cleanup, some bugs might pop up from this 
-🔹 Fixed a bug where jumping/falling was affected by the slope below 
+🔹 Fixed a bug where jumping/falling was affected by the slope below 🐛 
 🔹 Improved slope handling and added a debug mode 
 🔹 Steep surfaces can no longer be climbed in gravity mode 
 🔹 Change of plan, player avatar now looks in the direction it is moving 
@@ -49,7 +49,7 @@ export const changeLog = `
 
 🗓️ May 16, 2021
 🔹 Added prop BUSH and reworked prop controls
-🔹 Fixed a bug where props did not always render
+🔹 Fixed a bug where props did not always render 🐛
 🔹 Added a message if you try to claim a land owned by someone else
 🔹 Added lighting to props
 🔹 Fixed camera so it doesn't go haywire when looking completely up/down
