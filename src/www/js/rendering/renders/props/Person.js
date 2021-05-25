@@ -9,11 +9,11 @@ export function createRender_Person(gl, clothColor = [1, 0, 0, 1]) {
 
   const mesh = [
     0, leg, -cloth/3,
-    cloth, leg, cloth,
+    -cloth, leg, cloth,
     0, neck, 0,
 
     0, leg, -cloth/3,
-    -cloth, leg, cloth,
+    cloth, leg, cloth,
     0, neck, 0,
 
     0, neck, 0,
@@ -48,8 +48,8 @@ export function createRender_Person(gl, clothColor = [1, 0, 0, 1]) {
   const up = [0, 1, 0]
   const left = [-1, 0, 0]
   const right = [1, 0, 0]
-  const front = [0, 1, 1]
-  const back = [0, 0, -1]
+  const front = [0, 1, -1]
+  const back = [0, 1, 1]
   const normals = [
     ...front,
     ...left,

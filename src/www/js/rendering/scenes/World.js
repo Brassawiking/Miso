@@ -127,7 +127,13 @@ export function createScene_World(gl, landSize) {
         camera.matrix, 
         playerCenter, 
         v3.add(playerCenter, player.velocity), 
-        [0, 0, 1]
+        [1, 0, 1]
+      )
+      render_Line(
+        camera.matrix, 
+        playerCenter, 
+        v3.add(playerCenter, v3.multiply(sunRay, -1)), 
+        [1, 1, 0]
       )
       if (state.slopeNormal) {
         render_Line(
@@ -136,7 +142,7 @@ export function createScene_World(gl, landSize) {
           v3.add(player.position, v3.multiply(state.slopeNormal, 3)), 
           state.steepness > state.steepThreshold 
             ? [0, 1, 1] 
-            : [1, 1, 0]
+            : [0, 0, 1]
         )
 
         if (state.slopeDown) {
@@ -149,6 +155,7 @@ export function createScene_World(gl, landSize) {
         }
       }
     }
+
 
     // Transparent renders
     handleProps(camera.matrix, lands, sunRay)
