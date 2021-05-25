@@ -61,7 +61,7 @@ export async function createLoop_MainGame ({
  
   const update_Camera = init_Camera({ gl, state, mouse, prevMouse })
   const update_Movement = init_Movement({ state, keyboard, prevKeyboard })
-  const update_Editing =  init_Editing({ state, keyboard, prevKeyboard, mouse, actionTypes, data })
+  const update_Editing =  init_Editing({ state, keyboard, prevKeyboard, mouse, actionTypes, landTypes, propTypes, data })
   const update_UI = init_UI({ state, ui, actionTypes, landTypes, propTypes, data })
   const update_World = await init_World({ gl, state })
   

@@ -1,5 +1,9 @@
 export const changeLog = `
 
+🗓️ May 25, 2021
+🔹 Fixed a bug crash when changing land/prop types with keyboard
+🔹 Added some error handling so the game does not crash completely at any errors
+
 🗓️ May 24, 2021
 🔹 Added support for post-processing and made an edge silhouette effect with it 🚀
 

@@ -27,12 +27,16 @@ async function init() {
     stats.end()
     stats.begin()
   
-    const createNextLoop = currentLoop({ 
-      time: time / 1000, 
-      deltaTime: (time-prevTime) / 1000 
-    })
-    if (createNextLoop) {
-      await setCurrentLoop(createNextLoop)
+    try {
+      const createNextLoop = currentLoop({ 
+        time: time / 1000, 
+        deltaTime: (time-prevTime) / 1000 
+      })
+      if (createNextLoop) {
+        await setCurrentLoop(createNextLoop)
+      }
+    } catch (error) {
+      alert(`ERROR: ${error}`)      
     }
     updatePrevInput()
     prevTime = time

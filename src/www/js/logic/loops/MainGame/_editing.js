@@ -15,6 +15,8 @@ export function init_Editing({
   prevKeyboard,
   mouse,
   actionTypes,
+  landTypes, 
+  propTypes,
 }) {
   return () => {
     const planeIntersection = linePlaneIntersectionPoint(
