@@ -12,6 +12,7 @@ import { createRender_Tree } from '../renders/props/Tree.js'
 import { createRender_Person } from '../renders/props/Person.js'
 import { createRender_PoleHorizontal } from '../renders/props/PoleHorizontal.js'
 import { createRender_PoleVertical } from '../renders/props/PoleVertical.js'
+import { createRender_Fence } from '../renders/props/Fence.js'
 
 import { createRender_Line } from '../renders/Line.js'
 
@@ -23,6 +24,7 @@ export function createScene_World(gl, landSize) {
   const render_Terrain = createRender_Terrain(gl, landSize+1)
   const render_TerrainMarker = createRender_TerrainMarker(gl)
   const render_PlayerModel = createRender_PlayerModel(gl)
+  const render_Line = createRender_Line(gl)
   const render_PostProcessing = createRender_PostProcessing(gl)
   
   const propRenders = {
@@ -32,9 +34,8 @@ export function createScene_World(gl, landSize) {
     'tree': createRender_Tree(gl),
     'pole_horizontal': createRender_PoleHorizontal(gl),
     'pole_vertical': createRender_PoleVertical(gl),
+    'fence': createRender_Fence(gl),
   }
-
-  const render_Line = createRender_Line(gl)
 
   const landCache = []
   const heightMapCache = []
@@ -42,7 +43,6 @@ export function createScene_World(gl, landSize) {
   const colorMapCache = []
   const colorMapTextureCache = []
   const propListCache = []
-
 
   const colorTexture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, colorTexture)
@@ -155,7 +155,6 @@ export function createScene_World(gl, landSize) {
         }
       }
     }
-
 
     // Transparent renders
     handleProps(camera.matrix, lands, sunRay)

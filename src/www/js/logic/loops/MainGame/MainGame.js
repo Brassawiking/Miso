@@ -39,6 +39,7 @@ export async function createLoop_MainGame ({
     'person',
     'pole_vertical',
     'pole_horizontal',
+    'fence',
   ]
   
   const state = {
