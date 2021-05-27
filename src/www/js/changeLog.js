@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ May 28, 2021
+🔹 Fourth land created by another person added!⭐ 
+
 🗓️ May 27, 2021
 🔹 Added prop HOUSE_WALL and HOUSE_ROOF 
 🔹 Added some fresh crystals to intro land 
