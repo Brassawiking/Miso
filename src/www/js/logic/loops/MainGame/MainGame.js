@@ -59,6 +59,9 @@ export async function createLoop_MainGame ({
     gravity: true,
     debug: false,
   }
+  
+  gl.clearColor(121 / 255, 228 / 255, 245 / 255, 1)
+  gl.clear(gl.COLOR_BUFFER_BIT)
  
   const update_Camera = init_Camera({ gl, state, mouse, prevMouse })
   const update_Movement = init_Movement({ state, keyboard, prevKeyboard })

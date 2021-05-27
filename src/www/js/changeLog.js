@@ -1,5 +1,11 @@
 export const changeLog = `
 
+🗓️ May 27, 2021
+🔹 Changed background color when transitioning into the game a bit more pleasing
+
+🗓️ May 26, 2021
+🔹 Created some internal shape helpers in order to create new props faster
+
 🗓️ May 25, 2021
 🔹 Added a new mouse action to even out lands
 🔹 Fixed a bug crash when changing land/prop types with keyboard 🐛
