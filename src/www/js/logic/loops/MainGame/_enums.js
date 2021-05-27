@@ -24,4 +24,6 @@ export const propTypes = [
   'pole_horizontal',
   'fence',
   'crystal',
+  'house_roof',
+  'house_wall',
 ]

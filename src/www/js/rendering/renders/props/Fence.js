@@ -3,7 +3,7 @@ import { shape_box } from './helpers/shapes.js'
 
 export function createRender_Fence(gl) {
   const boardThick = 0.1
-  const boardWidth = Math.sqrt(2)*1
+  const boardWidth = 1.5
   const boardColor = [0, 0, 1, 1]
   const legHeight = 1.5
   const legThick = 0.1

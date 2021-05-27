@@ -14,6 +14,8 @@ import { createRender_PoleHorizontal } from '../renders/props/PoleHorizontal.js'
 import { createRender_PoleVertical } from '../renders/props/PoleVertical.js'
 import { createRender_Fence } from '../renders/props/Fence.js'
 import { createRender_Crystal } from '../renders/props/Crystal.js'
+import { createRender_HouseRoof } from '../renders/props/HouseRoof.js'
+import { createRender_HouseWall } from '../renders/props/HouseWall.js'
 
 import { createRender_Line } from '../renders/Line.js'
 
@@ -37,6 +39,8 @@ export function createScene_World(gl, landSize) {
     'pole_vertical': createRender_PoleVertical(gl),
     'fence': createRender_Fence(gl),
     'crystal': createRender_Crystal(gl),
+    'house_roof': createRender_HouseRoof(gl),
+    'house_wall': createRender_HouseWall(gl),
   }
 
   const landCache = []

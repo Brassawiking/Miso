@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 27, 2021
+🔹 Added prop HOUSE_WALL and HOUSE_ROOF 
 🔹 Added some fresh crystals to intro land 
 🔹 Fixed bug with brush did not render under water 🐛
 🔹 Added prop CRYSTAL
