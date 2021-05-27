@@ -86,6 +86,8 @@ export function createRender_Sea(gl) {
   }
 
   return (camera, sunRay, time) => {
+    gl.depthMask(false)
+
     Shader({
       attributes,
       uniforms: {
@@ -97,5 +99,7 @@ export function createRender_Sea(gl) {
     })
   
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4) 
+
+    gl.depthMask(true)
   }
 }

@@ -1,6 +1,8 @@
 export const changeLog = `
 
 🗓️ May 27, 2021
+🔹 Added some fresh crystals to intro land 
+🔹 Fixed bug with brush did not render under water 🐛
 🔹 Added prop CRYSTAL
 🔹 Added prop FENCE and added it to the introduction land
 🔹 Changed background color when transitioning into the game a bit more pleasing
