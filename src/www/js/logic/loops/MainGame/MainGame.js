@@ -1,10 +1,10 @@
 import { CAMERA, BRUSH, WORLD } from '../../entities.js'
-
 import { init_Camera } from './_camera.js'
 import { init_UI } from './_ui.js'
 import { init_Movement } from './_movement.js'
 import { init_Editing } from './_editing.js'
 import { init_World } from './_world.js'
+import { actionTypes, landTypes, propTypes} from './_enums.js'
 
 export async function createLoop_MainGame ({ 
   gl,
@@ -14,34 +14,7 @@ export async function createLoop_MainGame ({
   mouse,
   prevMouse,
   data 
-}) {
-  const actionTypes = [
-    'land_raise',
-    'land_lower',
-    'land_even',
-    'paint',
-    'prop_add',
-    'prop_remove',
-    'reset'
-  ]
-  
-  const landTypes = [
-    'sand',
-    'dirt',
-    'rock',
-    'grass'
-  ]
-
-  const propTypes = [
-    'tree',
-    'bush',
-    'stone_tablet',
-    'person',
-    'pole_vertical',
-    'pole_horizontal',
-    'fence',
-  ]
-  
+}) {  
   const state = {
     world: WORLD.identity(),
     brush: BRUSH.identity(),
