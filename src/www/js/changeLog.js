@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 28, 2021
+🔹 Fifth land created by another person added!⭐ 
 🔹 Fourth land created by another person added!⭐ 
 
 🗓️ May 27, 2021
