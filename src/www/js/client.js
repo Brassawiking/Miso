@@ -36,7 +36,8 @@ async function init() {
         await setCurrentLoop(createNextLoop)
       }
     } catch (error) {
-      alert(`ERROR: ${error}`)      
+      console.error(error)
+      alert(`ERROR: ${error}`)
     }
     updatePrevInput()
     prevTime = time

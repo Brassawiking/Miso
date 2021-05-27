@@ -1,22 +1,12 @@
 import { v3 } from '../../../../common/math.js'
 
-export function shape_box(
-  front_v0, 
-  front_v1, 
-  front_v2, 
-  front_v3,
-  back_v0, 
-  back_v1, 
-  back_v2, 
-  back_v3,
-  color
-) {
-  const front = shape_quad(front_v0, front_v1, front_v2, front_v3, color)
-  const back = shape_quad(back_v0, back_v1, back_v2, back_v3, color)
-  const top = shape_quad(front_v1, back_v2, back_v1, front_v2, color)
-  const bottom = shape_quad(back_v3, front_v0, front_v3, back_v0, color)
-  const left = shape_quad(back_v3, back_v2, front_v1, front_v0, color)
-  const right = shape_quad(front_v3, front_v2, back_v1, back_v0, color)
+export function shape_box(vPos, vX, vY, vZ, color) {
+  const front = shape_quad(v3.subtract(vPos, vZ), vX, vY, color)
+  const back = shape_quad(v3.add(vPos, vZ), v3.multiply(vX, -1), vY, color)
+  const top = shape_quad(v3.add(vPos, vY), vX, vZ, color)
+  const bottom = shape_quad(v3.subtract(vPos, vY), v3.multiply(vX, -1), vZ, color)
+  const left = shape_quad(v3.subtract(vPos, vX), v3.multiply(vZ, -1), vY, color)
+  const right = shape_quad(v3.add(vPos, vX), vZ, vY, color)
 
   const mesh = [
     ...front.mesh,
@@ -50,9 +40,14 @@ export function shape_box(
   }
 }
 
-export function shape_quad(v0, v1, v2, v3, color) {
-  const tri0 = shape_triangle(v0, v1, v2, color)
-  const tri1 = shape_triangle(v2, v3, v0, color)
+export function shape_quad(vPos, vX, vY, color) {
+  const a = v3.subtract(v3.subtract(vPos, vX), vY)
+  const b = v3.add(v3.subtract(vPos, vX), vY)
+  const c = v3.add(v3.add(vPos, vX), vY)
+  const d = v3.subtract(v3.add(vPos, vX), vY)
+  
+  const tri0 = shape_triangle(a, b, c, color)
+  const tri1 = shape_triangle(c, d, a, color)
   
   const mesh = [
     ...tri0.mesh,
@@ -74,13 +69,18 @@ export function shape_quad(v0, v1, v2, v3, color) {
   }
 }
 
-export function shape_triangle(v0, v1, v2, color) {
-  const normal = v3.normalize(v3.cross(v3.subtract(v1, v0), v3.subtract(v2, v0)))
+export function shape_triangle(a, b, c, color) {
+  const normal = v3.normalize(
+    v3.cross(
+      v3.subtract(b, a), 
+      v3.subtract(c, a)
+    )
+  )
 
   const mesh = [
-    ...v0,
-    ...v1,
-    ...v2,
+    ...a,
+    ...b,
+    ...c,
   ]
   const normals = [
     ...normal,
