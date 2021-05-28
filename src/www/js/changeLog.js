@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 28, 2021
+🔹 Added prop STEPS and made an example of them in the intro land 
 🔹 Fifth land created by another person added!⭐ 
 🔹 Fourth land created by another person added!⭐ 
 
