@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 29, 2021
+🔹 Added some eyes to the prop PERSON
 ⭐ Sixth land created by another person added!  
 🔹 Can now rotate props 45 degrees by holding SHIFT when rotating 
 🐛 Fixed broken number hotkeys for mouse actions

@@ -43,6 +43,14 @@ export function createRender_Person(clothColor = [1, 0, 0, 1]) {
     0, leg, cloth/2,
     cloth/4, footing, cloth/3,
     cloth/2, leg, cloth/3,
+
+    -0.03, neck+(face/2), 0,
+    -face/4-0.03, neck+(face/2)+0.1, -0.001,
+    -0.03, neck+(face/2)+0.1, -0.001,
+
+    0.03, neck+(face/2), 0,
+    face/4+0.03, neck+(face/2)+0.1, -0.001,
+    0.03, neck+(face/2)+0.1, -0.001,
   ]
 
   const up = [0, 1, 0]
@@ -86,11 +94,20 @@ export function createRender_Person(clothColor = [1, 0, 0, 1]) {
     ...front,
     ...front,
     ...front,
+
+    ...front,
+    ...front,
+    ...front,
+
+    ...front,
+    ...front,
+    ...front,
   ]
 
   const faceColor = [1, 0.8, 0.2, 1]
   const hairColor = [1, 0.5, 0, 1]
   const legColor = [0, 0, 0, 1]
+  const eyeColor = [0, 0, 0, 1]
   const colors = [
     ...clothColor,
     ...clothColor,
@@ -127,6 +144,14 @@ export function createRender_Person(clothColor = [1, 0, 0, 1]) {
     ...legColor,
     ...legColor,
     ...legColor,
+
+    ...eyeColor,
+    ...eyeColor,
+    ...eyeColor,
+
+    ...eyeColor,
+    ...eyeColor,
+    ...eyeColor,
  ]
 
   return createRender_Prop(mesh, normals, colors)
