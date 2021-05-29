@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 29, 2021
+⭐ Sixth land created by another person added!  
 🔹 Can now rotate props 45 degrees by holding SHIFT when rotating 
 🐛 Fixed broken number hotkeys for mouse actions
 🐛 Fixed bug where with movement slowed down at certain camera angles
