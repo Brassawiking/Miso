@@ -1,6 +1,6 @@
 import { createRender_Prop } from './_Prop.js'
 
-export function createRender_Tree(gl) {
+export function createRender_Tree() {
   const rootLevel = -0.5
   const rootWidth = -0.25
   const treeHeight = 10;
@@ -101,5 +101,5 @@ export function createRender_Tree(gl) {
     ...leafColor,
   ]
 
-  return createRender_Prop(gl, mesh, normals, colors)
+  return createRender_Prop(mesh, normals, colors)
 }

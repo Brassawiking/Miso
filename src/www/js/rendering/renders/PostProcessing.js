@@ -1,8 +1,9 @@
+import { gl } from '../gl.js'
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createRender_PostProcessing(gl) {
-  const Shader = createShader(gl, {
+export function createRender_PostProcessing() {
+  const Shader = createShader({
     attributes: {
       vertex: 'vec4'
     },
@@ -52,7 +53,7 @@ export function createRender_PostProcessing(gl) {
     `
   })
 
-  const quad = createArrayBuffer(gl, [
+  const quad = createArrayBuffer([
     -1, 1,
     1, 1,
     -1, -1,

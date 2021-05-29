@@ -1,6 +1,6 @@
 import { createRender_Prop } from './_Prop.js'
 
-export function createRender_Person(gl, clothColor = [1, 0, 0, 1]) {
+export function createRender_Person(clothColor = [1, 0, 0, 1]) {
   const leg = 0.4
   const cloth = 0.6
   const neck = 1.8
@@ -129,5 +129,5 @@ export function createRender_Person(gl, clothColor = [1, 0, 0, 1]) {
     ...legColor,
  ]
 
-  return createRender_Prop(gl, mesh, normals, colors)
+  return createRender_Prop(mesh, normals, colors)
 }

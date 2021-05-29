@@ -1,3 +1,4 @@
+import { gl } from '../gl.js'
 import { v3 } from '../../common/math.js'
 
 import { createRender_Sky } from '../renders/Sky.js'
@@ -22,27 +23,27 @@ import { createRender_Line } from '../renders/Line.js'
 
 import { createRender_PostProcessing } from '../renders/PostProcessing.js'
 
-export function createScene_World(gl, landSize) {
-  const render_Sky = createRender_Sky(gl)
-  const render_Sea = createRender_Sea(gl)
-  const render_Terrain = createRender_Terrain(gl, landSize+1)
-  const render_TerrainMarker = createRender_TerrainMarker(gl)
-  const render_PlayerModel = createRender_PlayerModel(gl)
-  const render_Line = createRender_Line(gl)
-  const render_PostProcessing = createRender_PostProcessing(gl)
+export function createScene_World(landSize) {
+  const render_Sky = createRender_Sky()
+  const render_Sea = createRender_Sea()
+  const render_Terrain = createRender_Terrain(landSize+1)
+  const render_TerrainMarker = createRender_TerrainMarker()
+  const render_PlayerModel = createRender_PlayerModel()
+  const render_Line = createRender_Line()
+  const render_PostProcessing = createRender_PostProcessing()
   
   const propRenders = {
-    'bush': createRender_Bush(gl),
-    'stone_tablet': createRender_StoneTablet(gl),
-    'person': createRender_Person(gl),
-    'tree': createRender_Tree(gl),
-    'pole_horizontal': createRender_PoleHorizontal(gl),
-    'pole_vertical': createRender_PoleVertical(gl),
-    'fence': createRender_Fence(gl),
-    'crystal': createRender_Crystal(gl),
-    'house_roof': createRender_HouseRoof(gl),
-    'house_wall': createRender_HouseWall(gl),
-    'steps': createRender_Steps(gl),
+    'bush': createRender_Bush(),
+    'stone_tablet': createRender_StoneTablet(),
+    'person': createRender_Person(),
+    'tree': createRender_Tree(),
+    'pole_horizontal': createRender_PoleHorizontal(),
+    'pole_vertical': createRender_PoleVertical(),
+    'fence': createRender_Fence(),
+    'crystal': createRender_Crystal(),
+    'house_roof': createRender_HouseRoof(),
+    'house_wall': createRender_HouseWall(),
+    'steps': createRender_Steps(),
   }
 
   const landCache = []

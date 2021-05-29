@@ -1,6 +1,7 @@
 import { keyboard, prevKeyboard, mouse, prevMouse, updatePrevInput} from './system/input.js'
 import { createLoop_StartScreen } from './logic/loops/StartScreen.js'
 import { Stats } from './external/stats.js'
+import { gl } from './rendering/gl.js'
 
 const data = {
   settings: {
@@ -12,7 +13,7 @@ const data = {
   }
 }
 
-const gl = createGL(data)
+initGL(data)
 const ui = createUI()
 const stats = createStats()
 let currentLoop
@@ -46,17 +47,10 @@ async function init() {
   })
 }
 
-function createGL(data) {
-  const canvas = document.body.appendChild(document.createElement('canvas'))
-  canvas.classList.add('glCanvas')
+function initGL(data) {
+  document.body.appendChild(gl.canvas)
+  gl.canvas.classList.add('glCanvas')
   
-  const gl = canvas.getContext('webgl2', {
-    preserveDrawingBuffer: true,
-    alpha: false,
-    //desynchronized: true,
-    //powerPreference: 'high-performance'
-  })
-
   const updateResolution = () => {
     const resolution = data.settings.resolution
     gl.canvas.width = resolution.fixed ? resolution.width : gl.canvas.clientWidth
@@ -65,8 +59,6 @@ function createGL(data) {
   }
   updateResolution()
   window.addEventListener('resize', updateResolution)
-
-  return gl
 }
 
 function createUI() {
@@ -83,7 +75,6 @@ function createStats() {
 
 async function setCurrentLoop(createLoop) {
   currentLoop = await createLoop({
-    gl,
     ui, 
     keyboard,
     prevKeyboard,

@@ -1,8 +1,9 @@
+import { gl } from '../gl.js'
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createRender_Terrain(gl, gridSize) {
-  const Shader = createShader(gl, {
+export function createRender_Terrain(gridSize) {
+  const Shader = createShader( {
     attributes: {
       a_pos: 'vec4',
       a_uv: 'vec2'
@@ -151,8 +152,8 @@ export function createRender_Terrain(gl, gridSize) {
     }
   }
 
-  const positionBuffer = createArrayBuffer(gl, mesh)
-  const texCoordBuffer = createArrayBuffer(gl, texCoords)
+  const positionBuffer = createArrayBuffer(mesh)
+  const texCoordBuffer = createArrayBuffer(texCoords)
   const indexBuffer = gl.createBuffer()
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indices), gl.STATIC_DRAW)

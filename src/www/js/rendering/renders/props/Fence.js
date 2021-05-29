@@ -1,7 +1,7 @@
 import { createRender_Prop } from './_Prop.js'
 import { shape_box } from './helpers/shapes.js'
 
-export function createRender_Fence(gl) {
+export function createRender_Fence() {
   const boardThick = 0.1
   const boardWidth = 1.5
   const boardColor = [0, 0, 1, 1]
@@ -15,7 +15,6 @@ export function createRender_Fence(gl) {
   const leg2 = shape_box([1, legHeight/2, 0], [legThick, 0, 0], [0, legHeight/2, 0], [0, 0, legThick], legColor)
 
   return createRender_Prop(
-    gl, 
     [
       ...board0.mesh,
       ...leg0.mesh,

@@ -1,8 +1,9 @@
+import { gl } from '../gl.js'
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createRender_Sea(gl) {
-  const Shader = createShader(gl, {
+export function createRender_Sea() {
+  const Shader = createShader({
     attributes: {
       a_pos: 'vec2'
     },
@@ -67,7 +68,7 @@ export function createRender_Sea(gl) {
     `
   })
 
-  const quad = createArrayBuffer(gl, [
+  const quad = createArrayBuffer([
     -1, 1,
     1, 1,
     -1, -1,

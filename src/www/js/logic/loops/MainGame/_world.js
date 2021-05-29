@@ -3,14 +3,13 @@ import { loadData, loadLandIntoWorld } from '../../data.js'
 import { createScene_World } from '../../../rendering/scenes/World.js'
 
 export async function init_World({
-  gl,
   state,
   state: {
     world,
     player,
   }
 }) {
-  const scene_World = createScene_World(gl, world.landSize)
+  const scene_World = createScene_World(world.landSize)
 
   const loadedLands = await Promise.all([
     loadData('data/miso_land_-1_0.json'),

@@ -1,3 +1,4 @@
+import { gl } from '../../../rendering/gl.js'
 import { CAMERA, BRUSH, WORLD } from '../../entities.js'
 import { init_Camera } from './_camera.js'
 import { init_UI } from './_ui.js'
@@ -7,7 +8,6 @@ import { init_World } from './_world.js'
 import { actionTypes, landTypes, propTypes} from './_enums.js'
 
 export async function createLoop_MainGame ({ 
-  gl,
   ui,  
   keyboard,
   prevKeyboard,
@@ -37,11 +37,11 @@ export async function createLoop_MainGame ({
   gl.clearColor(121 / 255, 228 / 255, 245 / 255, 1)
   gl.clear(gl.COLOR_BUFFER_BIT)
  
-  const update_Camera = init_Camera({ gl, state, mouse, prevMouse })
+  const update_Camera = init_Camera({ state, mouse, prevMouse })
   const update_Movement = init_Movement({ state, keyboard, prevKeyboard })
   const update_Editing =  init_Editing({ state, keyboard, prevKeyboard, mouse, actionTypes, landTypes, propTypes, data })
   const update_UI = init_UI({ state, ui, actionTypes, landTypes, propTypes, data })
-  const update_World = await init_World({ gl, state })
+  const update_World = await init_World({ state })
   
   return ({time, deltaTime}) => {
     update_Movement({ deltaTime })

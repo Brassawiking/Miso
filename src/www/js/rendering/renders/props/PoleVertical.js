@@ -1,7 +1,7 @@
 import { createRender_Prop } from './_Prop.js'
 import { shape_box } from './helpers/shapes.js'
 
-export function createRender_PoleVertical(gl) {
+export function createRender_PoleVertical() {
   const top = 5.0
   const bottom = -0.5
   const thick = 0.1
@@ -14,5 +14,5 @@ export function createRender_PoleVertical(gl) {
 
     [1, 0, 0, 1]
   )
-  return createRender_Prop(gl, mesh, normals, colors)
+  return createRender_Prop(mesh, normals, colors)
 }

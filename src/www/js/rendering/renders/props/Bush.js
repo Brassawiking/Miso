@@ -1,6 +1,6 @@
 import { createRender_Prop } from './_Prop.js'
 
-export function createRender_Bush(gl) {
+export function createRender_Bush() {
   const root = -0.5
   const height = 2
   const brim = 0.75
@@ -67,5 +67,5 @@ export function createRender_Bush(gl) {
     ...bushColor,
   ]
 
-  return createRender_Prop(gl, mesh, normals, colors)
+  return createRender_Prop(mesh, normals, colors)
 }

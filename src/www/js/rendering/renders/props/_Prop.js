@@ -1,11 +1,12 @@
+import { gl } from '../../gl.js'
 import { createShader } from '../../shaders.js'
 import { createArrayBuffer } from '../../buffers.js'
 
 let Shader
 
-export function createRender_Prop(gl, mesh, normals, colors) {
+export function createRender_Prop(mesh, normals, colors) {
   if (!Shader) {
-    Shader = createShader(gl, {
+    Shader = createShader({
       attributes: {
         vertexPosition: 'vec4',
         a_normal: 'vec4',
@@ -62,7 +63,7 @@ export function createRender_Prop(gl, mesh, normals, colors) {
       normalized: false,
       stride: 0,
       offset: 0,
-      buffer: createArrayBuffer(gl, mesh)
+      buffer: createArrayBuffer(mesh)
     },
     a_normal: {
       size: 3,
@@ -70,7 +71,7 @@ export function createRender_Prop(gl, mesh, normals, colors) {
       normalized: false,
       stride: 0,
       offset: 0,
-      buffer: createArrayBuffer(gl, normals)
+      buffer: createArrayBuffer(normals)
     },
     a_color: {
       size: 4,
@@ -78,7 +79,7 @@ export function createRender_Prop(gl, mesh, normals, colors) {
       normalized: false,
       stride: 0,
       offset: 0,
-      buffer: createArrayBuffer(gl, colors)
+      buffer: createArrayBuffer(colors)
     },
   }
 

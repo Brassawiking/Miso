@@ -1,8 +1,9 @@
+import { gl } from '../gl.js'
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createRender_Sky(gl) {
-  const Shader = createShader(gl, {
+export function createRender_Sky() {
+  const Shader = createShader({
     attributes: {
       vertex: 'vec4'
     },
@@ -33,7 +34,7 @@ export function createRender_Sky(gl) {
     `
   })
 
-  const quad = createArrayBuffer(gl, [
+  const quad = createArrayBuffer([
     -1, 1,
     1, 1,
     -1, -1,

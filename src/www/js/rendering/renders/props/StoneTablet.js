@@ -1,6 +1,6 @@
 import { createRender_Prop } from './_Prop.js'
 
-export function createRender_StoneTablet(gl) {
+export function createRender_StoneTablet() {
   const root = -0.5
   const width = 1
   const height = 1.5
@@ -88,5 +88,5 @@ export function createRender_StoneTablet(gl) {
     ...stoneColor,
   ]
 
-  return createRender_Prop(gl, mesh, normals, colors)
+  return createRender_Prop(mesh, normals, colors)
 }

@@ -1,8 +1,9 @@
+import { gl } from '../gl.js'
 import { createShader } from '../shaders.js'
 import { createArrayBuffer } from '../buffers.js'
 
-export function createRender_Line(gl) {
-  const Shader = createShader(gl, {
+export function createRender_Line() {
+  const Shader = createShader({
     attributes: {
       a_vertex: 'vec4'
     },
@@ -38,7 +39,7 @@ export function createRender_Line(gl) {
       normalized: false,
       stride: 0,
       offset: 0,
-      buffer: createArrayBuffer(gl, [0, 0])
+      buffer: createArrayBuffer([0, 0])
     }
   }
 

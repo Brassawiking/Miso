@@ -1,8 +1,8 @@
+import { gl } from '../../../rendering/gl.js'
 import { v3, clamp } from '../../../common/math.js'
 import { CAMERA } from '../../entities.js'
 
 export function init_Camera({ 
-  gl,
   state: {
     camera,
     player

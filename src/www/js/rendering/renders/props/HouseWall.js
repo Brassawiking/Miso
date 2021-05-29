@@ -1,7 +1,7 @@
 import { createRender_Prop } from './_Prop.js'
 import { shape_box } from './helpers/shapes.js'
 
-export function createRender_HouseWall(gl) {
+export function createRender_HouseWall() {
   const thick = 0.1
   const width = 1.5
   const height = 4.5
@@ -14,5 +14,5 @@ export function createRender_HouseWall(gl) {
 
     [195/255, 172/255, 125/255, 1]
   )
-  return createRender_Prop(gl, mesh, normals, colors)
+  return createRender_Prop(mesh, normals, colors)
 }

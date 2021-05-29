@@ -1,9 +1,11 @@
+import { gl } from './gl.js'
+
 let currentProgram
 let cachedAttributes
 let cachedUniforms
 
-export function createShader(gl, options) {
-  const shaderProgram = createGLShaderProgram(gl, options)
+export function createShader(options) {
+  const shaderProgram = createGLShaderProgram(options)
   const attributes = dictionaryMap(options.attributes, key => gl.getAttribLocation(shaderProgram, key))
   const uniforms = dictionaryMap(options.uniforms, key => gl.getUniformLocation(shaderProgram, key))
 
@@ -55,10 +57,10 @@ export function createShader(gl, options) {
   }
 }
 
-function createGLShaderProgram(gl, options) {
+function createGLShaderProgram(options) {
   const shaderProgram = gl.createProgram()
-  const vertexShader = createGLShader(gl, gl.VERTEX_SHADER, vertexSource(options))
-  const fragmentShader = createGLShader(gl, gl.FRAGMENT_SHADER, fragmentSource(options))
+  const vertexShader = createGLShader(gl.VERTEX_SHADER, vertexSource(options))
+  const fragmentShader = createGLShader(gl.FRAGMENT_SHADER, fragmentSource(options))
 
   gl.attachShader(shaderProgram, vertexShader)
   gl.attachShader(shaderProgram, fragmentShader)
@@ -131,7 +133,7 @@ function fragmentSource(options) {
 `.trim()
 }
 
-function createGLShader(gl, type, source) {
+function createGLShader(type, source) {
   const shader = gl.createShader(type)
   gl.shaderSource(shader, source)
   gl.compileShader(shader)

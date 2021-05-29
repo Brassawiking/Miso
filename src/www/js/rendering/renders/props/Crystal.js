@@ -1,8 +1,7 @@
 import { createRender_Prop } from './_Prop.js'
 import { shape_box } from './helpers/shapes.js'
-import { m4 } from '../../../common/math.js'
 
-export function createRender_Crystal(gl) {
+export function createRender_Crystal() {
 
   const crystal0 = shape_box(
     [0.1, 0.5-0.5, -0.2], 
@@ -31,7 +30,6 @@ export function createRender_Crystal(gl) {
   )
   
   return createRender_Prop(
-    gl, 
     [
       ...crystal0.mesh,
       ...crystal1.mesh,

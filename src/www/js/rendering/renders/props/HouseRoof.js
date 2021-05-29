@@ -1,7 +1,7 @@
 import { createRender_Prop } from './_Prop.js'
 import { shape_box } from './helpers/shapes.js'
 
-export function createRender_HouseRoof(gl) {
+export function createRender_HouseRoof() {
   const thick = 0.1
   const width = 4
   const height = 4.5
@@ -14,5 +14,5 @@ export function createRender_HouseRoof(gl) {
 
     [0.4, 0.4, 0.4, 1]
   )
-  return createRender_Prop(gl, mesh, normals, colors)
+  return createRender_Prop(mesh, normals, colors)
 }

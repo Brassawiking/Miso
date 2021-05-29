@@ -1,7 +1,7 @@
 import { createRender_Prop } from './_Prop.js'
 import { shape_box } from './helpers/shapes.js'
 
-export function createRender_Steps(gl) {
+export function createRender_Steps() {
   const step = 0.3
   const color = [0.5, 0.5, 0.5, 1]
   const width = 1.5
@@ -32,7 +32,6 @@ export function createRender_Steps(gl) {
   )
 
   return createRender_Prop(
-    gl, 
     [
       ...bottomStep.mesh,
       ...middleStep.mesh,
