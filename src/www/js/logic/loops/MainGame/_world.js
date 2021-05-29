@@ -19,6 +19,14 @@ export async function init_World({
     loadData('data/lands/miso_land_-1_-2.json'),
     loadData('data/lands/miso_land_-1_-3.json'),
     loadData('data/lands/miso_land_-3_0.json'),
+    loadData('data/lands/miso_land_-4_-1.json'),
+    loadData('data/lands/miso_land_-5_1.json'),
+    loadData('data/lands/miso_land_-5_-1.json'),
+    loadData('data/lands/miso_land_-5_0.json'),
+    loadData('data/lands/miso_land_-3_-1.json'),
+    loadData('data/lands/miso_land_-3_1.json'),
+    loadData('data/lands/miso_land_-4_0.json'),
+    loadData('data/lands/miso_land_-4_1.json'),
   ])
   loadedLands.forEach(x => loadLandIntoWorld(x, world))
 
