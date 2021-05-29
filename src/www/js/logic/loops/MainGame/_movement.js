@@ -1,4 +1,5 @@
 import { v3 } from '../../../common/math.js'
+import { keyboard } from '../../../system/input.js'
 import { WORLD } from '../../entities.js'
 
 export function init_Movement({
@@ -8,8 +9,6 @@ export function init_Movement({
     world,
     camera
   }, 
-  keyboard, 
-  prevKeyboard
 }) {
   const speed = 2
   const jumpSpeed = 12
@@ -17,35 +16,35 @@ export function init_Movement({
   const freeFallForce = 35
     
   return ({ deltaTime }) => {
-    if (keyboard.G && !prevKeyboard.G) {
+    if (keyboard.keyOnce('G')) {
       state.gravity = !state.gravity
     }
 
     let moveDirection = [0, 0, 0]
     if (
-      keyboard.D) {
+      keyboard.key('D')) {
       moveDirection = v3.add(moveDirection, [camera.x[0], 0, camera.x[2]])
     }
-    if (keyboard.A) {
+    if (keyboard.key('A')) {
       moveDirection = v3.add(moveDirection, [-camera.x[0], 0, -camera.x[2]])
     }
-    if (keyboard.W) {
+    if (keyboard.key('W')) {
       moveDirection = v3.add(moveDirection, [camera.z[0], 0, camera.z[2]])
     }
-    if (keyboard.S) {
+    if (keyboard.key('S')) {
       moveDirection = v3.add(moveDirection, [-camera.z[0], 0, -camera.z[2]])
     }
     player.velocity = v3.add(player.velocity, v3.multiply(v3.normalize(moveDirection), speed))
     
     if (state.gravity) {
-      if (keyboard.PAGEUP && !prevKeyboard.PAGEUP && !player.velocity[1]) {
+      if (keyboard.keyOnce('PAGEUP') && !player.velocity[1]) {
         player.velocity[1] += jumpSpeed
       }
     } else {
-      if (keyboard.PAGEUP) {
+      if (keyboard.key('PAGEUP')) {
         player.velocity[1] += speed
       }
-      if (keyboard.PAGEDOWN) {
+      if (keyboard.key('PAGEDOWN')) {
         player.velocity[1] -= speed
       }
     }

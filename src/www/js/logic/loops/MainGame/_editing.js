@@ -1,4 +1,5 @@
 import { v3, linePlaneIntersectionPoint } from '../../../common/math.js'
+import { keyboard, mouse } from '../../../system/input.js'
 import { BRUSH, LAND, LANDPOINT, PROP, } from '../../entities.js'
 
 export function init_Editing({
@@ -11,9 +12,6 @@ export function init_Editing({
   data: {
     user
   },
-  keyboard,
-  prevKeyboard,
-  mouse,
   actionTypes,
   landTypes, 
   propTypes,
@@ -35,24 +33,24 @@ export function init_Editing({
     }
   
     actionTypes.forEach((mouseAction, index) => {
-      if (keyboard[index+1]) {
+      if (keyboard.keyOnce[index+1]) {
         state.currentActionType = mouseAction
       }
     })
 
-    if (keyboard.ARROWLEFT && !prevKeyboard.ARROWLEFT) {
+    if (keyboard.keyOnce('ARROWLEFT')) {
       brush.size = Math.max(brush.size - 1, 1)
     }
-    if (keyboard.ARROWRIGHT && !prevKeyboard.ARROWRIGHT) {
+    if (keyboard.keyOnce('ARROWRIGHT')) {
       brush.size++
     }
-    if (keyboard.T && !prevKeyboard.T) {
+    if (keyboard.keyOnce('T')) {
       brush.soft = !brush.soft
     }
   
     const landPoints = BRUSH.ownedLandPoints(brush, world, user)
     const heightDelta = 0.1
-    if (keyboard.ARROWUP || (mouse.buttons[0] && state.currentActionType === 'land_raise')) {
+    if (keyboard.key('ARROWUP') || (mouse.left && state.currentActionType === 'land_raise')) {
       landPoints.forEach(landPoint => {
         let factor = 1
         if (brush.soft) {
@@ -64,7 +62,7 @@ export function init_Editing({
       })
     }
 
-    if (keyboard.ARROWDOWN || (mouse.buttons[0] && state.currentActionType === 'land_lower')) {
+    if (keyboard.key('ARROWDOWN') || (mouse.left && state.currentActionType === 'land_lower')) {
       landPoints.forEach(landPoint => {
         let factor = 1
         if (brush.soft) {
@@ -76,7 +74,7 @@ export function init_Editing({
       })
     }
 
-    if (mouse.buttons[0] && state.currentActionType === 'land_even') {
+    if (mouse.left && state.currentActionType === 'land_even') {
       let averageHeight = landPoints.reduce((sumHeight, land) => sumHeight + land.height, 0) / landPoints.length
       landPoints.forEach(landPoint => {
         let factor = 1
@@ -89,7 +87,7 @@ export function init_Editing({
       })
     }
 
-    if (keyboard.DELETE || (mouse.buttons[0] && state.currentActionType === 'reset')) {
+    if (keyboard.key('DELETE') || (mouse.left && state.currentActionType === 'reset')) {
       landPoints.forEach(landPoint => {
         landPoint.height = 1
         landPoint.type = 'grass'
@@ -103,13 +101,13 @@ export function init_Editing({
       })
     }
 
-    if (keyboard.C && !prevKeyboard.C) {
+    if (keyboard.keyOnce('C')) {
       state.currentPropType = propTypes[Math.max(propTypes.indexOf(state.currentPropType) - 1, 0)]
     }
-    if (keyboard.V && !prevKeyboard.V) {
+    if (keyboard.keyOnce('V')) {
       state.currentPropType = propTypes[Math.min(propTypes.indexOf(state.currentPropType) + 1, propTypes.length - 1)]
     }
-    if (keyboard.E || (mouse.buttons[0] && state.currentActionType === 'prop_add')) {
+    if (keyboard.key('E') || (mouse.left && state.currentActionType === 'prop_add')) {
       landPoints.forEach(landPoint => {
         if (!landPoint.prop) {
           if (landPoint.land.propCount >= world.maxPropCount) {
@@ -122,7 +120,7 @@ export function init_Editing({
         landPoint.land.propListDirty = true
       })
     }
-    if (keyboard.R || (mouse.buttons[0] && state.currentActionType === 'prop_remove')) {
+    if (keyboard.key('R') || (mouse.left && state.currentActionType === 'prop_remove')) {
       landPoints.forEach(landPoint => {
         if (landPoint.prop) {
           landPoint.prop = null
@@ -132,7 +130,7 @@ export function init_Editing({
       })
     }
     const propRotationSpeed = Math.PI / 90
-    if (keyboard.K) {
+    if (keyboard.key('K')) {
       landPoints.forEach(landPoint => {
         if (landPoint.prop) {
           landPoint.prop.rotation += propRotationSpeed
@@ -140,7 +138,7 @@ export function init_Editing({
         }
       })
     }
-    if (keyboard.L) {
+    if (keyboard.key('L')) {
       landPoints.forEach(landPoint => {
         if (landPoint.prop) {
           landPoint.prop.rotation -= propRotationSpeed
@@ -149,20 +147,20 @@ export function init_Editing({
       })
     }
 
-    if (keyboard.Z && !prevKeyboard.Z) {
+    if (keyboard.keyOnce('Z')) {
       state.currentLandType = landTypes[Math.max(landTypes.indexOf(state.currentLandType) - 1, 0)]
     }
-    if (keyboard.X && !prevKeyboard.X) {
+    if (keyboard.keyOnce('X')) {
       state.currentLandType = landTypes[Math.min(landTypes.indexOf(state.currentLandType) + 1, landTypes.length - 1)]
     }
-    if (keyboard.Q || (mouse.buttons[0] && state.currentActionType === 'paint')) {
+    if (keyboard.key('Q') || (mouse.left && state.currentActionType === 'paint')) {
       landPoints.forEach(landPoint => {
         landPoint.type = state.currentLandType
         landPoint.land.colorMapDirty = true
       })
     }
 
-    if (keyboard.ENTER && !prevKeyboard.ENTER) {
+    if (keyboard.keyOnce('ENTER')) {
       const land = LAND.at(brush.position, world)
       if (!land) {
         return
@@ -190,14 +188,13 @@ export function init_Editing({
       }
     }
 
-    if (keyboard[' ']) {
+    if (keyboard.keyOnce(' ')) {
       const props = landPoints.filter(x => x.prop).map(x => x.prop)
       if (props.length) {
         const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text || '')
         if (text != null) {
           props.forEach(prop => { prop.text = text })
         }
-        keyboard[' '] = false
       }
     }
   }

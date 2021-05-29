@@ -1,10 +1,9 @@
 import { v3 } from '../../../common/math.js'
+import { ui, markup } from '../../../rendering/ui.js'
 import { LAND, LANDPOINT } from '../../entities.js'
 import { loadLandIntoWorld } from '../../data.js'
-import { markup } from '../../../rendering/ui.js'
 
 export function init_UI({ 
-  ui,
   actionTypes, 
   landTypes, 
   propTypes,

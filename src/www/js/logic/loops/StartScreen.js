@@ -1,9 +1,8 @@
-import { createLoop_MainGame } from './MainGame/MainGame.js'
-import { markup } from '../../rendering/ui.js'
+import { ui, markup } from '../../rendering/ui.js'
 import { changeLog } from '../../changeLog.js'
+import { createLoop_MainGame } from './MainGame/MainGame.js'
 
 export function createLoop_StartScreen ({ 
-  ui,
   data,
 }) {
   const [root, { 
@@ -55,8 +54,6 @@ export function createLoop_StartScreen ({
   })
 
   ui_form.elements.username.focus()
-
-  //ui_form.querySelector('button').click()
 
   return () => {
     if (data.gameMode) {

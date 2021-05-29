@@ -1,3 +1,5 @@
+export const ui = document.createElement('miso-ui')
+
 export const markup = (html) => {
   const parser = document.createElement('div')
   parser.innerHTML = html

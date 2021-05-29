@@ -1,7 +1,8 @@
-import { keyboard, prevKeyboard, mouse, prevMouse, updatePrevInput} from './system/input.js'
-import { createLoop_StartScreen } from './logic/loops/StartScreen.js'
-import { Stats } from './external/stats.js'
 import { gl } from './rendering/gl.js'
+import { ui } from './rendering/ui.js'
+import { Stats } from './external/stats.js'
+import { updatePrevInput } from './system/input.js'
+import { createLoop_StartScreen } from './logic/loops/StartScreen.js'
 
 const data = {
   settings: {
@@ -13,17 +14,15 @@ const data = {
   }
 }
 
-initGL(data)
-const ui = createUI()
-const stats = createStats()
-let currentLoop
 init()
-
 async function init() {
-  await setCurrentLoop(createLoop_StartScreen)
+  initGL(data)
+  initUI()
+  const stats = initStats()
 
   stats.begin()
   let prevTime = performance.now()
+  let currentLoop = await initLoop(createLoop_StartScreen)
   requestAnimationFrame (async function update(time) {
     stats.end()
     stats.begin()
@@ -34,7 +33,7 @@ async function init() {
         deltaTime: (time-prevTime) / 1000 
       })
       if (createNextLoop) {
-        await setCurrentLoop(createNextLoop)
+        currentLoop = await initLoop(createNextLoop)
       }
     } catch (error) {
       console.error(error)
@@ -61,11 +60,11 @@ function initGL(data) {
   window.addEventListener('resize', updateResolution)
 }
 
-function createUI() {
-  return document.body.appendChild(document.createElement('miso-ui'))
+function initUI() {
+  document.body.appendChild(ui)
 }
 
-function createStats() {
+function initStats() {
   const stats = new Stats()
   stats.showPanel(1)
   document.body.appendChild(stats.dom)
@@ -73,13 +72,8 @@ function createStats() {
   return stats  
 }
 
-async function setCurrentLoop(createLoop) {
-  currentLoop = await createLoop({
-    ui, 
-    keyboard,
-    prevKeyboard,
-    mouse,
-    prevMouse,
+async function initLoop(createLoop) {
+  return await createLoop({
     data  
   })
 } 

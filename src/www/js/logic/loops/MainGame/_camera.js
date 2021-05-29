@@ -1,14 +1,13 @@
 import { gl } from '../../../rendering/gl.js'
 import { v3, clamp } from '../../../common/math.js'
+import { mouse } from '../../../system/input.js'
 import { CAMERA } from '../../entities.js'
 
 export function init_Camera({ 
   state: {
     camera,
     player
-  }, 
-  mouse,
-  prevMouse,
+  }
 }) {
   const orbitSpeed = 1.5;
   const zoomSpeed = 0.01
@@ -22,8 +21,8 @@ export function init_Camera({
   return () => {
     orbitDistance = Math.max(orbitDistance + zoomSpeed*mouse.wheel, 2.5)
   
-    if (mouse.buttons[2]) {
-      if (!prevMouse.buttons[2]) {
+    if (mouse.right) {
+      if (mouse.rightOnce) {
         orbitMoveStart = {
           mouseX: mouse.x,
           mouseY: mouse.y,

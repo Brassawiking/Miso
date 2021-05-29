@@ -8,11 +8,6 @@ import { init_World } from './_world.js'
 import { actionTypes, landTypes, propTypes} from './_enums.js'
 
 export async function createLoop_MainGame ({ 
-  ui,  
-  keyboard,
-  prevKeyboard,
-  mouse,
-  prevMouse,
   data 
 }) {  
   const state = {
@@ -37,10 +32,10 @@ export async function createLoop_MainGame ({
   gl.clearColor(121 / 255, 228 / 255, 245 / 255, 1)
   gl.clear(gl.COLOR_BUFFER_BIT)
  
-  const update_Camera = init_Camera({ state, mouse, prevMouse })
-  const update_Movement = init_Movement({ state, keyboard, prevKeyboard })
-  const update_Editing =  init_Editing({ state, keyboard, prevKeyboard, mouse, actionTypes, landTypes, propTypes, data })
-  const update_UI = init_UI({ state, ui, actionTypes, landTypes, propTypes, data })
+  const update_Camera = init_Camera({ state })
+  const update_Movement = init_Movement({ state })
+  const update_Editing =  init_Editing({ state, actionTypes, landTypes, propTypes, data })
+  const update_UI = init_UI({ state, actionTypes, landTypes, propTypes, data })
   const update_World = await init_World({ state })
   
   return ({time, deltaTime}) => {
