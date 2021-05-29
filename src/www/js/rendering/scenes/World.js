@@ -22,6 +22,7 @@ import { createRender_Steps } from '../renders/props/Steps.js'
 import { createRender_Line } from '../renders/Line.js'
 
 import { createRender_PostProcessing } from '../renders/PostProcessing.js'
+import { LANDPOINT } from '../../logic/entities.js'
 
 export function createScene_World(landSize) {
   const render_Sky = createRender_Sky()
@@ -129,6 +130,23 @@ export function createScene_World(landSize) {
       playerRotation = 2*Math.PI - playerRotation 
     }
     render_PlayerModel(camera.matrix, player.position, sunRay, playerRotation)
+
+    if (state.interactiveLandpoint) {
+      const playerEyes = v3.add(player.position, [0, 2, 0])
+      render_Line(
+        camera.matrix, 
+        playerEyes, 
+        v3.add(
+          LANDPOINT.position(state.interactiveLandpoint), 
+          [
+            0, 
+            state.interactiveLandpoint.height + getInterativePropHeightOffset(state.interactiveLandpoint.prop), 
+            0
+          ]
+        ), 
+        [1, 1, 1]
+      )
+    }
 
     if (state.debug) {
       const playerCenter = v3.add(player.position, [0, 1, 0])
@@ -392,5 +410,26 @@ function getColor(landPoint) {
       return [246, 228, 173]
     default:
       return [255, 255, 255]
+  }
+}
+
+function getInterativePropHeightOffset(prop) {
+  switch(prop.type) {
+    case 'bush': 
+      return 1
+    case 'stone_tablet': 
+      return 1
+    case 'pole_horizontal': 
+      return 4.5
+    case 'fence': 
+      return 1
+    case 'crystal': 
+      return 1
+    case 'house_roof': 
+      return 4.5
+    case 'steps': 
+      return 0
+    default:
+      return 2
   }
 }

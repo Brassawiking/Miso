@@ -247,9 +247,35 @@ export function init_UI({
     ui_propText.hidden = !propText
     ui_propText.textContent = propText
 
-    const landPointAtPlayer = LANDPOINT.at(v3.add(player.position, [0.5, 0, 0.5]), world)
-    if (landPointAtPlayer && landPointAtPlayer.prop) {
-      propText = landPointAtPlayer.prop.text
+    const viewForward = v3.normalize(player.direction)
+    const viewSideward = v3.normalize(v3.cross([0, 1, 0], player.direction))
+    const step = 0.75
+    state.viewPoints = [
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 0*step)), v3.multiply(viewSideward, -step)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 0*step)), v3.multiply(viewSideward, 0)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 0*step)), v3.multiply(viewSideward, step)),
+
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 1*step)), v3.multiply(viewSideward, -step)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 1*step)), v3.multiply(viewSideward, 0)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 1*step)), v3.multiply(viewSideward, step)),
+
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 2*step)), v3.multiply(viewSideward, -step*2)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 2*step)), v3.multiply(viewSideward, -step)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 2*step)), v3.multiply(viewSideward, 0)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 2*step)), v3.multiply(viewSideward, step)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 2*step)), v3.multiply(viewSideward, step*2)),
+
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 3*step)), v3.multiply(viewSideward, -step*2)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 3*step)), v3.multiply(viewSideward, -step)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 3*step)), v3.multiply(viewSideward, 0)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 3*step)), v3.multiply(viewSideward, step)),
+      v3.add(v3.add(player.position, v3.multiply(viewForward, 3*step)), v3.multiply(viewSideward, step*2)),
+    ]
+    
+    const propsInFrontOfPlayer = state.viewPoints.map(v => LANDPOINT.at(v, world))
+    state.interactiveLandpoint = propsInFrontOfPlayer.find(x => x && x.prop && x.prop.text)
+    if (state.interactiveLandpoint) {
+      propText = state.interactiveLandpoint.prop.text
     } else {
       propText = null
     }

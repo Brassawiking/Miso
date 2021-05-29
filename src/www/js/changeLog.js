@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 29, 2021
+🔹 Made it easier to read prop texts and added visual feedback for which prop is in focus 
 ⭐ Added 1 new land created by another person!
 ⭐ Added 8 new lands created by another person!
 🔹 Added some eyes to the prop PERSON
