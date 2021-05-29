@@ -23,16 +23,16 @@ export function init_Movement({
     let moveDirection = [0, 0, 0]
     if (
       keyboard.key('D')) {
-      moveDirection = v3.add(moveDirection, [camera.x[0], 0, camera.x[2]])
+      moveDirection = v3.add(moveDirection, v3.normalize([camera.x[0], 0, camera.x[2]]))
     }
     if (keyboard.key('A')) {
-      moveDirection = v3.add(moveDirection, [-camera.x[0], 0, -camera.x[2]])
+      moveDirection = v3.add(moveDirection, v3.normalize([-camera.x[0], 0, -camera.x[2]]))
     }
     if (keyboard.key('W')) {
-      moveDirection = v3.add(moveDirection, [camera.z[0], 0, camera.z[2]])
+      moveDirection = v3.add(moveDirection, v3.normalize([camera.z[0], 0, camera.z[2]]))
     }
     if (keyboard.key('S')) {
-      moveDirection = v3.add(moveDirection, [-camera.z[0], 0, -camera.z[2]])
+      moveDirection = v3.add(moveDirection, v3.normalize([-camera.z[0], 0, -camera.z[2]]))
     }
     player.velocity = v3.add(player.velocity, v3.multiply(v3.normalize(moveDirection), speed))
     

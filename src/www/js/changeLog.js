@@ -1,12 +1,13 @@
 export const changeLog = `
 
 🗓️ May 29, 2021
+🔹 Fixed bug where with movement slowed down at certain camera angles 🐛
 🔹 Code cleanup, some bugs might pop up afterwards 
 
 🗓️ May 28, 2021
 🔹 Added prop STEPS and made an example of them in the intro land 
-🔹 Fifth land created by another person added!⭐ 
-🔹 Fourth land created by another person added!⭐ 
+🔹 Fifth land created by another person added! ⭐ 
+🔹 Fourth land created by another person added! ⭐ 
 
 🗓️ May 27, 2021
 🔹 Added prop HOUSE_WALL and HOUSE_ROOF 
@@ -38,7 +39,7 @@ export const changeLog = `
 
 🗓️ May 22, 2021
 🔹 Added a greeting message when you enter a land 
-🔹 Third land created by another person added!⭐ 
+🔹 Third land created by another person added! ⭐ 
 🔹 Improved seam handling 
 🔹 Performance improvements 
 
@@ -49,12 +50,12 @@ export const changeLog = `
 🔹 Made the water a bit more fancy with some reflective sunlight 
 
 🗓️ May 20, 2021
-🔹 Second land created by another person added!⭐ 
+🔹 Second land created by another person added! ⭐ 
 
 🗓️ May 19, 2021
 🔹 Can now load saved land files 
 🔹 Changed fly up/down controls as CTRL+W closes the browser tab 
-🔹 First land created by another person added!⭐ 
+🔹 First land created by another person added! ⭐ 
 🔹 Moved back starting position to better hint at unclaimed areas
 🔹 Moved prop text to center of the screen when it shows
 🔹 Tweaked rotation amount to ensure even degrees (90, 180, 270 are now possible)
