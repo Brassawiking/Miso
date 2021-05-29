@@ -1,6 +1,7 @@
 import { v3, linePlaneIntersectionPoint } from '../../../common/math.js'
 import { keyboard, mouse } from '../../../system/input.js'
 import { BRUSH, LAND, LANDPOINT, PROP, } from '../../entities.js'
+import { actionTypes, landTypes, propTypes} from './_enums.js'
 
 export function init_Editing({
   state,
@@ -12,9 +13,6 @@ export function init_Editing({
   data: {
     user
   },
-  actionTypes,
-  landTypes, 
-  propTypes,
 }) {
   return () => {
     const planeIntersection = linePlaneIntersectionPoint(

@@ -34,8 +34,8 @@ export async function createLoop_MainGame ({
  
   const update_Camera = init_Camera({ state })
   const update_Movement = init_Movement({ state })
-  const update_Editing =  init_Editing({ state, actionTypes, landTypes, propTypes, data })
-  const update_UI = init_UI({ state, actionTypes, landTypes, propTypes, data })
+  const update_Editing = init_Editing({ state, data })
+  const update_UI = init_UI({ state, data })
   const update_World = await init_World({ state })
   
   return ({time, deltaTime}) => {

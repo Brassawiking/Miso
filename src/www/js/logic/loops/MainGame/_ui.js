@@ -2,11 +2,9 @@ import { v3 } from '../../../common/math.js'
 import { ui, markup } from '../../../rendering/ui.js'
 import { LAND, LANDPOINT } from '../../entities.js'
 import { loadLandIntoWorld } from '../../data.js'
+import { actionTypes, landTypes, propTypes} from './_enums.js'
 
 export function init_UI({ 
-  actionTypes, 
-  landTypes, 
-  propTypes,
   state,
   state: {
     brush,
