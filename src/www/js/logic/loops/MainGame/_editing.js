@@ -33,7 +33,7 @@ export function init_Editing({
     }
   
     actionTypes.forEach((mouseAction, index) => {
-      if (keyboard.keyOnce[index+1]) {
+      if (keyboard.keyOnce(index+1)) {
         state.currentActionType = mouseAction
       }
     })
@@ -130,18 +130,19 @@ export function init_Editing({
       })
     }
     const propRotationSpeed = Math.PI / 90
-    if (keyboard.key('K')) {
+    const propRotationFixedStep = Math.PI / 4
+    if ((keyboard.key('K') && !keyboard.key('SHIFT')) || (keyboard.keyOnce('K') && keyboard.key('SHIFT'))) {
       landPoints.forEach(landPoint => {
         if (landPoint.prop) {
-          landPoint.prop.rotation += propRotationSpeed
+          landPoint.prop.rotation += keyboard.key('SHIFT') ? propRotationFixedStep : propRotationSpeed
           landPoint.land.propListDirty = true
         }
       })
     }
-    if (keyboard.key('L')) {
+    if ((keyboard.key('L') && !keyboard.key('SHIFT')) || (keyboard.keyOnce('L') && keyboard.key('SHIFT'))) {
       landPoints.forEach(landPoint => {
         if (landPoint.prop) {
-          landPoint.prop.rotation -= propRotationSpeed
+          landPoint.prop.rotation -= keyboard.key('SHIFT') ? propRotationFixedStep : propRotationSpeed
           landPoint.land.propListDirty = true
         }
       })
