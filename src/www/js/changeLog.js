@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 30, 2021
+⭐ Added 1 new land by yours truly!
 🚀 Added functional items prototype to the inventory screen
 🔹 Added browser tab icon
 🔹 Added a bunch of color variations of prop PERSON
