@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ May 30, 2021
+🔹 Increased view cone for reading props with text
+
 🗓️ May 29, 2021
 🔹 Made it easier to read prop texts and added visual feedback for which prop is in focus 
 ⭐ Added 1 new land created by another person!

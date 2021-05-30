@@ -1,4 +1,5 @@
-import { LAND } from '../../entities.js'
+import { v3 } from '../../../common/math.js'
+import { LAND, LANDPOINT } from '../../entities.js'
 import { loadData, loadLandIntoWorld } from '../../data.js'
 import { createScene_World } from '../../../rendering/scenes/World.js'
 
@@ -35,6 +36,8 @@ export async function init_World({
     const sunSpeed = time / 5 + Math.PI
     const sunRay = [Math.sin(sunSpeed), -1, Math.cos(sunSpeed)]
     const lands = getLands(player, world)
+
+    state.interactiveLandpoint = getInteractiveProp(player, world)
 
     scene_World({ 
       time,
@@ -73,4 +76,81 @@ function getLands(player, world) {
     getOrCreateLand(activeLand.x+1, activeLand.y),
     getOrCreateLand(activeLand.x+1, activeLand.y-1),
   ]
+}
+
+function getInteractiveProp(player, world) {
+  const step = 0.75
+  const viewForward = v3.normalize(player.direction)
+  const viewSideward = v3.normalize(v3.cross([0, 1, 0], player.direction))
+
+  const forward_1  = v3.add(player.position, v3.multiply(viewForward, 1*step))
+  const forward_2  = v3.add(player.position, v3.multiply(viewForward, 2*step))
+  const forward_3  = v3.add(player.position, v3.multiply(viewForward, 3*step))
+  const forward_4  = v3.add(player.position, v3.multiply(viewForward, 4*step))
+
+  const left_1 = v3.multiply(viewSideward, -step)
+  const left_2 = v3.multiply(viewSideward, -step*2)
+  const left_3 = v3.multiply(viewSideward, -step*3)
+  const left_4 = v3.multiply(viewSideward, -step*4)
+
+  const right_1 = v3.multiply(viewSideward, step)
+  const right_2 = v3.multiply(viewSideward, step*2)
+  const right_3 = v3.multiply(viewSideward, step*3)
+  const right_4 = v3.multiply(viewSideward, step*4)
+
+
+  const viewPoints = [
+    player.position,
+    v3.add(player.position, left_1),
+    v3.add(player.position, right_1),
+    v3.add(player.position, left_2),
+    v3.add(player.position, right_2),
+
+    forward_1,
+    v3.add(forward_1, left_1),
+    v3.add(forward_1, right_1),
+    v3.add(forward_1, left_2),
+    v3.add(forward_1, right_2),
+
+    forward_2,
+    v3.add(forward_2, left_1),
+    v3.add(forward_2, right_1),
+    v3.add(forward_2, left_2),
+    v3.add(forward_2, right_2),
+    v3.add(forward_2, left_3),
+    v3.add(forward_2, right_3),
+
+    forward_3,
+    v3.add(forward_3, left_1),
+    v3.add(forward_3, right_1),
+    v3.add(forward_3, left_2),
+    v3.add(forward_3, right_2),
+    v3.add(forward_3, left_3),
+    v3.add(forward_3, right_3),
+    v3.add(forward_3, left_4),
+    v3.add(forward_3, right_4),
+
+    forward_4,
+    v3.add(forward_4, left_1),
+    v3.add(forward_4, right_1),
+    v3.add(forward_4, left_2),
+    v3.add(forward_4, right_2),
+    v3.add(forward_4, left_3),
+    v3.add(forward_4, right_3),
+    v3.add(forward_4, left_4),
+    v3.add(forward_4, right_4),
+  ]
+
+  for (let i = 0; i < viewPoints.length; ++i) {
+    const landPoint = LANDPOINT.at(viewPoints[i], world)
+    if (      
+      landPoint && 
+      landPoint.prop && 
+      landPoint.prop.text
+    ) {
+      return landPoint
+    }
+  }
+  
+  return null
 }
