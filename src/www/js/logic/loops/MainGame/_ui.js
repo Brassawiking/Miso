@@ -236,7 +236,6 @@ export function init_UI({
 
   ui_inventoryGrid.addEventListener('mousedown', e => {
     const itemIndex = e.target.getAttribute('data-item-index')
-    console.log(itemIndex, e)
     if (e.button == 2 && itemIndex != null) {
       player.items[itemIndex] = null
     }
