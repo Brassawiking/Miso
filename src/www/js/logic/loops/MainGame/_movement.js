@@ -10,12 +10,13 @@ export function init_Movement({
     camera
   }, 
 }) {
-  const speed = 2
-  const jumpSpeed = 12
   const jumpFallForce = 25
   const freeFallForce = 35
     
   return ({ deltaTime }) => {
+    const speed = player.base.speed + player.items.filter(x => x && x.type == 'mod' && x.effects.speed != null).reduce((sum, item) => sum + item.effects.speed, 0)
+    const jumpSpeed = player.base.jump + player.items.filter(x => x && x.type == 'mod' && x.effects.jump != null).reduce((sum, item) => sum + item.effects.jump, 0)
+
     if (keyboard.keyOnce('G')) {
       state.gravity = !state.gravity
     }

@@ -8,7 +8,7 @@ export const CAMERA = {
       target: [0, 0, 1],
       up: [0, 1, 0],
       near: 1,
-      far: 1000,
+      far: 10000,
       aspect: 1,
       matrix: m4.identity(),
     }

@@ -33,6 +33,9 @@ export function init_UI({
 
     ui_save,
     ui_load,
+
+    ui_buyItems,
+    ui_inventoryGrid,
   }] = markup(`
     <div>
       <div class="toolbar" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()">
@@ -74,18 +77,15 @@ export function init_UI({
       </ul>
 
       <div id="ui_inventory" class="inventory ui-box ui-rows" onmousedown="event.stopPropagation()" hidden>
-        <h1>Inventory</h1>
-        <div class="grid">
-          ${
-            Array(24 * 1).fill('<div class="slot"> <img src="https://i.pinimg.com/originals/40/ed/8e/40ed8e381cf0876d77b540144c1247e0.png"/> </div>').join('')
-          }
-          ${
-            Array(24 * 1).fill('<div class="slot"> <img src="https://i.pinimg.com/originals/3b/37/86/3b37860fb69293ef99bba496fe9cb1d5.png"/> </div>').join('')
-          }
-          ${
-            Array(24 * 10).fill('<div class="slot"> </div>').join('')
-          }
+        <h1>
+          Inventory
+        </h1>
+        <div ref="buyItems" style="margin: 10px 0;">
+          Buy:
+          <button data-item="lightfoot">MOD: "Lightfoot"</button>
+          <button data-item="eaglewings">MOD: "Eagle Wings"</button>
         </div>
+        <div ref="inventoryGrid" class="grid"></div>
       </div>
 
       <div id="ui_char" class="inventory ui-box ui-rows" onmousedown="event.stopPropagation()" hidden>
@@ -199,9 +199,54 @@ export function init_UI({
     fileInput.click()
   })
 
+  ui_buyItems.addEventListener('click', e => {
+    const itemToBuy = e.target.getAttribute('data-item')
+    if (itemToBuy != null) {
+      const firstEmptySlot = player.items.indexOf(null)
+      if (firstEmptySlot < 0) {
+        alert('No more room in inventory')
+      } else {
+        let item = null
+        switch (itemToBuy) {
+          case 'lightfoot':
+            item = {
+              name: 'Lightfoot',
+              icon: 'https://i.pinimg.com/originals/40/ed/8e/40ed8e381cf0876d77b540144c1247e0.png',
+              type: 'mod',
+              effects: {
+                speed: 0.1,
+              }
+            }
+            break
+          case 'eaglewings':
+            item = {
+              name: 'Lightfoot',
+              icon: 'https://i.pinimg.com/originals/3b/37/86/3b37860fb69293ef99bba496fe9cb1d5.png',
+              type: 'mod',
+              effects: {
+                jump: 0.5,
+              }
+            }
+            break
+        }
+        player.items[firstEmptySlot] = item
+      }
+    }
+  })
+
+  ui_inventoryGrid.addEventListener('mousedown', e => {
+    const itemIndex = e.target.getAttribute('data-item-index')
+    console.log(itemIndex, e)
+    if (e.button == 2 && itemIndex != null) {
+      player.items[itemIndex] = null
+    }
+  })
+
   let currentLandText
   let currentLandTextTimer
   let propText
+
+  let currentInventoryGrid
 
   return () => {
     const landAtBrush = LAND.at(brush.position, world) || {}
@@ -250,6 +295,32 @@ export function init_UI({
       propText = state.interactiveLandpoint.prop.text
     } else {
       propText = null
+    }
+
+    const inventoryGrid = player.items.map((item, index) => `
+      <div 
+        class="slot"
+        data-item-index="${index}" 
+        title='${
+          item 
+            ? `
+${item.type.toUpperCase()}:
+"${item.name}"
+
+EFFECTS:
+${Object.keys(item.effects).map(effect => `${effect}: ${item.effects[effect]}`).join('\n')}
+
+(Right-click to remove)
+            `
+            : ''
+        }'
+      >
+        ${item ? `<img src="${item.icon}" style="pointer-events: none;"/>` : ''}
+      </div>
+    `).join('')
+    if (currentInventoryGrid != inventoryGrid) {
+      ui_inventoryGrid.innerHTML = inventoryGrid
+      currentInventoryGrid = inventoryGrid
     }
   }
 }

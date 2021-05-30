@@ -19,6 +19,13 @@ export async function createLoop_MainGame ({
       position: [-5, 1, 2],
       velocity: [0, 0, 0],
       direction: [0, 0, 1],
+
+      base: {
+        speed: 2,
+        jump: 12
+      },
+
+      items: new Array(24*12).fill(null)
     },
 
     currentActionType: actionTypes[0],
