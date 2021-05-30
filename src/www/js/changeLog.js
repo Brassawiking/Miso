@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ May 30, 2021
+🔹 Added browser tab icon
 🔹 Added a bunch of color variations of prop PERSON
 🔹 Increased view cone for reading props with text
 
