@@ -192,7 +192,49 @@ export const PROP = {
     return {
       type: null,
       text: null,
-      rotation: 0
+      activeText: null,
+      rotation: 0,
+      interactions: null,
+      // interactions: [
+      //   {
+      //     action: 'Could you tell me more?',
+      //     conditions: {
+      //       greeter1: false
+      //     },
+      //     effects: {
+      //       text: 'It is just like, reeeeaaaaally big maaaan',
+      //       events: {
+      //         greeter1: true
+      //       } 
+      //     }
+      //   },
+      //   {
+      //     action: 'Nice shirt!',
+      //     conditions: {
+      //       greeter1: true,
+      //       greeter2: false
+      //     },
+      //     effects: {
+      //       text: 'Thanks!',
+      //       events: {
+      //         greeter2: true
+      //       } 
+      //     }
+      //   },
+      //   {
+      //     action: 'See you around!',
+      //     conditions: {
+      //       greeter1: true
+      //     },
+      //     effects: {
+      //       text: null,
+      //       events: {
+      //         greeter1: false,
+      //         greeter2: false
+      //       } 
+      //     }
+      //   },
+      // ]
     }
   }
 }

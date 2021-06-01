@@ -1,164 +1,42 @@
-import { ui, markup } from '../../../rendering/ui.js'
+import { ui } from '../../../rendering/ui.js'
 import { LAND } from '../../entities.js'
 import { loadLandIntoWorld } from '../../data.js'
 import { actionTypes, landTypes, propTypes} from './_enums.js'
+
+import { h, render } from '../../../external/preact.module.js'
+import { useState, useEffect } from '../../../external/preact.hooks.module.js'
+import htm from '../../../external/htm.module.js'
+const html = htm.bind(h)  
 
 export function init_UI({ 
   state,
   state: {
     brush,
     world,
-    player,
   },
   data: {
     user
   }
 }) {
-  const [root, { 
-    ui_actionType, 
-    ui_landType, 
-    ui_propType, 
-    ui_gravity,
-    ui_brushSoft,
-    ui_debug,
+  return () => {
+    render(html`
+      <${App}
+        state=${state}
+        user=${user}
+        brush=${brush} 
+        world=${world}
+      />
+    `, ui)
+  }
+}
 
-    ui_landText,
-    ui_propText,
+function App({ state, state: { player }, user, brush, world }) {
+  const [showInventory, setShowInventory] = useState(false)
+  const [showCharacter, setShowCharacter] = useState(false)
+  const [showHelp, setShowHelp] = useState(true)
 
-    ui_brushSize,
-    ui_brushPosition,
-    ui_brushLandName,
-    ui_brushLandOwner,
-    ui_brushLandPropCount,
 
-    ui_save,
-    ui_load,
-
-    ui_buyItems,
-    ui_inventoryGrid,
-  }] = markup(`
-    <div>
-      <div class="toolbar" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()">
-        <label>
-          Mouse: 
-          <select ref="actionType" tabindex="-1"></select>
-        </label>
-        <label>
-          Land [Q / Z / X]: 
-          <select ref="landType" tabindex="-1"></select>
-        </label>
-        <label>
-          Prop [E / R / C / V]: 
-          <select ref="propType" tabindex="-1"></select>
-        </label>
-        <label>
-          Gravity [G]:
-          <input ref="gravity" type="checkbox" tabindex="-1"/>
-        </label>
-        <label>
-          Soft brush [T]:
-          <input ref="brushSoft" type="checkbox" tabindex="-1"/>
-        </label>
-        <label>
-          Debug:
-          <input ref="debug" type="checkbox" tabindex="-1"/>
-        </label>
-      </div>
-
-      <div ref="landText" hidden class="ui-box ui-center" style="text-align: right;"></div>
-      <div ref="propText" hidden class="ui-box ui-center" style="white-space: pre;"></div>
-
-      <ul class="menu" onmousedown="event.stopPropagation()">
-        <li onclick="ui_inventory.hidden = !ui_inventory.hidden; this.classList.toggle('selected')">Inv</li>
-        <li onclick="ui_char.hidden = !ui_char.hidden; this.classList.toggle('selected')">Char</li>
-        <li ref="save">Save</li>
-        <li ref="load">Load</li>
-        <li onclick="ui_help.hidden = !ui_help.hidden; this.classList.toggle('selected')" class="selected">Help</li>
-      </ul>
-
-      <div id="ui_inventory" class="inventory ui-box ui-rows" onmousedown="event.stopPropagation()" hidden>
-        <h1>
-          Inventory
-        </h1>
-        <div ref="buyItems" style="margin: 10px 0;">
-          Buy:
-          <button data-item="lightfoot">MOD: "Lightfoot"</button>
-          <button data-item="eaglewings">MOD: "Eagle Wings"</button>
-        </div>
-        <div ref="inventoryGrid" class="grid"></div>
-      </div>
-
-      <div id="ui_char" class="inventory ui-box ui-rows" onmousedown="event.stopPropagation()" hidden>
-        <h1>Character</h1>
-      </div>
-
-      <div class="ui-box ui-bottom ui-right">
-        <table>
-          <tr><th colspan="2"> ----- Brush info ----- </th><tr>
-          <tr><th> Size </th><td ref="brushSize"> </td><tr>
-          <tr><th> Position </th><td ref="brushPosition"> </td><tr>
-          <tr><th> Land name </th><td ref="brushLandName">  </td><tr>
-          <tr><th> Land owner </th><td ref="brushLandOwner"> </td><tr>
-          <tr><th> Land props </th><td ref="brushLandPropCount"> </td><tr>
-        </table>
-
-        <table id="ui_help">
-          <tr><th colspan="2"> ----- Controls ----- </th><tr>
-          <tr><th> Enter </th><td> Claim / Rename land </td><tr>
-          <tr><th> WASD </th><td> Move </td><tr>
-          <tr><th> Page up </th><td> Jump / Fly up </td><tr>
-          <tr><th> Page down </th><td> Fly down </td><tr>
-          <tr><th> Up / Down </th><td> Land height </td><tr>
-          <tr><th> Left / Right </th><td> Brush size </td><tr>
-          <tr><th> Mouse left </th><td> Action </td><tr>
-          <tr><th> Mouse right </th><td> Rotate camera </td><tr>
-          <tr><th> Mouse wheel </th><td> Zoom </td><tr>
-          <tr><th> Space </th><td> Edit prop </td><tr>
-          <tr><th> (Shift +) K / L </th><td> Rotate prop </td><tr>
-          <tr><th> Delete </th><td> Reset land </td><tr>
-          <tr><th> [A / B / C / ...] </th><td> Shortcuts </td><tr>
-        </table>
-      </div>
-    </div>
-  `)
-  ui.insertBefore(root, ui.firstChild)
-
-  actionTypes.forEach((mouseAction, index) => { 
-    ui_actionType.add(new Option(`[${index+1}] ${mouseAction.toUpperCase()}`, mouseAction)) 
-  })
-  ui_actionType.addEventListener('input', e => { 
-    state.currentActionType = e.target.value
-    e.target.blur()
-  })
-
-  landTypes.forEach(landType => { ui_landType.add(new Option(landType.toUpperCase(), landType)) })
-  ui_landType.addEventListener('input', e => { 
-    state.currentLandType = e.target.value
-    e.target.blur()
-  })
-
-  propTypes.forEach(propType => { ui_propType.add(new Option(propType.toUpperCase(), propType)) })
-  ui_propType.addEventListener('input', e => { 
-    state.currentPropType = e.target.value
-    e.target.blur()
-  })
-
-  ui_gravity.addEventListener('input', e => { 
-    state.gravity = e.target.checked 
-    e.target.blur()
-  })
-
-  ui_brushSoft.addEventListener('input', e => { 
-    brush.soft = e.target.checked 
-    e.target.blur()
-  })
-
-  ui_debug.addEventListener('input', e => { 
-    state.debug = e.target.checked 
-    e.target.blur()
-  })
-
-  ui_save.addEventListener('click', e => {
+  const save = () => {
     const land = LAND.at(player.position, world)
     if (land && land.owner == user.name) {
       const data = { 
@@ -170,6 +48,9 @@ export function init_UI({
         points: land.points.map(x => {
           const point = { ...x }
           delete point.land
+          if (point.prop) {
+            delete point.prop.activeText
+          }
           return point
         })
       }
@@ -183,9 +64,9 @@ export function init_UI({
       download.click()
       document.body.removeChild(download)
     }
-  })
+  }
 
-  ui_load.addEventListener('click', e => {
+  const load = () => {
     const fileInput = document.createElement('input')
     fileInput.type = 'file'
     fileInput.addEventListener('input', e => {
@@ -197,10 +78,233 @@ export function init_UI({
       reader.readAsText(file)
     })
     fileInput.click()
-  })
+  }
 
-  ui_buyItems.addEventListener('click', e => {
-    const itemToBuy = e.target.getAttribute('data-item')
+  return html`
+    <div>
+      <${LandText} state=${state} />
+      <${PropDialog} state=${state} />
+
+      <${Toolbar} state=${state} />
+      <${Info} 
+        showHelp=${showHelp} 
+        brush=${brush}
+        world=${world}
+      />
+
+      <ul class="menu" onmousedown=${e => { e.stopPropagation() }}>
+        <li 
+          onclick=${() => { setShowInventory(!showInventory) }} 
+          class=${showInventory ? 'selected' : ''}
+        >
+          Inv
+        </li>
+        <li 
+          onclick=${() => { setShowCharacter(!showCharacter) }} 
+          class=${showCharacter ? 'selected' : ''}
+        >
+          Char
+        </li>
+        <li onclick=${save}>
+          Save
+        </li>
+        <li onclick=${load}>
+          Load
+        </li>
+        <li 
+          onclick=${() => { setShowHelp(!showHelp) }} 
+          class=${showHelp ? 'selected' : ''}
+        >
+          Help
+        </li>
+      </ul>
+
+      ${showInventory && html`
+        <${Inventory} player=${player} />
+      `}
+
+      ${showCharacter && html`
+        <${Character} />
+      `}      
+    </div>
+  `
+}
+
+function Toolbar({ state, state: { brush } }) {
+  return html`
+    <div 
+      class="toolbar" 
+      onmousedown=${e => { e.stopPropagation() }} 
+      onkeydown=${e => { e.stopPropagation() }}
+    >
+      <label>
+        Mouse:
+        ${' '}
+        <select 
+          value=${state.currentActionType} 
+          oninput=${e => { state.currentActionType = e.target.value; e.target.blur(); }} 
+          tabindex="-1"
+        >
+          ${
+            actionTypes.map((actionType, index) => html`
+              <option value=${actionType}>
+                [${index+1}] ${actionType.toUpperCase()}
+              </option>
+            `)
+          }
+        </select>
+      </label>
+      <label>
+        Land [Q / Z / X]: 
+        ${' '}
+        <select 
+          value=${state.currentLandType} 
+          oninput=${e => { state.currentLandType = e.target.value; e.target.blur(); }} 
+          tabindex="-1"
+        >
+          ${
+            landTypes.map(landType => html`
+              <option value=${landType}>
+                ${landType.toUpperCase()}
+              </option>
+            `)
+          }
+        </select>
+      </label>
+      <label>
+        Prop [E / R / C / V]: 
+        ${' '}
+        <select 
+          value=${state.currentPropType} 
+          oninput=${e => { state.currentPropType = e.target.value; e.target.blur(); }} 
+          tabindex="-1"
+        >
+          ${
+            propTypes.map(propType => html`
+              <option value=${propType}>
+                ${propType.toUpperCase()}
+              </option>
+            `)
+          }
+        </select>
+      </label>
+      <label>
+        Gravity [G]:
+        ${' '}
+        <input
+          checked=${state.gravity}
+          oninput=${e => { state.gravity = e.target.checked; e.target.blur(); }}
+          type="checkbox" 
+          tabindex="-1"
+        />
+      </label>
+      <label>
+        Soft brush [T]:
+        ${' '}
+        <input 
+          checked=${brush.soft}
+          oninput=${e => { brush.soft = e.target.checked; e.target.blur(); }}
+          type="checkbox" 
+          tabindex="-1"
+        />
+      </label>
+      <label>
+        Debug:
+        ${' '}
+        <input
+          checked=${state.debug}
+          oninput=${e => { state.debug = e.target.checked; e.target.blur(); }}
+          type="checkbox" 
+          tabindex="-1"
+        />
+      </label>
+    </div>
+  `
+}
+
+function LandText({ state, state: { player, world }}) {
+  const activeLand = LAND.at(player.position, world)
+
+  useEffect(() => {
+    // Temp fix
+    const element = document.querySelector('.js-land-text')
+    let fadeTimer
+
+    element.classList.remove('ui-fade-in')
+    element.classList.add('ui-fade-out')
+
+    fadeTimer = setTimeout(() => {
+      // Temp fix
+      element.innerHTML = `
+        <h1 style="text-align: center;">${activeLand.name || 'Unclaimed Land...'}</h1>
+        ${activeLand.owner || '(You can claim this land if you want to)'} 
+      `
+      element.classList.add('ui-fade-in')
+      element.classList.remove('ui-fade-out')
+      element.hidden = false
+      
+      fadeTimer = setTimeout(() => {
+        element.classList.remove('ui-fade-in')
+        element.classList.add('ui-fade-out')
+      }, 2000)
+    }, 1000)
+
+    return () => {
+      clearTimeout(fadeTimer)
+    }
+  }, [activeLand.name, activeLand.owner])
+
+  return html`
+    <div 
+      hidden
+      class="js-land-text ui-box ui-center" 
+      style="text-align: right;"
+    />
+  `
+}
+
+function PropDialog({ state, state: { player } }) {
+  return html`
+    ${state.interactiveLandpoint && html`
+      <div class="ui-box ui-center" style="white-space: pre;">
+        ${state.interactiveLandpoint.prop.activeText || state.interactiveLandpoint.prop.text}
+        ${state.interactiveLandpoint.prop.interactions && 
+          state.interactiveLandpoint.prop.interactions
+            .filter(interaction => {
+              if (interaction.conditions) {
+                for (const condition in interaction.conditions) {
+                  if (!!player.events[condition] != interaction.conditions[condition]) {
+                    return false
+                  }
+                }
+              }
+              return true
+            })
+            .map(interaction => html`
+              <button
+                onmousedown=${e => {
+                  e.stopPropagation()
+                  const effects = interaction.effects
+                  if (effects.text || effects.text == null) {
+                    state.interactiveLandpoint.prop.activeText = effects.text
+                  }
+                  for (const event in effects.events) {
+                    player.events[event] = effects.events[event]
+                  }
+                }}
+                style="display: block; margin: 10px auto;"
+              >
+                ${interaction.action}
+              </button>
+            `)
+        }
+      </div>
+    `}
+  `
+}
+
+function Inventory({ player }) {
+  const buyItem = itemToBuy => {
     if (itemToBuy != null) {
       const firstEmptySlot = player.items.indexOf(null)
       if (firstEmptySlot < 0) {
@@ -232,77 +336,30 @@ export function init_UI({
         player.items[firstEmptySlot] = item
       }
     }
-  })
+  }
 
-  ui_inventoryGrid.addEventListener('mousedown', e => {
-    const itemIndex = e.target.getAttribute('data-item-index')
-    if (e.button == 2 && itemIndex != null) {
-      player.items[itemIndex] = null
-    }
-  })
-
-  let currentLandText
-  let currentLandTextTimer
-  let propText
-
-  let currentInventoryGrid
-
-  return () => {
-    const landAtBrush = LAND.at(brush.position, world) || {}
-    ui_brushSize.textContent = (brush.size-1)*2 + 1
-    ui_brushPosition.textContent = brush.position[0] + ', ' + brush.position[2]
-    ui_brushLandName.textContent = landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'
-    ui_brushLandOwner.textContent = landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'
-    ui_brushLandPropCount.textContent = landAtBrush.propCount + ' / ' + world.maxPropCount
-
-    ui_landType.value = state.currentLandType
-    ui_propType.value = state.currentPropType
-    ui_actionType.value = state.currentActionType
-    ui_gravity.checked = state.gravity
-    ui_brushSoft.checked = brush.soft
-    ui_debug.checked = state.debug
-
-    const activeLand = LAND.at(player.position, world)
-    const landText = `
-      <h1>${activeLand.name || 'Unclaimed Land...'}</h1>
-      ${activeLand.owner || '(You can claim this land if you want to)'} 
-    `
-    if (currentLandText != landText) {
-      currentLandText = landText
-
-      ui_landText.classList.remove('ui-fade-in')
-      ui_landText.classList.add('ui-fade-out')
-
-      clearTimeout(currentLandTextTimer)
-      currentLandTextTimer = setTimeout(() => {
-        ui_landText.innerHTML = currentLandText
-        ui_landText.classList.add('ui-fade-in')
-        ui_landText.classList.remove('ui-fade-out')
-        ui_landText.hidden = false
-        
-        currentLandTextTimer = setTimeout(() => {
-          ui_landText.classList.remove('ui-fade-in')
-          ui_landText.classList.add('ui-fade-out')
-        }, 2000)
-      }, 1000)
-    }
-
-    ui_propText.hidden = !propText
-    ui_propText.textContent = propText
-
-    if (state.interactiveLandpoint) {
-      propText = state.interactiveLandpoint.prop.text
-    } else {
-      propText = null
-    }
-
-    const inventoryGrid = player.items.map((item, index) => `
-      <div 
-        class="slot"
-        data-item-index="${index}" 
-        title='${
-          item 
-            ? `
+  return html`
+    <div class="inventory ui-box ui-rows" onmousedown=${e => { e.stopPropagation() }}>
+      <h1>
+        Inventory
+      </h1>
+      <div style="margin: 10px 0;">
+        Buy:
+        ${' '}
+        <button onclick=${() => { buyItem('lightfoot') }}>MOD: "Lightfoot"</button>
+        ${' '}
+        <button onclick=${() => { buyItem('eaglewings') }}>MOD: "Eagle Wings"</button>
+      </div>
+      <div class="grid">
+        ${
+          player.items.map((item, index) => html`
+            <div
+              onmousedown=${e => {
+                if (e.button == 2) {
+                  player.items[index] = null
+                }
+              }}
+              title=${item && `
 ${item.type.toUpperCase()}:
 "${item.name}"
 
@@ -310,16 +367,62 @@ EFFECTS:
 ${Object.keys(item.effects).map(effect => `${effect}: ${item.effects[effect]}`).join('\n')}
 
 (Right-click to remove)
-            `
-            : ''
-        }'
-      >
-        ${item ? `<img src="${item.icon}" style="pointer-events: none;"/>` : ''}
+              `}
+              class="slot"
+            >
+            ${item && html`
+              <img 
+                src="${item.icon}"
+                style="pointer-events: none;"
+              />
+            `}
+            </div>
+          `)
+        }
       </div>
-    `).join('')
-    if (currentInventoryGrid != inventoryGrid) {
-      ui_inventoryGrid.innerHTML = inventoryGrid
-      currentInventoryGrid = inventoryGrid
-    }
-  }
+    </div>
+  `
+}
+
+function Character() {
+  return html`
+    <div class="inventory ui-box ui-rows" onmousedown=${e => { e.stopPropagation() }}>
+      <h1>Character</h1>
+    </div>
+  `
+}
+
+function Info({ showHelp, brush, world }) {
+  const landAtBrush = LAND.at(brush.position, world) || {}
+  return html`
+    <div class="ui-box ui-bottom ui-right">
+      <table>
+        <tr><th colspan="2"> ----- Brush info ----- </th></tr>
+        <tr><th> Size </th><td> ${(brush.size-1)*2 + 1} </td></tr>
+        <tr><th> Position </th><td> ${brush.position[0] + ', ' + brush.position[2]} </td></tr>
+        <tr><th> Land name </th><td> ${landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'} </td></tr>
+        <tr><th> Land owner </th><td> ${landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'} </td></tr>
+        <tr><th> Land props </th><td> ${landAtBrush.propCount + ' / ' + world.maxPropCount} </td></tr>
+      </table>
+
+      ${showHelp && html`
+        <table id="ui_help">
+          <tr><th colspan="2"> ----- Controls ----- </th></tr>
+          <tr><th> Enter </th><td> Claim / Rename land </td></tr>
+          <tr><th> WASD </th><td> Move </td></tr>
+          <tr><th> Page up </th><td> Jump / Fly up </td></tr>
+          <tr><th> Page down </th><td> Fly down </td></tr>
+          <tr><th> Up / Down </th><td> Land height </td></tr>
+          <tr><th> Left / Right </th><td> Brush size </td></tr>
+          <tr><th> Mouse left </th><td> Action </td></tr>
+          <tr><th> Mouse right </th><td> Rotate camera </td></tr>
+          <tr><th> Mouse wheel </th><td> Zoom </td></tr>
+          <tr><th> Space </th><td> Edit prop </td></tr>
+          <tr><th> (Shift +) K / L </th><td> Rotate prop </td></tr>
+          <tr><th> Delete </th><td> Reset land </td></tr>
+          <tr><th> [A / B / C / ...] </th><td> Shortcuts </td></tr>
+        </table>
+      `}
+    </div>
+  `
 }

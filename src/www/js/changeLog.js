@@ -1,5 +1,9 @@
 export const changeLog = `
 
+🗓️ June 1, 2021
+🔹 50% done with adding player defined prop interactions
+🔹 Rewrote all UI to use Preact framework to make life a bit easier
+
 🗓️ May 30, 2021
 ⭐ Added 1 new land by yours truly!
 🚀 Added functional items prototype to the inventory screen
