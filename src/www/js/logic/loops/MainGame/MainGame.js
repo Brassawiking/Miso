@@ -35,6 +35,7 @@ export async function createLoop_MainGame ({
     
     gravity: true,
     debug: false,
+    help: true
   }
   
   gl.clearColor(121 / 255, 228 / 255, 245 / 255, 1)

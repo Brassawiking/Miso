@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ June 12, 2021
+🔹 Partially reworked UI (with some mockup elements)
+
 🗓️ June 11, 2021
 🔹 Created UI for editing player events
 🔹 Created UI for editing props (interactions not yet available)
