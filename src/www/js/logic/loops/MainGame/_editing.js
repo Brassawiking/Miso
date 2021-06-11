@@ -190,10 +190,11 @@ export function init_Editing({
     if (keyboard.keyOnce(' ')) {
       const props = landPoints.filter(x => x.prop).map(x => x.prop)
       if (props.length) {
-        const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text || '')
-        if (text != null) {
-          props.forEach(prop => { prop.text = text })
-        }
+        state.editingProps = props
+        // const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text || '')
+        // if (text != null) {
+        //   props.forEach(prop => { prop.text = text })
+        // }
       }
     }
   }

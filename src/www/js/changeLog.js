@@ -1,5 +1,9 @@
 export const changeLog = `
 
+🗓️ June 11, 2021
+🔹 Created UI for editing player events
+🔹 Created UI for editing props (interactions not yet available)
+
 🗓️ June 1, 2021
 🔹 50% done with adding player defined prop interactions
 🔹 Rewrote all UI to use Preact framework to make life a bit easier

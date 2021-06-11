@@ -145,9 +145,9 @@ function getInteractiveProp(player, world) {
   for (let i = 0; i < viewPoints.length; ++i) {
     const landPoint = LANDPOINT.at(viewPoints[i], world)
     if (      
-      landPoint && 
-      landPoint.prop && 
-      landPoint.prop.text
+      landPoint &&
+      landPoint.prop &&
+      (landPoint.prop.text || landPoint.prop.interactions.length)
     ) {
       return landPoint
     }

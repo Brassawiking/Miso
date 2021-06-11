@@ -194,7 +194,7 @@ export const PROP = {
       text: null,
       activeText: null,
       rotation: 0,
-      interactions: null,
+      interactions: [],
       // interactions: [
       //   {
       //     action: 'Could you tell me more?',
