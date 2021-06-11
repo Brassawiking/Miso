@@ -152,7 +152,7 @@ export function Toolbar({ state, state: { brush, player, world }, data: { user }
       .toolbar {
         position: absolute;
         top: 10px;
-        left: 100px;
+        left: 10px;
         max-width: calc(100vw - 110px);
         font-family: "Gothic A1", sans-serif;
         font-size: 14px;

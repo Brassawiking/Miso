@@ -69,6 +69,11 @@ body:after {
   z-index: 1;
 }
 
+.stats {
+  left: auto !important;
+  right: 0 !important;
+}
+
 miso-ui {
   display: block;
   position: fixed;
