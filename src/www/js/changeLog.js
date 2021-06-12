@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+⭐ Added 1 new land by yours truly!
 🔹 Partially reworked UI (with some mockup elements)
 
 🗓️ June 11, 2021
