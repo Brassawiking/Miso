@@ -100,7 +100,6 @@ function getInteractiveProp(player, world) {
   const right_3 = v3.multiply(viewSideward, step*3)
   const right_4 = v3.multiply(viewSideward, step*4)
 
-
   const viewPoints = [
     player.position,
     v3.add(player.position, left_1),
