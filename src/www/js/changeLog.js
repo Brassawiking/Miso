@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🔹 Updated intro land with a LAVA encounter
 🔹 Tweaked LAVA knockback to be more dangerous
 🚀 Added land type LAVA that hurts player, changed INVISIBILITY to SHIELD and added a setback event when player toughness reaches zero! 
 🔹 Added prototype INVISIBILITY ability (-) to try out the ABILITY points

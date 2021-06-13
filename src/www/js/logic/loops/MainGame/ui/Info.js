@@ -21,7 +21,7 @@ export function Info({ state, state: { brush, world } }) {
           <tr><th> Enter </th><td> Claim / Rename land </td></tr>
           <tr><th> WASD </th><td> Move </td></tr>
           <tr><th> F </th><td> Dash </td></tr>
-          <tr><th> B / N / M </th><td> Use RECOVERY points </td></tr>
+          <tr><th> B / N / M </th><td> Recover points </td></tr>
           <tr><th> - </th><td> Cast SHIELD </td></tr>
           <tr><th> Page up </th><td> Jump / Fly up </td></tr>
           <tr><th> Page down </th><td> Fly down </td></tr>
