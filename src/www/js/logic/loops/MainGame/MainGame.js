@@ -33,7 +33,24 @@ export async function createLoop_MainGame ({
       },
 
       events: {},
-      items: new Array(200).fill(null)
+      items: new Array(200).fill(null),
+
+      toughness: {
+        value: 3,
+        max: 5,
+      },
+      stamina: {
+        value: 3,
+        max: 5,
+      },
+      ability: {
+        value: 2,
+        max: 3,
+      },
+      recovery: {
+        value: 6,
+        max: 10,
+      },
     },
 
     currentActionType: actionTypes[0],
@@ -42,7 +59,7 @@ export async function createLoop_MainGame ({
     
     gravity: true,
     debug: false,
-    help: true
+    help: true,
   }
   
   gl.clearColor(121 / 255, 228 / 255, 245 / 255, 1)

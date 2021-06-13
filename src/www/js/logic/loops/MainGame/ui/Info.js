@@ -20,6 +20,7 @@ export function Info({ state, state: { brush, world } }) {
           <tr><th colspan="2"> ----- Controls ----- </th></tr>
           <tr><th> Enter </th><td> Claim / Rename land </td></tr>
           <tr><th> WASD </th><td> Move </td></tr>
+          <tr><th> F </th><td> Dash </td></tr>
           <tr><th> Page up </th><td> Jump / Fly up </td></tr>
           <tr><th> Page down </th><td> Fly down </td></tr>
           <tr><th> Up / Down </th><td> Land height </td></tr>

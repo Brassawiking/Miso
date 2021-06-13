@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🚀 Added a dash move (F) which is limited by regenerative STAMINA
 🔹 Added sound effects for entering game and jumping
 🔹 Created a shop tab
 🔹 Changed inventory size

@@ -16,6 +16,10 @@ export function init_Movement({
   const jumpFallForce = 25
   const freeFallForce = 35
     
+  setInterval(() => {
+    player.stamina.value = Math.min(player.stamina.value + 1, player.stamina.max)
+  }, 3000)
+
   return ({ deltaTime }) => {
     const speed = player.base.speed + player.items.filter(x => x && x.type == 'mod' && x.effects.speed != null).reduce((sum, item) => sum + item.effects.speed, 0)
     const jumpSpeed = player.base.jump + player.items.filter(x => x && x.type == 'mod' && x.effects.jump != null).reduce((sum, item) => sum + item.effects.jump, 0)
@@ -39,7 +43,12 @@ export function init_Movement({
       moveDirection = v3.add(moveDirection, v3.normalize([-camera.z[0], 0, -camera.z[2]]))
     }
     player.velocity = v3.add(player.velocity, v3.multiply(v3.normalize(moveDirection), speed))
-    
+
+    if (keyboard.keyOnce('F') && player.stamina.value > 0) {
+      player.velocity = v3.add(player.velocity, v3.multiply(v3.normalize(player.direction), jumpSpeed * 4))
+      player.stamina.value--
+    }
+
     if (state.gravity) {
       if (keyboard.keyOnce('PAGEUP') && !player.velocity[1]) {
         player.velocity[1] += jumpSpeed

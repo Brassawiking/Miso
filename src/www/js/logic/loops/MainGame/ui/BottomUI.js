@@ -31,7 +31,7 @@ export function BottomUI({ state, state: { player } }) {
       menuSound.currentTime = 0
     }
   }
-  
+
   return html`
     <div 
       class="bottomUI ${expanded ? 'expanded' : ''}" 
@@ -57,43 +57,35 @@ export function BottomUI({ state, state: { player } }) {
         </div>
         <div class="statBar" style="color: lime;" >
           <div class="statBarIcon">⭯</div>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
+          ${
+            Array(player.recovery.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.recovery.value ? 'empty' : ''}"/>
+            `)
+          }
         </div>
         <div class="statBar" style="color: cyan;">
           <div class="statBarIcon">★</div>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint empty"/>
+          ${
+            Array(player.ability.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.ability.value ? 'empty' : ''}"/>
+            `)
+          }
         </div>
         <div class="statBar" style="color: gold;">
           <div class="statBarIcon">➤</div>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
+          ${
+            Array(player.stamina.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.stamina.value ? 'empty' : ''}"/>
+            `)
+          }
         </div>
         <div class="statBar" style="color: red;">
           <div class="statBarIcon">♥</div>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
+          ${
+            Array(player.toughness.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.toughness.value ? 'empty' : ''}"/>
+            `)
+          }
         </div>
       </div>
 
