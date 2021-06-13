@@ -1,6 +1,9 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🔹 Revised UI for the mockup stat bars
+
+🗓️ June 12, 2021
 ⭐ Added 1 new land by yours truly!
 🔹 Partially reworked UI (with some mockup elements)
 

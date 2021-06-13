@@ -54,10 +54,43 @@ export function BottomUI({ state }) {
             Help
           </button>
         </div>
-        <div title="Stat: X / Y" class="statBar" style="width: 300px; color: lime; --value: 50%;" />
-        <div title="Stat: X / Y" class="statBar" style="width: 30px; color: cyan; --value: 60%;" />
-        <div title="Stat: X / Y" class="statBar" style="width: 150px; color: gold; --value: 75%;" />
-        <div title="Stat: X / Y" class="statBar" style="width: 200px; color: red; --value: 70%;" />
+        <div title="Stat: X / Y" class="statBar" style="color: lime;" >
+            <div class="statBarPoint"/>
+            <div class="statBarPoint"/>
+            <div class="statBarPoint"/>
+            <div class="statBarPoint"/>
+            <div class="statBarPoint"/>
+            <div class="statBarPoint"/>
+            <div class="statBarPoint empty"/>
+            <div class="statBarPoint empty"/>
+            <div class="statBarPoint empty"/>
+            <div class="statBarPoint empty"/>
+        </div>
+        <div title="Stat: X / Y" class="statBar" style="color: cyan;">
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint empty"/>
+        </div>
+        <div title="Stat: X / Y" class="statBar" style="color: gold;">
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+        </div>
+        <div title="Stat: X / Y" class="statBar" style="color: red;">
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+        </div>
       </div>
 
       <div style="padding: 20px;">
@@ -138,27 +171,28 @@ export function BottomUI({ state }) {
       }
 
       .bottomUI .statBar {
-        box-sizing: content-box; /* Map stat to pixels? */
-        height: 22px; 
-        background: currentColor;
+        display: flex;
+        box-sizing: border-box;
+        height: 24px; 
+        padding: 2px; 
         margin: 0 10px;
         transform: skew(-15deg) translateY(-16px);
         border-radius: 4px;
         border: 1px solid #fff;
-        box-shadow: #000 -1px -2px 5px 0px inset, #fff 1px 2px 5px 0px inset;
-        position: relative;
-        overflow: hidden;
+        background: #000;
       }
 
-      .bottomUI .statBar:before {
-        content: '';
-        display: block;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        width: calc(100% - var(--value));
-        background: #000;
+      .bottomUI .statBarPoint {
+        height: 100%; 
+        margin: 0 2px; 
+        width: 8px; 
+        border-radius: 2px;
+        background: currentColor; 
+        box-shadow: rgba(0, 0, 0, 0.3) -1px -1px 2px 0px inset, #fff 1px 1px 2px 0px inset; 
+      }
+
+      .bottomUI .statBarPoint.empty {
+        opacity: 0.35;
       }
 
       .bottomUI .tabs {
