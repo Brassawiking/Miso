@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🔹 Made the shop tab a bit more fancy and scalable
 🔹 Flipped bottom UI order
 🚀 Added a dash move (F) which is limited by regenerative STAMINA
 🔹 Added sound effects for entering game and jumping

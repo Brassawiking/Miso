@@ -97,7 +97,7 @@ export function BottomUI({ state, state: { player } }) {
       <div style="flex: 1 1 0; min-height: 0; padding: 10px; display: flex; flex-direction: column;">
         <div class="tabs">
           <div onclick=${() => tabSelected('inventory')} class="tab ${tab == 'inventory' ? 'selected' : '' }">
-            <div style="font-size: 12px; font-weight: 300;">${player.items.filter(x => x).length} / ${player.items.length}</div>
+            <div style="font-size: 14px; font-weight: 300;">${player.items.filter(x => x).length} / ${player.items.length}</div>
             Inventory 
           </div>
           <div onclick=${() => tabSelected('events')} class="tab ${tab == 'events' ? 'selected' : '' }">
