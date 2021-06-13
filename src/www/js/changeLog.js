@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+⭐ Added 1 new land by yours truly! Try your skill at the Proving Grounds to the north!
 🔹 Updated intro land with a LAVA encounter
 🔹 Tweaked LAVA knockback to be more dangerous
 🚀 Added land type LAVA that hurts player, changed INVISIBILITY to SHIELD and added a setback event when player toughness reaches zero! 
