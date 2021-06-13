@@ -54,7 +54,7 @@ export function BottomUI({ state }) {
             Help
           </button>
         </div>
-        <div title="Stat: X / Y" class="statBar" style="color: lime;" >
+        <div class="statBar" style="color: lime;" >
           <div class="statBarIcon">⭯</div>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
@@ -67,13 +67,57 @@ export function BottomUI({ state }) {
           <div class="statBarPoint empty"/>
           <div class="statBarPoint empty"/>
         </div>
-        <div title="Stat: X / Y" class="statBar" style="color: cyan;">
+        <div class="statBar" style="color: cyan;">
           <div class="statBarIcon">★</div>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
           <div class="statBarPoint empty"/>
         </div>
-        <div title="Stat: X / Y" class="statBar" style="color: gold;">
+        <div class="statBar" style="color: gold;">
           <div class="statBarIcon">➤</div>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
@@ -86,8 +130,16 @@ export function BottomUI({ state }) {
           <div class="statBarPoint empty"/>
           <div class="statBarPoint empty"/>
         </div>
-        <div title="Stat: X / Y" class="statBar" style="color: red;">
+        <div class="statBar" style="color: red;">
           <div class="statBarIcon">♥</div>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
@@ -179,7 +231,7 @@ export function BottomUI({ state }) {
         box-sizing: border-box;
         height: 24px; 
         padding: 2px; 
-        margin: 0 10px;
+        margin: 0 8px;
         transform: skew(-15deg) translateY(-16px);
         border-radius: 4px;
         border: 1px solid #fff;
