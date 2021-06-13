@@ -41,33 +41,11 @@ export function BottomUI({ state, state: { player } }) {
       onkeydown=${e => { e.stopPropagation() }}
     >
       <div class="quickbar">
-        <div style="flex: 1 1 0;">
-          <button onclick=${toggle}>
-            ${expanded ? '▼ Close' : '▲ Open'}
-          </button>
-          <button 
-            onclick=${e => {
-              e.target.blur()
-              state.help = !state.help
-            }}
-            class="${state.help ? 'selected' : ''}"
-          >
-            Help
-          </button>
-        </div>
-        <div class="statBar" style="color: lime;" >
-          <div class="statBarIcon">⭯</div>
+        <div class="statBar" style="color: red;">
+          <div class="statBarIcon">♥</div>
           ${
-            Array(player.recovery.max).fill(null).map((_, index) => html`
-              <div class="statBarPoint ${index+1 > player.recovery.value ? 'empty' : ''}"/>
-            `)
-          }
-        </div>
-        <div class="statBar" style="color: cyan;">
-          <div class="statBarIcon">★</div>
-          ${
-            Array(player.ability.max).fill(null).map((_, index) => html`
-              <div class="statBarPoint ${index+1 > player.ability.value ? 'empty' : ''}"/>
+            Array(player.toughness.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.toughness.value ? 'empty' : ''}"/>
             `)
           }
         </div>
@@ -79,14 +57,37 @@ export function BottomUI({ state, state: { player } }) {
             `)
           }
         </div>
-        <div class="statBar" style="color: red;">
-          <div class="statBarIcon">♥</div>
+        <div class="statBar" style="color: cyan;">
+          <div class="statBarIcon">★</div>
           ${
-            Array(player.toughness.max).fill(null).map((_, index) => html`
-              <div class="statBarPoint ${index+1 > player.toughness.value ? 'empty' : ''}"/>
+            Array(player.ability.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.ability.value ? 'empty' : ''}"/>
             `)
           }
         </div>
+        <div class="statBar" style="color: lime;" >
+          <div class="statBarIcon">⭯</div>
+          ${
+            Array(player.recovery.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.recovery.value ? 'empty' : ''}"/>
+            `)
+          }
+        </div>
+
+        <div style="flex: 1 1 0;"/>
+
+        <button 
+          onclick=${e => {
+            e.target.blur()
+            state.help = !state.help
+          }}
+          class="${state.help ? 'selected' : ''}"
+        >
+          Help
+        </button>
+        <button onclick=${toggle}>
+          ${expanded ? '▼ Close' : '▲ Open'}
+        </button>
       </div>
 
       <div style="padding: 20px;">
