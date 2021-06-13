@@ -42,7 +42,7 @@ export async function init_World({
 
   setInterval(() => {
     player.recovery.value = Math.min(player.recovery.value + 1, player.recovery.max)
-  }, 3000)
+  }, 5000)
 
   let shieldTimer
   const recoverPoint = (stat) => {
