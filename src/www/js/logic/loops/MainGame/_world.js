@@ -103,7 +103,7 @@ export async function init_World({
     ) {
       player.toughness.value--
       player.takenDamage = true
-      player.velocity = v3.add(player.velocity, [0, 10, 0])
+      player.velocity = v3.add(v3.multiply(player.direction, -30), [0, 10, 0])
       setTimeout(() => {
         player.takenDamage = false
       }, 1000)
