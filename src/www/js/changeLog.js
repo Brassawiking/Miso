@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🚀 Prototype RECOVERY points can now be used to refill other points with B / N / M, STAMINA no longer regenerates
 🔹 Made the shop tab a bit more fancy and scalable
 🔹 Flipped bottom UI order
 🚀 Added a dash move (F) which is limited by regenerative STAMINA

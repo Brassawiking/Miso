@@ -16,10 +16,6 @@ export function init_Movement({
   const jumpFallForce = 25
   const freeFallForce = 35
     
-  setInterval(() => {
-    player.stamina.value = Math.min(player.stamina.value + 1, player.stamina.max)
-  }, 3000)
-
   return ({ deltaTime }) => {
     const speed = player.base.speed + player.items.filter(x => x && x.type == 'mod' && x.effects.speed != null).reduce((sum, item) => sum + item.effects.speed, 0)
     const jumpSpeed = player.base.jump + player.items.filter(x => x && x.type == 'mod' && x.effects.jump != null).reduce((sum, item) => sum + item.effects.jump, 0)

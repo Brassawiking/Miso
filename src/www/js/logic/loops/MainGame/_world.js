@@ -1,4 +1,5 @@
 import { v3 } from '../../../common/math.js'
+import { keyboard } from '../../../system/input.js'
 import { LAND, LANDPOINT } from '../../entities.js'
 import { loadData, loadLandIntoWorld } from '../../data.js'
 import { createScene_World } from '../../../rendering/scenes/World.js'
@@ -34,12 +35,43 @@ export async function init_World({
   ])
   loadedLands.forEach(x => loadLandIntoWorld(x, world))
 
+  setInterval(() => {
+    player.recovery.value = Math.min(player.recovery.value + 1, player.recovery.max)
+  }, 3000)
+
   return ({ time }) => {
     const sunSpeed = time / 5 + Math.PI
     const sunRay = [Math.sin(sunSpeed), -1, Math.cos(sunSpeed)]
     const lands = getLands(player, world)
 
     state.interactiveLandpoint = getInteractiveProp(player, world)
+
+    if (
+      keyboard.keyOnce('B') && 
+      player.toughness.value < player.toughness.max &&
+      player.recovery.value > 0
+    ) {
+      player.toughness.value++
+      player.recovery.value--
+    }
+    
+    if (
+      keyboard.keyOnce('N') && 
+      player.stamina.value < player.stamina.max && 
+      player.recovery.value > 0
+    ) {
+      player.stamina.value++
+      player.recovery.value--
+    }
+    
+    if (
+      keyboard.keyOnce('M') && 
+      player.ability.value < player.ability.max && 
+      player.recovery.value > 0
+    ) {
+      player.ability.value++
+      player.recovery.value--
+    }
 
     scene_World({ 
       time,

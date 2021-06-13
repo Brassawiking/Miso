@@ -40,15 +40,15 @@ export async function createLoop_MainGame ({
         max: 5,
       },
       stamina: {
-        value: 3,
-        max: 5,
+        value: 5,
+        max: 10,
       },
       ability: {
         value: 2,
         max: 3,
       },
       recovery: {
-        value: 6,
+        value: 0,
         max: 10,
       },
     },
