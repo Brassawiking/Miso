@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🔹 Added sound effects for entering game and jumping
 🔹 Created a shop tab
 🔹 Changed inventory size
 🔹 Added small inventory summary

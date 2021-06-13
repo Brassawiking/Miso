@@ -2,6 +2,8 @@ import { v3 } from '../../../common/math.js'
 import { keyboard } from '../../../system/input.js'
 import { WORLD } from '../../entities.js'
 
+const jumpSound = new Audio('https://opengameart.org/sites/default/files/huh.mp3')
+
 export function init_Movement({
   state,
   state: { 
@@ -40,6 +42,11 @@ export function init_Movement({
     if (state.gravity) {
       if (keyboard.keyOnce('PAGEUP') && !player.velocity[1]) {
         player.velocity[1] += jumpSpeed
+        if (jumpSound.paused) {
+          jumpSound.play()
+        } else {
+          jumpSound.currentTime = 0
+        }
       }
     } else {
       if (keyboard.key('PAGEUP')) {

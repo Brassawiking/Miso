@@ -7,9 +7,16 @@ import { init_Editing } from './_editing.js'
 import { init_World } from './_world.js'
 import { actionTypes, landTypes, propTypes} from './_enums.js'
 
+const forestAmbience = new Audio('https://opengameart.org/sites/default/files/Forest_Ambience.mp3')
+
 export async function createLoop_MainGame ({ 
   data 
-}) {  
+}) {
+  setTimeout(() => {
+    forestAmbience.loop = true
+    forestAmbience.play()
+  }, 1000)
+
   const state = {
     world: WORLD.identity(),
     brush: BRUSH.identity(),
