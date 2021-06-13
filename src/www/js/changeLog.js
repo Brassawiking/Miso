@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🔹 Added some icons for mockup stat bars
 🔹 Revised UI for the mockup stat bars
 
 🗓️ June 12, 2021

@@ -55,23 +55,26 @@ export function BottomUI({ state }) {
           </button>
         </div>
         <div title="Stat: X / Y" class="statBar" style="color: lime;" >
-            <div class="statBarPoint"/>
-            <div class="statBarPoint"/>
-            <div class="statBarPoint"/>
-            <div class="statBarPoint"/>
-            <div class="statBarPoint"/>
-            <div class="statBarPoint"/>
-            <div class="statBarPoint empty"/>
-            <div class="statBarPoint empty"/>
-            <div class="statBarPoint empty"/>
-            <div class="statBarPoint empty"/>
+          <div class="statBarIcon">⭯</div>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
+          <div class="statBarPoint empty"/>
         </div>
         <div title="Stat: X / Y" class="statBar" style="color: cyan;">
+          <div class="statBarIcon">★</div>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
           <div class="statBarPoint empty"/>
         </div>
         <div title="Stat: X / Y" class="statBar" style="color: gold;">
+          <div class="statBarIcon">➤</div>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
@@ -84,6 +87,7 @@ export function BottomUI({ state }) {
           <div class="statBarPoint empty"/>
         </div>
         <div title="Stat: X / Y" class="statBar" style="color: red;">
+          <div class="statBarIcon">♥</div>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
@@ -180,6 +184,12 @@ export function BottomUI({ state }) {
         border-radius: 4px;
         border: 1px solid #fff;
         background: #000;
+      }
+
+      .bottomUI .statBarIcon {
+        padding: 0 2px;
+        line-height: 20px;
+        font-weight: 900;
       }
 
       .bottomUI .statBarPoint {
