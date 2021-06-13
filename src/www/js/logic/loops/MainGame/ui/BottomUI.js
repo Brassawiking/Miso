@@ -6,7 +6,7 @@ import { Events } from './Events.js'
 const menuSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/mouseclick.wav.mp3')
 const tabSound = new Audio('https://opengameart.org/sites/default/files/Menu%20Selection%20Click%20%28preview%29.mp3')
 
-export function BottomUI({ state }) {
+export function BottomUI({ state, state: { player } }) {
   const [expanded, setExpanded] = useState(false)
   const [tab, setTab] = useState('inventory')
 
@@ -71,50 +71,6 @@ export function BottomUI({ state }) {
           <div class="statBarIcon">★</div>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
-          <div class="statBarPoint empty"/>
           <div class="statBarPoint empty"/>
         </div>
         <div class="statBar" style="color: gold;">
@@ -135,15 +91,6 @@ export function BottomUI({ state }) {
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
           <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
-          <div class="statBarPoint"/>
           <div class="statBarPoint empty"/>
           <div class="statBarPoint empty"/>
         </div>
@@ -156,7 +103,8 @@ export function BottomUI({ state }) {
       <div style="flex: 1 1 0; min-height: 0; padding: 10px; display: flex; flex-direction: column;">
         <div class="tabs">
           <div onclick=${() => tabSelected('inventory')} class="tab ${tab == 'inventory' ? 'selected' : '' }">
-            Inventory
+            <div style="font-size: 12px;">${player.items.filter(x => x).length} / ${player.items.length}</div>
+            Inventory 
           </div>
           <div onclick=${() => tabSelected('events')} class="tab ${tab == 'events' ? 'selected' : '' }">
             Events
@@ -261,13 +209,14 @@ export function BottomUI({ state }) {
         display: flex; 
         border-bottom: 1px solid #fff;
         font-size: 20px;
+        align-items: flex-end;
       }
 
       .bottomUI .tab {
         margin: 0 20px; 
         padding: 5px 0; 
         border-bottom: 3px solid transparent; 
-        cursor pointer; 
+        cursor: pointer; 
         font-weight: light;
         cursor: pointer;
         width: 150px;
