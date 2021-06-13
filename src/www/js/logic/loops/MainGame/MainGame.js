@@ -26,7 +26,7 @@ export async function createLoop_MainGame ({
       },
 
       events: {},
-      items: new Array(24*12).fill(null)
+      items: new Array(200).fill(null)
     },
 
     currentActionType: actionTypes[0],

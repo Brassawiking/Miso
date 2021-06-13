@@ -97,8 +97,8 @@ ${Object.keys(item.effects).map(effect => `${effect}: ${item.effects[effect]}`).
       .inventory .grid {
         flex: 1 1 0px;
         display: grid;
-        grid-template-columns: repeat(24, 1fr);
-        grid-template-rows: repeat(12, 1fr);
+        grid-template-columns: repeat(20, 1fr);
+        grid-template-rows: repeat(10, 1fr);
         gap: 2px;
         overflow: hidden;
       }
