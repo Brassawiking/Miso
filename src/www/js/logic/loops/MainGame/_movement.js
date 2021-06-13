@@ -2,7 +2,8 @@ import { v3 } from '../../../common/math.js'
 import { keyboard } from '../../../system/input.js'
 import { WORLD } from '../../entities.js'
 
-const jumpSound = new Audio('https://opengameart.org/sites/default/files/huh.mp3')
+const jumpSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/fall.wav.mp3')
+jumpSound.volume = 0.25
 
 export function init_Movement({
   state,
