@@ -2,6 +2,7 @@ import { preact } from '../../../../rendering/ui.js'
 const  { html, useState } = preact
 import { Inventory } from './Inventory.js'
 import { Events } from './Events.js'
+import { Shop } from './Shop.js'
 
 const menuSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/mouseclick.wav.mp3')
 const tabSound = new Audio('https://opengameart.org/sites/default/files/Menu%20Selection%20Click%20%28preview%29.mp3')
@@ -109,6 +110,9 @@ export function BottomUI({ state, state: { player } }) {
           <div onclick=${() => tabSelected('events')} class="tab ${tab == 'events' ? 'selected' : '' }">
             Events
           </div>
+          <div onclick=${() => tabSelected('shop')} class="tab ${tab == 'shop' ? 'selected' : '' }">
+            Shop
+          </div>
         </div>
         <div style="flex: 1 1 0; overflow: auto;">
           ${tab == 'inventory' && html`
@@ -118,6 +122,11 @@ export function BottomUI({ state, state: { player } }) {
           `}
           ${tab == 'events' && html`
             <${Events}
+              state=${state}
+            />
+          `}
+          ${tab == 'shop' && html`
+            <${Shop}
               state=${state}
             />
           `}

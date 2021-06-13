@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🔹 Created a shop tab
 🔹 Changed inventory size
 🔹 Added small inventory summary
 🔹 Added some icons for mockup stat bars
