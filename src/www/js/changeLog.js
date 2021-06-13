@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 12, 2021
+🚀 Added land type LAVA that hurts player, changed INVISIBILITY to SHIELD and added a setback event when player toughness reaches zero! 
 🔹 Added prototype INVISIBILITY ability (-) to try out the ABILITY points
 🚀 Prototype RECOVERY points can now be used to refill other points with B / N / M, STAMINA no longer regenerates
 🔹 Made the shop tab a bit more fancy and scalable

@@ -4,6 +4,11 @@ import { LAND, LANDPOINT } from '../../entities.js'
 import { loadData, loadLandIntoWorld } from '../../data.js'
 import { createScene_World } from '../../../rendering/scenes/World.js'
 
+const recoverSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/click.wav.mp3')
+const lavaSound = new Audio('https://opengameart.org/sites/default/files/a_1.mp3')
+const setbackSound = new Audio('https://opengameart.org/sites/default/files/game_over_bad_chest.mp3')
+const shieldSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/spell3.wav.mp3')
+
 export async function init_World({
   state,
   state: {
@@ -39,6 +44,22 @@ export async function init_World({
     player.recovery.value = Math.min(player.recovery.value + 1, player.recovery.max)
   }, 3000)
 
+  let shieldTimer
+  const recoverPoint = (stat) => {
+    if (
+      stat.value < stat.max &&
+      player.recovery.value > 0
+    ) {
+      stat.value++
+      player.recovery.value--
+      if (recoverSound.paused) {
+          recoverSound.play()
+      } else {
+        recoverSound.currentTime = 0
+      }
+    }
+  }
+
   return ({ time }) => {
     const sunSpeed = time / 5 + Math.PI
     const sunRay = [Math.sin(sunSpeed), -1, Math.cos(sunSpeed)]
@@ -46,43 +67,69 @@ export async function init_World({
 
     state.interactiveLandpoint = getInteractiveProp(player, world)
 
-    if (
-      keyboard.keyOnce('B') && 
-      player.toughness.value < player.toughness.max &&
-      player.recovery.value > 0
-    ) {
-      player.toughness.value++
-      player.recovery.value--
+    if (keyboard.keyOnce('B')) {
+      recoverPoint(player.toughness)
     }
-    
-    if (
-      keyboard.keyOnce('N') && 
-      player.stamina.value < player.stamina.max && 
-      player.recovery.value > 0
-    ) {
-      player.stamina.value++
-      player.recovery.value--
+    if (keyboard.keyOnce('N')) {
+      recoverPoint(player.stamina)
     }
-    
-    if (
-      keyboard.keyOnce('M') && 
-      player.ability.value < player.ability.max && 
-      player.recovery.value > 0
-    ) {
-      player.ability.value++
-      player.recovery.value--
+    if (keyboard.keyOnce('M')) {
+      recoverPoint(player.ability)
     }
 
     if (
       keyboard.keyOnce('-') && 
       player.ability.value > 0 
     ) {
-      const amount = 5
       player.ability.value--
-      player.invisibility += amount
+      player.shielded = true
+      clearTimeout(shieldTimer)
+      shieldTimer = setTimeout(() => {
+        player.shielded = false
+      }, 3000)
+
+      if (shieldSound.paused) {
+        shieldSound.play()
+      } else {
+        shieldSound.currentTime = 0
+      }
+    }
+
+    if (
+      LANDPOINT.at(player.position, world).type == 'lava' &&
+      player.velocity[1] == 0 &&
+      !player.shielded &&
+      !player.takenDamage
+    ) {
+      player.toughness.value--
+      player.takenDamage = true
+      player.velocity = v3.add(player.velocity, [0, 10, 0])
       setTimeout(() => {
-        player.invisibility -= amount
-      }, 10000)
+        player.takenDamage = false
+      }, 1000)
+
+      if (lavaSound.paused) {
+        lavaSound.play()
+      } else {
+        lavaSound.currentTime = 0
+      }
+    }
+
+    if (player.toughness.value <= 0) {
+      player.position = [-5, 1, 2]
+      player.velocity = [0, 0, 0]
+      player.direction = [0, 0, 1]
+      player.toughness.value = 1
+      player.stamina.value = 0
+      player.ability.value = 0
+      player.recovery.value = 0
+      player.takenDamage = false
+
+      if (setbackSound.paused) {
+        setbackSound.play()
+      } else {
+        setbackSound.currentTime = 0
+      }
     }
 
     scene_World({ 

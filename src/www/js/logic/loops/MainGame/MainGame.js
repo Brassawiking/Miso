@@ -36,15 +36,15 @@ export async function createLoop_MainGame ({
       items: new Array(200).fill(null),
 
       toughness: {
-        value: 3,
+        value: 5,
         max: 5,
       },
       stamina: {
-        value: 5,
+        value: 10,
         max: 10,
       },
       ability: {
-        value: 2,
+        value: 3,
         max: 3,
       },
       recovery: {
@@ -52,7 +52,8 @@ export async function createLoop_MainGame ({
         max: 10,
       },
 
-      invisibility: 0
+      takenDamage: false,
+      shielded: false,
     },
 
     currentActionType: actionTypes[0],

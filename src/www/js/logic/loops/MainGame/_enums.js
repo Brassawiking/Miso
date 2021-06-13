@@ -12,7 +12,8 @@ export const landTypes = [
   'sand',
   'dirt',
   'rock',
-  'grass'
+  'grass',
+  'lava',
 ].sort((a, b) => a.localeCompare(b))
 
 export const propTypes = [

@@ -137,7 +137,7 @@ export function createScene_World(landSize) {
     if (v3.cross(player.direction, modelFacingNormal)[1] < 0) {
       playerRotation = 2*Math.PI - playerRotation 
     }
-    render_PlayerModel(camera.matrix, player.position, sunRay, playerRotation, 1 / (player.invisibility+1))
+    render_PlayerModel(camera.matrix, player.position, sunRay, playerRotation, player.shielded ? 0.25 : 1)
 
     if (state.interactiveLandpoint) {
       const playerEyes = v3.add(player.position, [0, 2, 0])
@@ -406,19 +406,15 @@ export function createScene_World(landSize) {
   }
 }
 
+const colors = {
+  'grass': [71, 176, 20],
+  'dirt': [118, 85, 10],
+  'rock': [61, 53, 75],
+  'sand': [246, 228, 173],
+  'lava': [255, 0, 50],
+}
 function getColor(landPoint) {
-  switch(landPoint.type) {
-    case 'grass':
-      return [71, 176, 20]
-    case 'dirt':
-      return [118, 85, 10]
-    case 'rock':
-      return [61, 53, 75]
-    case 'sand':
-      return [246, 228, 173]
-    default:
-      return [255, 255, 255]
-  }
+  return colors[landPoint.type] || [255, 255, 255]
 }
 
 function getInterativePropHeightOffset(prop) {
