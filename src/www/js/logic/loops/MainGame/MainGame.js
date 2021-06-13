@@ -51,6 +51,8 @@ export async function createLoop_MainGame ({
         value: 0,
         max: 10,
       },
+
+      invisibility: 0
     },
 
     currentActionType: actionTypes[0],

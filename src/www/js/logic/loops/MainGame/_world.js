@@ -73,6 +73,18 @@ export async function init_World({
       player.recovery.value--
     }
 
+    if (
+      keyboard.keyOnce('-') && 
+      player.ability.value > 0 
+    ) {
+      const amount = 5
+      player.ability.value--
+      player.invisibility += amount
+      setTimeout(() => {
+        player.invisibility -= amount
+      }, 10000)
+    }
+
     scene_World({ 
       time,
       lands,

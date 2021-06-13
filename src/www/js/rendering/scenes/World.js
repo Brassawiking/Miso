@@ -137,11 +137,11 @@ export function createScene_World(landSize) {
     if (v3.cross(player.direction, modelFacingNormal)[1] < 0) {
       playerRotation = 2*Math.PI - playerRotation 
     }
-    render_PlayerModel(camera.matrix, player.position, sunRay, playerRotation)
+    render_PlayerModel(camera.matrix, player.position, sunRay, playerRotation, 1 / (player.invisibility+1))
 
     if (state.interactiveLandpoint) {
       const playerEyes = v3.add(player.position, [0, 2, 0])
-      render_Line(
+      render_Line(  
         camera.matrix, 
         playerEyes, 
         v3.add(

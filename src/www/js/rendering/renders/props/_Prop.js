@@ -16,7 +16,8 @@ export function createRender_Prop(mesh, normals, colors) {
         cameraView: 'mat4',
         worldPosition: 'vec3',
         u_sunRay: 'vec3',
-        u_rotation: 'float'
+        u_rotation: 'float',
+        u_opacity: 'float',
       },
       varyings: {
         v_normal: 'vec4',
@@ -50,7 +51,7 @@ export function createRender_Prop(mesh, normals, colors) {
       fragment: `
         void main() {
           float light = dot(-normalize(u_sunRay), normalize(v_normal.xyz));
-          fragment = vec4((v_color * max(light, 0.4)).rgb, v_color.a);
+          fragment = vec4((v_color * max(light, 0.4)).rgb, v_color.a * u_opacity);
         }
       `
     })
@@ -93,7 +94,8 @@ export function createRender_Prop(mesh, normals, colors) {
   let currentPosition
   let currentSunRay
   let currentRotation
-  return (cameraView, position, sunRay, rotation) => {
+  let currentOpacity
+  return (cameraView, position, sunRay, rotation, opacity = 1) => {
     if (currentCameraView != cameraView) {
       uniforms.cameraView = ['Matrix4fv', false, cameraView]
       currentCameraView = cameraView
@@ -109,6 +111,10 @@ export function createRender_Prop(mesh, normals, colors) {
     if (currentRotation != rotation) {
       uniforms.u_rotation = ['1f', rotation]
       currentRotation = rotation      
+    }
+    if (currentOpacity != opacity) {
+      uniforms.u_opacity = ['1f', opacity]
+      currentOpacity = opacity      
     }
 
     Shader({
