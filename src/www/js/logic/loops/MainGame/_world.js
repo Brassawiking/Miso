@@ -71,7 +71,7 @@ export async function init_World({
   return ({ time }) => {
     const sunSpeed = time / 5 + Math.PI
     const sunRay = [Math.sin(sunSpeed), -1, Math.cos(sunSpeed)]
-    const lands = getLands(player, world)
+    const lands = getLands(player, world, state)
 
     state.interactiveLandpoint = getInteractiveProp(player, world)
 
@@ -83,6 +83,13 @@ export async function init_World({
     }
     if (keyboard.keyOnce('M')) {
       recoverPoint(player.toughness)
+    }
+
+    if (keyboard.keyOnce('P')) {
+      state.viewDistance++
+    }
+    if (keyboard.keyOnce('O')) {
+      state.viewDistance = Math.max(state.viewDistance - 1, 1)
     }
 
     if (keyboard.keyOnce('-')) {
@@ -161,7 +168,7 @@ export async function init_World({
   }
 }
 
-function getLands(player, world) {
+function getLands(player, world, state) {
   const getOrCreateLand = (iX, iY) => 
     LAND.at_index(iX, iY, world) ||
     LAND.add(LAND.identity(world.landSize), world, iX, iY)
@@ -170,19 +177,16 @@ function getLands(player, world) {
   const activeLandIndexY = Math.floor(player.position[2] / world.landSize)
   const activeLand = getOrCreateLand(activeLandIndexX, activeLandIndexY)
   
-  return [
-    getOrCreateLand(activeLand.x-1, activeLand.y+1),
-    getOrCreateLand(activeLand.x-1, activeLand.y),
-    getOrCreateLand(activeLand.x-1, activeLand.y-1),
+  const result = []
+  const viewDistance = state.viewDistance
 
-    getOrCreateLand(activeLand.x, activeLand.y+1),
-    activeLand,
-    getOrCreateLand(activeLand.x, activeLand.y-1),
+  for (let i = -viewDistance; i <= viewDistance ; ++i) {
+    for (let j = -viewDistance; j <= viewDistance ; ++j) {
+      result.push(getOrCreateLand(activeLand.x + i, activeLand.y + j))
+    }
+  }
 
-    getOrCreateLand(activeLand.x+1, activeLand.y+1),
-    getOrCreateLand(activeLand.x+1, activeLand.y),
-    getOrCreateLand(activeLand.x+1, activeLand.y-1),
-  ]
+  return result
 }
 
 function getInteractiveProp(player, world) {

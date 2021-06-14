@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 14, 2021
+🔹 Can now change view distance for taking those sweet screenshots! (Larger distance is very performance heavy) 
 🔹 Added sound effect when trying to use DASH or SHIELD when they are not available 
 🔹 Added sound effect when trying to use RECOVERY when it is empty 
 🔹 Added a new item in shop for ease of travel 
