@@ -4,7 +4,8 @@ import { LAND, LANDPOINT } from '../../entities.js'
 import { loadData, loadLandIntoWorld } from '../../data.js'
 import { createScene_World } from '../../../rendering/scenes/World.js'
 
-const recoverSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/click.wav.mp3')
+const recoverySound = new Audio('https://opengameart.org/sites/default/files/audio_preview/click.wav.mp3')
+const recoveryEmptySound = new Audio('https://opengameart.org/sites/default/files/Metal%20Click.mp3')
 const lavaSound = new Audio('https://opengameart.org/sites/default/files/a_1.mp3')
 const setbackSound = new Audio('https://opengameart.org/sites/default/files/game_over_bad_chest.mp3')
 const shieldSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/spell3.wav.mp3')
@@ -48,16 +49,21 @@ export async function init_World({
 
   let shieldTimer
   const recoverPoint = (stat) => {
-    if (
-      stat.value < stat.max &&
-      player.recovery.value > 0
-    ) {
-      stat.value++
-      player.recovery.value--
-      if (recoverSound.paused) {
-          recoverSound.play()
+    if (stat.value < stat.max) {
+      if (player.recovery.value > 0) {
+        stat.value++
+        player.recovery.value--
+        if (recoverySound.paused) {
+            recoverySound.play()
+        } else {
+          recoverySound.currentTime = 0
+        }
       } else {
-        recoverSound.currentTime = 0
+        if (recoveryEmptySound.paused) {
+          recoveryEmptySound.play()
+        } else {
+          recoveryEmptySound.currentTime = 0
+        }
       }
     }
   }
