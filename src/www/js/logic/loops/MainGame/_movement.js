@@ -8,6 +8,8 @@ jumpSound.volume = 0.25
 const dashSound = new Audio('https://opengameart.org/sites/default/files/sfx_fly.mp3')
 dashSound.volume = 0.25
 
+const notAvailableSound = new Audio('https://opengameart.org/sites/default/files/Metal%20Click.mp3')
+
 export function init_Movement({
   state,
   state: { 
@@ -43,13 +45,21 @@ export function init_Movement({
     }
     player.velocity = v3.add(player.velocity, v3.multiply(v3.normalize(moveDirection), speed))
 
-    if (keyboard.keyOnce('F') && player.stamina.value > 0) {
-      player.velocity = v3.add(player.velocity, v3.multiply(v3.normalize(player.direction), jumpSpeed * 4))
-      player.stamina.value--
-      if (dashSound.paused) {
-        dashSound.play()
+    if (keyboard.keyOnce('F')) {
+      if (player.stamina.value > 0) {
+        player.velocity = v3.add(player.velocity, v3.multiply(v3.normalize(player.direction), jumpSpeed * 4))
+        player.stamina.value--
+        if (dashSound.paused) {
+          dashSound.play()
+        } else {
+          dashSound.currentTime = 0
+        }
       } else {
-        dashSound.currentTime = 0
+        if (notAvailableSound.paused) {
+          notAvailableSound.play()
+        } else {
+          notAvailableSound.currentTime = 0
+        }
       }
     }
 

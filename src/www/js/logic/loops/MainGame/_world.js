@@ -5,7 +5,7 @@ import { loadData, loadLandIntoWorld } from '../../data.js'
 import { createScene_World } from '../../../rendering/scenes/World.js'
 
 const recoverySound = new Audio('https://opengameart.org/sites/default/files/audio_preview/click.wav.mp3')
-const recoveryEmptySound = new Audio('https://opengameart.org/sites/default/files/Metal%20Click.mp3')
+const notAvailableSound = new Audio('https://opengameart.org/sites/default/files/Metal%20Click.mp3')
 const lavaSound = new Audio('https://opengameart.org/sites/default/files/a_1.mp3')
 const setbackSound = new Audio('https://opengameart.org/sites/default/files/game_over_bad_chest.mp3')
 const shieldSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/spell3.wav.mp3')
@@ -59,10 +59,10 @@ export async function init_World({
           recoverySound.currentTime = 0
         }
       } else {
-        if (recoveryEmptySound.paused) {
-          recoveryEmptySound.play()
+        if (notAvailableSound.paused) {
+          notAvailableSound.play()
         } else {
-          recoveryEmptySound.currentTime = 0
+          notAvailableSound.currentTime = 0
         }
       }
     }
@@ -85,21 +85,27 @@ export async function init_World({
       recoverPoint(player.toughness)
     }
 
-    if (
-      keyboard.keyOnce('-') && 
-      player.ability.value > 0 
-    ) {
-      player.ability.value--
-      player.shielded = true
-      clearTimeout(shieldTimer)
-      shieldTimer = setTimeout(() => {
-        player.shielded = false
-      }, 3000)
-
-      if (shieldSound.paused) {
-        shieldSound.play()
+    if (keyboard.keyOnce('-')) {
+      if (player.ability.value > 0) {
+        player.ability.value--
+        player.shielded = true
+        
+        clearTimeout(shieldTimer)
+        shieldTimer = setTimeout(() => {
+          player.shielded = false
+        }, 3000)
+  
+        if (shieldSound.paused) {
+          shieldSound.play()
+        } else {
+          shieldSound.currentTime = 0
+        }
       } else {
-        shieldSound.currentTime = 0
+        if (notAvailableSound.paused) {
+          notAvailableSound.play()
+        } else {
+          notAvailableSound.currentTime = 0
+        }
       }
     }
 
