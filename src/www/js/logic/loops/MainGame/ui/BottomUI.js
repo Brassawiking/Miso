@@ -41,19 +41,11 @@ export function BottomUI({ state, state: { player } }) {
       onkeydown=${e => { e.stopPropagation() }}
     >
       <div class="quickbar">
-        <div class="statBar" style="color: red;">
-          <div class="statBarIcon">♥</div>
+        <div class="statBar" style="color: lime;" >
+          <div class="statBarIcon">⭯</div>
           ${
-            Array(player.toughness.max).fill(null).map((_, index) => html`
-              <div class="statBarPoint ${index+1 > player.toughness.value ? 'empty' : ''}"/>
-            `)
-          }
-        </div>
-        <div class="statBar" style="color: gold;">
-          <div class="statBarIcon">➤</div>
-          ${
-            Array(player.stamina.max).fill(null).map((_, index) => html`
-              <div class="statBarPoint ${index+1 > player.stamina.value ? 'empty' : ''}"/>
+            Array(player.recovery.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.recovery.value ? 'empty' : ''}"/>
             `)
           }
         </div>
@@ -65,11 +57,19 @@ export function BottomUI({ state, state: { player } }) {
             `)
           }
         </div>
-        <div class="statBar" style="color: lime;" >
-          <div class="statBarIcon">⭯</div>
+        <div class="statBar" style="color: gold;">
+          <div class="statBarIcon">➤</div>
           ${
-            Array(player.recovery.max).fill(null).map((_, index) => html`
-              <div class="statBarPoint ${index+1 > player.recovery.value ? 'empty' : ''}"/>
+            Array(player.stamina.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.stamina.value ? 'empty' : ''}"/>
+            `)
+          }
+        </div>
+        <div class="statBar" style="color: red;">
+          <div class="statBarIcon">♥</div>
+          ${
+            Array(player.toughness.max).fill(null).map((_, index) => html`
+              <div class="statBarPoint ${index+1 > player.toughness.value ? 'empty' : ''}"/>
             `)
           }
         </div>
@@ -179,10 +179,10 @@ export function BottomUI({ state, state: { player } }) {
       .bottomUI .statBar {
         display: flex;
         box-sizing: border-box;
-        height: 24px; 
+        height: 48px; 
         padding: 2px; 
         margin: 0 8px;
-        transform: skew(-15deg) translateY(-16px);
+        transform: skew(-15deg) translateY(-36px);
         border-radius: 4px;
         border: 1px solid #fff;
         background: #000;
@@ -192,12 +192,13 @@ export function BottomUI({ state, state: { player } }) {
         padding: 0 2px;
         line-height: 20px;
         font-weight: 900;
+        align-self: center;
       }
 
       .bottomUI .statBarPoint {
         height: 100%; 
         margin: 0 2px; 
-        width: 8px; 
+        width: 12px; 
         border-radius: 2px;
         background: currentColor; 
         box-shadow: rgba(0, 0, 0, 0.3) -1px -1px 2px 0px inset, #fff 1px 1px 2px 0px inset; 

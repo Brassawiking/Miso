@@ -20,6 +20,14 @@ const items = [
       jump: 0.5,
     }
   },
+  {
+    name: 'Traveler',
+    icon: 'https://opengameart.org/sites/default/files/styles/medium/public/cystal_full.png',
+    type: 'mod',
+    effects: {
+      speed: 10,
+    }
+  },
 ]
 
 export function Shop({ state: { player }}) {
@@ -61,7 +69,6 @@ export function Shop({ state: { player }}) {
       .shop .item {
         border: 1px solid #fff;
         padding: 10px 30px;
-        height: 100px;
         box-sizing: border-box;
         display: flex;
         margin: 20px 0;
@@ -77,8 +84,10 @@ export function Shop({ state: { player }}) {
       }
 
       .shop .item img {
-        height: 100%;
+        height: 80px;
+        width: 80px;
         margin-right: 30px;
+        text-align: center;
       }
 
       .shop .item h1 {

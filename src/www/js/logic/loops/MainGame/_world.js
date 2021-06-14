@@ -70,13 +70,13 @@ export async function init_World({
     state.interactiveLandpoint = getInteractiveProp(player, world)
 
     if (keyboard.keyOnce('B')) {
-      recoverPoint(player.toughness)
+      recoverPoint(player.ability)
     }
     if (keyboard.keyOnce('N')) {
       recoverPoint(player.stamina)
     }
     if (keyboard.keyOnce('M')) {
-      recoverPoint(player.ability)
+      recoverPoint(player.toughness)
     }
 
     if (
