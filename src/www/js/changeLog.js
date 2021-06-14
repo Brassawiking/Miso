@@ -1,6 +1,9 @@
 export const changeLog = `
 
-🗓️ June 12, 2021
+🗓️ June 14, 2021
+⭐ Added 1 new land created by another person!
+
+🗓️ June 13, 2021
 ⭐ Added 1 new land by yours truly! Try your skill at the Proving Grounds to the north!
 🔹 Updated intro land with a LAVA encounter
 🔹 Tweaked LAVA knockback to be more dangerous
