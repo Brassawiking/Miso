@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 14, 2021
+🔹 Added a new item in shop for ease of travel 
 🔹 Increased stat bar size and flipped order for better peripheral awareness 
 🔹 Big performance boost for large brush sizes, especially with soft brush
 ⭐ Added 1 new land created by another person!
