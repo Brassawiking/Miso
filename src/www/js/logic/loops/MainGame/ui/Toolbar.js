@@ -19,6 +19,7 @@ export function Toolbar({ state, state: { brush, player, world }, data: { user }
         points: land.points.map(x => {
           const point = { ...x }
           delete point.land
+          delete point._position
           if (point.prop) {
             delete point.prop.activeText
           }

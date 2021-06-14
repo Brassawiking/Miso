@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 14, 2021
+🔹 Big performance boost for large brush sizes, especially with soft brush
 ⭐ Added 1 new land created by another person!
 
 🗓️ June 13, 2021

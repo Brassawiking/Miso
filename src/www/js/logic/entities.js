@@ -173,17 +173,19 @@ export const LANDPOINT = {
   },
 
   position(lp) {
-    const index = lp.land.points.indexOf(lp)
-    const mapSize = Math.sqrt(lp.land.points.length)
+    if (!lp._position) {
+      const index = lp.land.points.indexOf(lp)
+      const mapSize = Math.sqrt(lp.land.points.length)
+      const localX = index % mapSize
+      const localY = (index - localX) / mapSize
 
-    const localX = index % mapSize
-    const localY = (index - localX) / mapSize
-
-    return [
-      localX + lp.land.x * mapSize,
-      0,
-      localY + lp.land.y * mapSize
-    ]
+      lp._position = [
+        localX + lp.land.x * mapSize,
+        0,
+        localY + lp.land.y * mapSize
+      ]
+    }
+    return lp._position
   }
 }
 
@@ -249,21 +251,17 @@ export const BRUSH = {
   },
 
   ownedLandPoints(b, world, user) {
-    const landPoints = []
+    const landPoints = new Set()
     for (let i = 0 ; i < 2 * (b.size - 1) + 1; ++i) {
       for (let j = 0 ; j < 2 * (b.size - 1) + 1; ++j) {
         const offset = [i-b.size + 1, 0, j-b.size + 1]
         const landPoint = LANDPOINT.at(v3.add(b.position, offset), world)
         
-        if (
-          landPoint && 
-          landPoint.land.owner === user.name && 
-          !landPoints.includes(landPoint)
-        ) {
-            landPoints.push(landPoint)
+        if (landPoint && landPoint.land.owner === user.name) {
+          landPoints.add(landPoint)
         }
       }
     }
-    return landPoints
+    return Array.from(landPoints)
   }
 }
