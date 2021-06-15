@@ -4,6 +4,9 @@ const  { html } = preact
 export function Inventory({ state: { player }}) {
   return html`
     <div class="inventory">
+      <h3 style="margin: 0 0 20px 0;">
+        Hover mouse for details, right-click to remove items
+      </h3>
       <div class="grid">
         ${
           player.items.map((item, index) => html`
