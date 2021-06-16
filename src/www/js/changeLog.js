@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 16, 2021
+🔹 Changed misc info to debug info section, now only shown when debug is active
 🔹 Info box now displays the current land index the player is within (same index in filename when saving)
 
 🗓️ June 14, 2021

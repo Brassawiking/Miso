@@ -17,10 +17,12 @@ export function Info({ state, state: { brush, player, world } }) {
         <tr><th> Land props </th><td> ${landAtBrush.propCount + ' / ' + world.maxPropCount} </td></tr>
       </table>
 
-      <table>
-        <tr><th colspan="2"> ----- Misc info ----- </th></tr>
-        <tr><th> Land index </th><td> ${landAtPlayer.x}, ${landAtPlayer.y}  </td></tr>
-      </table>
+      ${state.debug && html`
+        <table>
+          <tr><th colspan="2"> ----- Debug info ----- </th></tr>
+          <tr><th> Land index </th><td> ${landAtPlayer.x}, ${landAtPlayer.y}  </td></tr>
+        </table>
+      `}
 
       ${state.help && html`
         <table>
