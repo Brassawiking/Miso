@@ -1,17 +1,15 @@
 import { changeLog } from '../../changeLog.js'
+import { sound_login } from '../../audio/soundEffects.js'
 import { createLoop_MainGame } from './MainGame/MainGame.js'
 import { ui, preact } from '../../rendering/ui.js'
 const { html, render, useState, useEffect } = preact
-
-const enterSound = new Audio('https://opengameart.org/sites/default/files/Accept_0.mp3')
-enterSound.volume = 0.4
 
 export function createLoop_StartScreen ({ data }) {  
   render(html`<${App} data=${data}/>`, ui)
 
   return () => {
     if (data.gameMode) {
-      enterSound.play()
+      sound_login()
       return createLoop_MainGame
     }
   }

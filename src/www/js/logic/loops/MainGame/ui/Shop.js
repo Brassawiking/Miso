@@ -1,7 +1,7 @@
+import { sound_buy } from '../../../../audio/soundEffects.js'
 import { preact } from '../../../../rendering/ui.js'
 const  { html } = preact
 
-const buySound = new Audio('https://opengameart.org/sites/default/files/audio_preview/dropmetalthing.ogg.mp3')
 
 const items = [
   {
@@ -37,11 +37,7 @@ export function Shop({ state: { player }}) {
       alert('No more room in inventory')
     } else {
       player.items[firstEmptySlot] = item
-      if (buySound.paused) {
-        buySound.play()
-      } else {
-        buySound.currentTime = 0
-      }
+      sound_buy()
     }
   }
 

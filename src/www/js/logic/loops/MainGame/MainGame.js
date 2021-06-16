@@ -79,7 +79,6 @@ export async function createLoop_MainGame ({
   return ({time, deltaTime}) => {
     update_Movement({ deltaTime })
     update_Camera()
-    update_Editing()
     update_World({ time })
     update_UI()
   }

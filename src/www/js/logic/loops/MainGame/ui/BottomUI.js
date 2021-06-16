@@ -3,9 +3,7 @@ const  { html, useState } = preact
 import { Inventory } from './Inventory.js'
 import { Events } from './Events.js'
 import { Shop } from './Shop.js'
-
-const menuSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/mouseclick.wav.mp3')
-const tabSound = new Audio('https://opengameart.org/sites/default/files/Menu%20Selection%20Click%20%28preview%29.mp3')
+import { sound_menu, sound_tab } from '../../../../audio/soundEffects.js'
 
 export function BottomUI({ state, state: { player } }) {
   const [expanded, setExpanded] = useState(false)
@@ -17,23 +15,14 @@ export function BottomUI({ state, state: { player } }) {
 
   const tabSelected = tab => {
     setTab(tab)
-
-    if (tabSound.paused) {
-      tabSound.play()
-    } else {
-      tabSound.currentTime = 0
-    }
+    sound_tab()
   }
 
   const toggle = e => {
     e.target.blur();
 
     setExpanded(!expanded)
-    if (menuSound.paused) {
-      menuSound.play()
-    } else {
-      menuSound.currentTime = 0
-    }
+    sound_menu()
   }
 
   return html`

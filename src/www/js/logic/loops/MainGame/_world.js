@@ -3,12 +3,13 @@ import { keyboard } from '../../../system/input.js'
 import { LAND, LANDPOINT } from '../../entities.js'
 import { loadData, loadLandIntoWorld } from '../../data.js'
 import { createScene_World } from '../../../rendering/scenes/World.js'
-
-const recoverySound = new Audio('https://opengameart.org/sites/default/files/audio_preview/click.wav.mp3')
-const notAvailableSound = new Audio('https://opengameart.org/sites/default/files/Metal%20Click.mp3')
-const lavaSound = new Audio('https://opengameart.org/sites/default/files/a_1.mp3')
-const setbackSound = new Audio('https://opengameart.org/sites/default/files/game_over_bad_chest.mp3')
-const shieldSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/spell3.wav.mp3')
+import { 
+  sound_recovery, 
+  sound_notAvailable, 
+  sound_shield, 
+  sound_lava, 
+  sound_setback,
+} from '../../../audio/soundEffects.js'
 
 export async function init_World({
   state,
@@ -53,17 +54,9 @@ export async function init_World({
       if (player.recovery.value > 0) {
         stat.value++
         player.recovery.value--
-        if (recoverySound.paused) {
-            recoverySound.play()
-        } else {
-          recoverySound.currentTime = 0
-        }
+        sound_recovery()
       } else {
-        if (notAvailableSound.paused) {
-          notAvailableSound.play()
-        } else {
-          notAvailableSound.currentTime = 0
-        }
+        sound_notAvailable()
       }
     }
   }
@@ -102,17 +95,9 @@ export async function init_World({
           player.shielded = false
         }, 3000)
   
-        if (shieldSound.paused) {
-          shieldSound.play()
-        } else {
-          shieldSound.currentTime = 0
-        }
+        sound_shield()
       } else {
-        if (notAvailableSound.paused) {
-          notAvailableSound.play()
-        } else {
-          notAvailableSound.currentTime = 0
-        }
+        sound_notAvailable()
       }
     }
 
@@ -129,11 +114,7 @@ export async function init_World({
         player.takenDamage = false
       }, 1000)
 
-      if (lavaSound.paused) {
-        lavaSound.play()
-      } else {
-        lavaSound.currentTime = 0
-      }
+      sound_lava()
     }
 
     if (player.toughness.value <= 0) {
@@ -146,11 +127,7 @@ export async function init_World({
       player.recovery.value = 0
       player.takenDamage = false
 
-      if (setbackSound.paused) {
-        setbackSound.play()
-      } else {
-        setbackSound.currentTime = 0
-      }
+      sound_setback()
     }
 
     scene_World({ 

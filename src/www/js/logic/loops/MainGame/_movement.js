@@ -2,13 +2,11 @@ import { v3 } from '../../../common/math.js'
 import { keyboard } from '../../../system/input.js'
 import { WORLD } from '../../entities.js'
 
-const jumpSound = new Audio('https://opengameart.org/sites/default/files/audio_preview/fall.wav.mp3')
-jumpSound.volume = 0.25
-
-const dashSound = new Audio('https://opengameart.org/sites/default/files/sfx_fly.mp3')
-dashSound.volume = 0.25
-
-const notAvailableSound = new Audio('https://opengameart.org/sites/default/files/Metal%20Click.mp3')
+import { 
+  sound_jump, 
+  sound_dash, 
+  sound_notAvailable,
+} from '../../../audio/soundEffects.js'
 
 export function init_Movement({
   state,
@@ -49,28 +47,16 @@ export function init_Movement({
       if (player.stamina.value > 0) {
         player.velocity = v3.add(player.velocity, v3.multiply(v3.normalize(player.direction), jumpSpeed * 4))
         player.stamina.value--
-        if (dashSound.paused) {
-          dashSound.play()
-        } else {
-          dashSound.currentTime = 0
-        }
+        sound_dash()
       } else {
-        if (notAvailableSound.paused) {
-          notAvailableSound.play()
-        } else {
-          notAvailableSound.currentTime = 0
-        }
+        sound_notAvailable()
       }
     }
 
     if (state.gravity) {
       if (keyboard.keyOnce('PAGEUP') && !player.velocity[1]) {
         player.velocity[1] += jumpSpeed
-        if (jumpSound.paused) {
-          jumpSound.play()
-        } else {
-          jumpSound.currentTime = 0
-        }
+        sound_jump()
       }
     } else {
       if (keyboard.key('PAGEUP')) {
