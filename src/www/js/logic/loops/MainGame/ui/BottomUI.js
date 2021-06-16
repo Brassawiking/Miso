@@ -11,6 +11,10 @@ export function BottomUI({ state, state: { player } }) {
   const [expanded, setExpanded] = useState(false)
   const [tab, setTab] = useState('inventory')
 
+  const speed = player.base.speed + player.items.filter(x => x && x.type == 'mod' && x.effects.speed != null).reduce((sum, item) => sum + item.effects.speed, 0)
+  const jumpSpeed = player.base.jump + player.items.filter(x => x && x.type == 'mod' && x.effects.jump != null).reduce((sum, item) => sum + item.effects.jump, 0)
+
+
   const tabSelected = tab => {
     setTab(tab)
 
@@ -90,11 +94,16 @@ export function BottomUI({ state, state: { player } }) {
         </button>
       </div>
 
-      <div style="padding: 20px;">
-        [Quick summary]
+      <div style="border:1px solid #fff; border-radius: 8px; margin: 10px 20px; padding: 10px 15px; font-weight: 900; background: rgba(0, 0, 0, 0.5);">
+        <span style="margin: 0 15px;">        
+          Speed: ${speed.toFixed(2)} 
+        </span>
+        <span style="margin: 0 15px;">  
+          Jump: ${jumpSpeed.toFixed(2)} 
+        </span>
       </div>
  
-      <div style="flex: 1 1 0; min-height: 0; padding: 10px; display: flex; flex-direction: column;">
+      <div style="flex: 1 1 0; min-height: 0; padding: 20px; display: flex; flex-direction: column;">
         <div class="tabs">
           <div onclick=${() => tabSelected('inventory')} class="tab ${tab == 'inventory' ? 'selected' : '' }">
             <div style="font-size: 14px; font-weight: 300;">${player.items.filter(x => x).length} / ${player.items.length}</div>
@@ -135,7 +144,7 @@ export function BottomUI({ state, state: { player } }) {
         left: 0;
         width: 100%; 
         height: calc(100% - 80px); 
-        background: rgba(0,0,0,0.5); 
+        background: rgba(0,0,0,0.65); 
         color: #fff;
         transition: 350ms;
         box-sizing: border-box;

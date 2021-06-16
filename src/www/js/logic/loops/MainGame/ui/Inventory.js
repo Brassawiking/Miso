@@ -53,15 +53,15 @@ ${Object.keys(item.effects).map(effect => `${effect}: ${item.effects[effect]}`).
         display: grid;
         grid-template-columns: repeat(20, 1fr);
         grid-template-rows: repeat(10, 1fr);
-        gap: 2px;
         overflow: hidden;
+        border: 1px solid #777;
+        border-radius: 10px;
       }
       
       .inventory .slot {
         overflow: hidden;
-        border-radius: 4px;
-        border: 1px solid #777;
-        background: linear-gradient(142deg, rgba(2,0,36,1) 0%, rgba(52,58,74,1) 100%);
+        outline: 1px solid #777;
+        background: linear-gradient(142deg, rgba(2,0,36,1) 0%, rgb(37 44 62) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
