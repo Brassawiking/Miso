@@ -373,6 +373,7 @@ export function createScene_World(landSize) {
             }
             propList.push({
               prop,
+              landPoint, 
               position: [
                 i + land.x*landSize, 
                 landPoint.height,
@@ -386,10 +387,10 @@ export function createScene_World(landSize) {
 
       const propList = propListCache[index]
       for (let i = 0, len = propList.length; i < len; ++i) {
-        const { prop, position } = propList[i]
+        const { prop, position, landPoint } = propList[i]
         let propRender = propRenders[prop.type]
         if (propRender) {
-          propRender(cameraView, position, sunRay, prop.rotation)
+          propRender(cameraView, position, sunRay, prop.rotation, landPoint._withinBrush ? 0.5 : 1)
         }
       }
     })

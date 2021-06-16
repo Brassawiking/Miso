@@ -130,12 +130,24 @@ export async function init_World({
       sound_setback()
     }
 
+    if (state.ownedLandPointsWithinBrush) {
+      state.ownedLandPointsWithinBrush.forEach(x => {
+        x._withinBrush = true
+      })
+    }
+
     scene_World({ 
       time,
       lands,
       state,
       sunRay
     })
+
+    if (state.ownedLandPointsWithinBrush) {
+      state.ownedLandPointsWithinBrush.forEach(x => {
+        delete x._withinBrush
+      })
+    }
 
     lands.forEach(land => {
       land.heightMapDirty = false

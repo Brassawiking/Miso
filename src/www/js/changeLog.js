@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 16, 2021
+🔹 Props within brush now turn semi-transparent to easier see which ones will be affected
 🐛 Fixed accidental removal of all editing, oops
 🔹 Added speed and jump values to the quick summary section
 🔹 Changed misc info to debug info section, now only shown when debug is active

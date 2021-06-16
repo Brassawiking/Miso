@@ -47,6 +47,8 @@ export function init_Editing({
     }
   
     const landPoints = BRUSH.ownedLandPoints(brush, world, user)
+    state.ownedLandPointsWithinBrush = landPoints
+    
     const heightDelta = 0.1
     if (keyboard.key('ARROWUP') || (mouse.left && state.currentActionType === 'land_raise')) {
       landPoints.forEach(landPoint => {
