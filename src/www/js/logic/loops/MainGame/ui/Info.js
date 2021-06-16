@@ -2,8 +2,10 @@ import { LAND } from '../../../entities.js'
 import { preact } from '../../../../rendering/ui.js'
 const  { html } = preact
 
-export function Info({ state, state: { brush, world } }) {
+export function Info({ state, state: { brush, player, world } }) {
   const landAtBrush = LAND.at(brush.position, world) || {}
+  const landAtPlayer = LAND.at(player.position, world)
+  
   return html`
     <div class="info ui-box ui-bottom ui-right" style="bottom: 60px;">
       <table>
@@ -13,6 +15,11 @@ export function Info({ state, state: { brush, world } }) {
         <tr><th> Land name </th><td> ${landAtBrush.owner != null ? landAtBrush.name : 'NOT CLAIMED'} </td></tr>
         <tr><th> Land owner </th><td> ${landAtBrush.owner != null ? landAtBrush.owner : 'NOT CLAIMED'} </td></tr>
         <tr><th> Land props </th><td> ${landAtBrush.propCount + ' / ' + world.maxPropCount} </td></tr>
+      </table>
+
+      <table>
+        <tr><th colspan="2"> ----- Misc info ----- </th></tr>
+        <tr><th> Land index </th><td> ${landAtPlayer.x}, ${landAtPlayer.y}  </td></tr>
       </table>
 
       ${state.help && html`

@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ June 16, 2021
+🔹 Info box now displays the current land index the player is within (same index in filename when saving)
+
 🗓️ June 14, 2021
 🔹 Can now change view distance for taking those sweet screenshots! (Larger distance is very performance heavy) 
 🔹 Added sound effect when trying to use DASH or SHIELD when they are not available 
