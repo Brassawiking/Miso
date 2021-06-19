@@ -63,6 +63,7 @@ export async function createLoop_MainGame ({
     gravity: true,
     debug: false,
     help: true,
+    fixedLandHeight: 5,
 
     viewDistance: 1,
   }

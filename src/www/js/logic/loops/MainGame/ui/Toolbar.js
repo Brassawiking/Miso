@@ -132,6 +132,18 @@ export function Toolbar({ state, state: { brush, player, world }, data: { user }
         />
       </label>
       <label>
+        Land fixed height:
+        ${' '}
+        <input
+          style="width: 50px;"
+          value=${state.fixedLandHeight}
+          oninput=${e => { state.fixedLandHeight = +e.target.value }}
+          onchange=${e => { e.target.blur() }}
+          type="number" 
+          tabindex="-1"
+        />
+      </label>
+      <label>
         Debug:
         ${' '}
         <input

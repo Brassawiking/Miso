@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ June 19, 2021
+🔹 Added a new LAND_FIXED to mouse actions, which sets the height within brush to the fixed number in the toolbar
+
 🗓️ June 16, 2021
 🔹 Props within brush now turn semi-transparent to easier see which ones will be affected
 🐛 Fixed accidental removal of all editing, oops

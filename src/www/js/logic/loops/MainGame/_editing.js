@@ -87,6 +87,13 @@ export function init_Editing({
       })
     }
 
+    if (mouse.left && state.currentActionType === 'land_fixed') {
+      landPoints.forEach(landPoint => {
+        landPoint.height = state.fixedLandHeight
+        landPoint.land.heightMapDirty = true
+      })
+    }
+
     if (keyboard.key('DELETE') || (mouse.left && state.currentActionType === 'reset')) {
       landPoints.forEach(landPoint => {
         landPoint.height = 1

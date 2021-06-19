@@ -2,6 +2,7 @@ export const actionTypes = [
   'land_raise',
   'land_lower',
   'land_even',
+  'land_fixed',
   'paint',
   'prop_add',
   'prop_remove',
