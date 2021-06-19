@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 19, 2021
+⭐ Added 1 new land created by yours truly!
 ⭐ Added 1 new land created by another person!
 🔹 Can now sample land height (Y) for easier use of LAND_FIXED
 🔹 Made LAND_EVEN with smooth brush much more effective
