@@ -102,6 +102,13 @@ export function init_Editing({
       })
     }
 
+    if (keyboard.keyOnce('Y')) {
+      const landPoint = LANDPOINT.at(brush.position, world)
+      if (landPoint) {
+        state.fixedLandHeight = landPoint.height
+      }
+    }
+
     if (keyboard.key('DELETE') || (mouse.left && state.currentActionType === 'reset')) {
       landPoints.forEach(landPoint => {
         landPoint.height = 1

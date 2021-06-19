@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 19, 2021
+🔹 Can now sample land height (Y) for easier use of LAND_FIXED
 🔹 Made LAND_EVEN with smooth brush much more effective
 🔹 LAND_FIXED now supports smooth brush
 🔹 Added a new LAND_FIXED to mouse actions, which sets the height within brush to the fixed number in the toolbar

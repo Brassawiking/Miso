@@ -42,6 +42,7 @@ export function Info({ state, state: { brush, player, world } }) {
           <tr><th> Space </th><td> Edit prop </td></tr>
           <tr><th> (Shift +) K / L </th><td> Rotate prop </td></tr>
           <tr><th> Delete </th><td> Reset land </td></tr>
+          <tr><th> Y </th><td> Sample land height </td></tr>
           <tr><th> O / P </th><td> Change view distance </td></tr>
           <tr><th> [A / B / C / ...] </th><td> Shortcuts </td></tr>
         </table>
