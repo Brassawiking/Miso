@@ -82,15 +82,23 @@ export function init_Editing({
           const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
           factor = Math.max(brush.size - distance, 0) / brush.size
         }
-        landPoint.height += ((averageHeight - landPoint.height) / 100) * factor
+        landPoint.height += ((averageHeight - landPoint.height) / 10) * factor
         landPoint.land.heightMapDirty = true
       })
     }
 
     if (mouse.left && state.currentActionType === 'land_fixed') {
       landPoints.forEach(landPoint => {
-        landPoint.height = state.fixedLandHeight
-        landPoint.land.heightMapDirty = true
+        let setHeight = true
+        if (brush.soft) {
+          const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
+          setHeight = brush.size - distance > 0
+        }
+
+        if (setHeight) {
+          landPoint.height = state.fixedLandHeight
+          landPoint.land.heightMapDirty = true
+        }
       })
     }
 
