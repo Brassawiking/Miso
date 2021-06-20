@@ -165,7 +165,11 @@ export async function init_World({
     if (state.spawnMonsters && state.monsters.length < 1000) {
       const spawn = v3.add(player.position, [Math.random() * 1000 - 500, 0, Math.random() * 1000 - 500])
       spawn[1] = WORLD.heightAt(spawn, world)
-      const position = [spawn[0]+0.1, 50, spawn[2]+0.3]
+      const position = [
+        spawn[0]+(Math.random()*4 -2), 
+        spawn[1]+50, 
+        spawn[2]+(Math.random()*4 -2)
+      ]
       
       state.monsters.push({
         spawn: spawn,
