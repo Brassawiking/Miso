@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ June 20, 2021
+🚀 Added monster trilobites spawning around the world! Fight them back (PAGEDOWN) or they will bite you! Can be toggled off in the top toolbar 
+
 🗓️ June 19, 2021
 ⭐ Added 1 new land created by yours truly!
 ⭐ Added 1 new land created by another person!

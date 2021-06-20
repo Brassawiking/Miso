@@ -144,6 +144,16 @@ export function Toolbar({ state, state: { brush, player, world }, data: { user }
         />
       </label>
       <label>
+        Monsters:
+        ${' '}
+        <input
+          checked=${state.spawnMonsters}
+          oninput=${e => { state.spawnMonsters = e.target.checked; e.target.blur(); }}
+          type="checkbox" 
+          tabindex="-1"
+        />
+      </label>
+      <label>
         Debug:
         ${' '}
         <input

@@ -1,5 +1,5 @@
 import { createRender_Prop } from './_Prop.js'
-import { shape_box } from './helpers/shapes.js'
+import { shape_box } from '../helpers/shapes.js'
 
 export function createRender_PoleVertical() {
   const top = 5.0

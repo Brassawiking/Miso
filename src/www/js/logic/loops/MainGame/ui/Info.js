@@ -21,6 +21,7 @@ export function Info({ state, state: { brush, player, world } }) {
         <table>
           <tr><th colspan="2"> ----- Debug info ----- </th></tr>
           <tr><th> Land index </th><td> ${landAtPlayer.x}, ${landAtPlayer.y}  </td></tr>
+          <tr><th> Monster count </th><td> ${state.monsters.length}  </td></tr>
         </table>
       `}
 
@@ -29,9 +30,10 @@ export function Info({ state, state: { brush, player, world } }) {
           <tr><th colspan="2"> ----- Controls ----- </th></tr>
           <tr><th> Enter </th><td> Claim / Rename land </td></tr>
           <tr><th> WASD </th><td> Move </td></tr>
+          <tr><th> PAGEDOWN </th><td> Swing STAFF </td></tr>
           <tr><th> F </th><td> Dash </td></tr>
-          <tr><th> B / N / M </th><td> Recover points </td></tr>
           <tr><th> - </th><td> Cast SHIELD </td></tr>
+          <tr><th> B / N / M </th><td> Recover points </td></tr>
           <tr><th> Page up </th><td> Jump / Fly up </td></tr>
           <tr><th> Page down </th><td> Fly down </td></tr>
           <tr><th> Up / Down </th><td> Land height </td></tr>

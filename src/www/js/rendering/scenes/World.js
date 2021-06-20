@@ -6,6 +6,7 @@ import { createRender_Sea } from '../renders/Sea.js'
 import { createRender_Terrain } from '../renders/Terrain.js'
 import { createRender_TerrainMarker } from '../renders/TerrainMarker.js'
 import { createRender_PlayerModel } from '../renders/PlayerModel.js'
+import { createRender_Trilobite } from '../renders/Trilobite.js'
 
 import { createRender_Bush } from '../renders/props/Bush.js'
 import { createRender_StoneTablet } from '../renders/props/StoneTablet.js'
@@ -32,6 +33,9 @@ export function createScene_World(landSize) {
   const render_PlayerModel = createRender_PlayerModel()
   const render_Line = createRender_Line()
   const render_PostProcessing = createRender_PostProcessing()
+
+  const render_Trilobite = createRender_Trilobite()
+  const render_TrilobiteHit = createRender_Trilobite([1, 1, 1, 1])
   
   const propRenders = {
     'bush': createRender_Bush(),
@@ -132,12 +136,46 @@ export function createScene_World(landSize) {
     render_Sky()
     handleTerrain(camera.matrix, lands, time, sunRay)
 
+
+    for (let i = 0, len = state.monsters.length; i < len; ++i) {
+      const monster = state.monsters[i]
+      const modelFacingNormal = [0, 0, -1]
+      const direction = v3.normalize(monster.velocity)
+      let rotation = Math.acos(v3.dot(modelFacingNormal, direction))
+      if (v3.cross(direction, modelFacingNormal)[1] < 0) {
+        rotation = 2*Math.PI - rotation 
+      }
+      const render = monster.isHit || monster.toughness <= 0
+        ? render_TrilobiteHit
+        : render_Trilobite
+      render(camera.matrix, monster.position, sunRay, rotation, 1)
+    }
+
     const modelFacingNormal = [0, 0, -1]
     let playerRotation = Math.acos(v3.dot(modelFacingNormal, player.direction))
     if (v3.cross(player.direction, modelFacingNormal)[1] < 0) {
       playerRotation = 2*Math.PI - playerRotation 
     }
     render_PlayerModel(camera.matrix, player.position, sunRay, playerRotation, player.shielded ? 0.25 : 1)
+    
+    if (player.swinging) {
+      const playerArms = v3.add(player.position, [0, 1.25, 0])
+      const swingSpeed = time * 30
+      const swingLength = 3
+      render_Line(
+        camera.matrix,
+        playerArms,
+        v3.add(
+          playerArms,
+          [
+            Math.sin(swingSpeed) * swingLength,
+            0,
+            Math.cos(swingSpeed) * swingLength
+          ]  
+        ),
+        [0, 0, 0]
+      )
+    }
 
     if (state.interactiveLandpoint) {
       const playerEyes = v3.add(player.position, [0, 2, 0])

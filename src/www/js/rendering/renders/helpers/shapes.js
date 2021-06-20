@@ -1,4 +1,4 @@
-import { v3 } from '../../../../common/math.js'
+import { v3 } from '../../../common/math.js'
 
 export function shape_box(vPos, vX, vY, vZ, color) {
   const front = shape_quad(v3.subtract(vPos, vZ), vX, vY, color)

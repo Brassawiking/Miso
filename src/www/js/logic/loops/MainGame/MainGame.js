@@ -26,6 +26,7 @@ export async function createLoop_MainGame ({
       position: [-5, 1, 2],
       velocity: [0, 0, 0],
       direction: [0, 0, 1],
+      swinging: false,
 
       base: {
         speed: 2,
@@ -66,6 +67,9 @@ export async function createLoop_MainGame ({
     fixedLandHeight: 5,
 
     viewDistance: 1,
+
+    spawnMonsters: true,
+    monsters: [],
   }
   
   gl.clearColor(121 / 255, 228 / 255, 245 / 255, 1)
@@ -81,7 +85,7 @@ export async function createLoop_MainGame ({
     update_Movement({ deltaTime })
     update_Camera()
     update_Editing()
-    update_World({ time })
+    update_World({ time, deltaTime })
     update_UI()
   }
 }

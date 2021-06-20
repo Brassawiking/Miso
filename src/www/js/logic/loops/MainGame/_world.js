@@ -1,6 +1,6 @@
 import { v3 } from '../../../common/math.js'
 import { keyboard } from '../../../system/input.js'
-import { LAND, LANDPOINT } from '../../entities.js'
+import { LAND, LANDPOINT, WORLD } from '../../entities.js'
 import { loadData, loadLandIntoWorld } from '../../data.js'
 import { createScene_World } from '../../../rendering/scenes/World.js'
 import { 
@@ -9,6 +9,10 @@ import {
   sound_shield, 
   sound_lava, 
   sound_setback,
+  sound_monsterHit,
+  sound_monsterDie,
+  sound_hitting,
+  sound_monsterBite
 } from '../../../audio/soundEffects.js'
 
 export async function init_World({
@@ -63,7 +67,7 @@ export async function init_World({
     }
   }
 
-  return ({ time }) => {
+  return ({ time, deltaTime }) => {
     const sunSpeed = time / 5 + Math.PI
     const sunRay = [Math.sin(sunSpeed), -1, Math.cos(sunSpeed)]
     const lands = getLands(player, world, state)
@@ -110,8 +114,9 @@ export async function init_World({
       !player.takenDamage
     ) {
       player.toughness.value--
-      player.takenDamage = true
       player.velocity = v3.add(v3.multiply(player.direction, -30), [0, 10, 0])
+
+      player.takenDamage = true
       setTimeout(() => {
         player.takenDamage = false
       }, 1000)
@@ -123,9 +128,9 @@ export async function init_World({
       player.position = [-5, 1, 2]
       player.velocity = [0, 0, 0]
       player.direction = [0, 0, 1]
-      player.toughness.value = 1
-      player.stamina.value = 0
-      player.ability.value = 0
+      player.toughness.value = player.toughness.max
+      player.stamina.value = player.stamina.max
+      player.ability.value = player.ability.max
       player.recovery.value = 0
       player.takenDamage = false
 
@@ -156,6 +161,119 @@ export async function init_World({
       land.colorMapDirty = false
       land.propListDirty = false
     })
+
+    if (state.spawnMonsters && state.monsters.length < 1000) {
+      const spawn = v3.add(player.position, [Math.random() * 1000 - 500, 0, Math.random() * 1000 - 500])
+      spawn[1] = WORLD.heightAt(spawn, world)
+      const position = [spawn[0]+0.1, 50, spawn[2]+0.3]
+      
+      state.monsters.push({
+        spawn: spawn,
+        position: position,
+        toughness: 3,
+        speed: 1,
+        velocity: [0, 0, 0],
+        aggroRange: 20,
+        isHit: null
+      })
+    }
+
+    for (let i = 0, len = state.monsters.length ; i < len ; ++i) {      
+      const monster = state.monsters[i]
+      const distanceToPlayer = v3.length(v3.subtract(monster.spawn, player.position))
+      let target = player.position
+
+      if (distanceToPlayer > monster.aggroRange) {
+        target = monster.spawn
+      }
+      if (distanceToPlayer > 500) {
+        monster.toughness = 0
+      }
+
+      const toTarget = v3.subtract(target, monster.position)
+      toTarget[1] = 0
+
+      if (monster.velocity[1] == 0 && monster.toughness > 0) {
+        monster.velocity = v3.add(
+          monster.velocity,
+          v3.multiply(
+            v3.normalize(toTarget), 
+            monster.speed 
+          )
+        )
+      }
+
+      monster.velocity[0] *= 0.85
+      monster.velocity[2] *= 0.85
+      monster.velocity[1] -= 35 * deltaTime
+
+      monster.position = v3.add(monster.position, v3.multiply(monster.velocity, deltaTime))
+
+      if (monster.toughness > 0) {
+        const minHeight = Math.max(WORLD.heightAt(monster.position, world), -1)
+        if (monster.position[1] < minHeight) {
+          monster.position[1] = minHeight
+          monster.velocity[1] = 0
+        }
+      }
+
+      const toPlayer = v3.subtract(player.position, monster.position)
+      if (
+        !player.takenDamage &&
+        !player.shielded &&
+        monster.toughness > 0 &&
+        v3.length(toPlayer) < 1
+      ) {
+        toPlayer[1] = 0
+        player.velocity = v3.add(player.velocity, v3.add(v3.multiply(v3.normalize(toPlayer), 50), [0, 15, 0]))
+        player.toughness.value--
+        sound_monsterBite()
+
+        player.takenDamage = true
+        setTimeout(() => {
+          player.takenDamage = false
+        }, 1000)  
+      }
+    }
+
+    if (keyboard.keyOnce('PAGEDOWN') && state.gravity) {
+      sound_hitting()
+      clearTimeout(player.swinging)
+      player.swinging = setTimeout(() => {
+        player.swinging = false
+      }, 200)
+
+
+      for (let i = 0, len = state.monsters.length ; i < len ; ++i) {
+        const monster = state.monsters[i]
+        const toMonster = v3.subtract(monster.position, player.position)
+        if (v3.length(toMonster) < 3 && monster.toughness > 0) {
+          monster.toughness--
+          sound_monsterHit()
+
+          if (monster.toughness <= 0) {
+            sound_monsterDie()
+          }
+
+          clearTimeout(monster.isHit)
+          monster.isHit = setTimeout(() => {
+            monster.isHit = null
+          }, 250)
+
+          monster.velocity = v3.add(
+            monster.velocity, 
+            v3.add(
+              v3.multiply(v3.normalize(toMonster), 50),
+              [0, 12, 0]
+            )
+          )
+        }
+      }
+    }
+
+    state.monsters = state.spawnMonsters 
+      ? state.monsters.filter(x => x.position[1] > -10)
+      : []
   }
 }
 

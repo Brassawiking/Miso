@@ -12,6 +12,11 @@ export const sound_shield = createSoundEffect('https://opengameart.org/sites/def
 export const sound_notAvailable = createSoundEffect('https://opengameart.org/sites/default/files/Metal%20Click.mp3')
 export const sound_setback = createSoundEffect('https://opengameart.org/sites/default/files/game_over_bad_chest.mp3')
 
+export const sound_hitting = createSoundEffect('https://opengameart.org/sites/default/files/SFX_Jump_09_0.mp3', 0.25)
+export const sound_monsterHit = createSoundEffect('https://opengameart.org/sites/default/files/audio_preview/hit01.wav.mp3')
+export const sound_monsterBite = createSoundEffect('https://opengameart.org/sites/default/files/k1.mp3')
+export const sound_monsterDie = createSoundEffect('https://opengameart.org/sites/default/files/audio_preview/mutantdie.wav.mp3')
+
 function createSoundEffect(source, volume = 1) {
   const soundEffect = new Audio(source)
   soundEffect.volume = volume
