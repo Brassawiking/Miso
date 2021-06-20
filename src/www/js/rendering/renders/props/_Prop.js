@@ -88,6 +88,8 @@ export function createRender_Prop(mesh, normals, colors) {
     cameraView: null,
     worldPosition: null,
     u_sunRay: null,
+    u_rotation: null,
+    u_opacity: null,
   }
 
   let currentCameraView

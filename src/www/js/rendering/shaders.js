@@ -1,58 +1,74 @@
 import { gl } from './gl.js'
 
 let currentProgram
-let cachedAttributes
-let cachedUniforms
+let cachedAttributeInputs
+let cachedUniformInputs
 
 export function createShader(options) {
   const shaderProgram = createGLShaderProgram(options)
-  const attributes = dictionaryMap(options.attributes, key => gl.getAttribLocation(shaderProgram, key))
-  const uniforms = dictionaryMap(options.uniforms, key => gl.getUniformLocation(shaderProgram, key))
+  const attributes = Object
+    .keys(options.attributes)
+    .map(attribute => ({ 
+      name: attribute, 
+      location: gl.getAttribLocation(shaderProgram, attribute)
+    }))
+  const uniforms = Object
+    .keys(options.uniforms)
+    .map(uniform => ({ 
+      name: uniform, 
+      location: gl.getUniformLocation(shaderProgram, uniform)
+    }))
 
-  return (inputs) => {
+  const attributesCount = attributes.length
+  const uniformsCount = uniforms.length
+
+  return ({ 
+    attributes: attributeInputs, 
+    uniforms: uniformInputs 
+  }) => {
     if (currentProgram !== shaderProgram) {
       gl.useProgram(shaderProgram)
       currentProgram = shaderProgram
-      cachedAttributes = {}
-      cachedUniforms = {}
+      cachedAttributeInputs = {}
+      cachedUniformInputs = {}
     }
 
-    const attributeKeys = Object.keys(inputs.attributes)
-    for (let i = 0, len = attributeKeys.length; i < len; ++i) {
-      const key = attributeKeys[i]
-      const attribute = inputs.attributes[key]
+    for (let i = 0; i < attributesCount; ++i) {
+      const attribute = attributes[i]
+      const name = attribute.name
+      const input = attributeInputs[name]
 
-      if (cachedAttributes[key] == attribute) {
+      if (cachedAttributeInputs[name] === input) {
         continue
       }
-      cachedAttributes[key] = attribute
+      cachedAttributeInputs[name] = input
 
-      const attributeLocation = attributes[key]
-      gl.bindBuffer(gl.ARRAY_BUFFER, attribute.buffer)
+      const attributeLocation = attribute.location
+      gl.bindBuffer(gl.ARRAY_BUFFER, input.buffer)
       gl.enableVertexAttribArray(attributeLocation)
       gl.vertexAttribPointer(
         attributeLocation, 
-        attribute.size, 
-        attribute.type, 
-        attribute.normalized, 
-        attribute.stride, 
-        attribute.offset
+        input.size, 
+        input.type, 
+        input.normalized, 
+        input.stride, 
+        input.offset
       )
     }
   
-    const uniformKeys = Object.keys(inputs.uniforms)
-    for (let i = 0, len = uniformKeys.length; i < len; ++i) {
-      const key = uniformKeys[i]
-      const uniform = inputs.uniforms[key]
+    for (let i = 0; i < uniformsCount; ++i) {
+      const uniform = uniforms[i]
+      const name = uniform.name
+      const input = uniformInputs[name]
 
-      if (cachedUniforms[key] == uniform) {
+      const cachedInput = cachedUniformInputs[name]
+      if (cachedInput === input) {
         continue
       }
-      cachedUniforms[key] = uniform
+      cachedUniformInputs[name] = input
       
-      const uniformLocation = uniforms[key]
-      const [type, ...args] = uniform
-      gl[`uniform${type}`](uniformLocation, ...args)
+      const [type, ...args] = input
+      gl[`uniform${type}`](uniform.location, ...args)
     }
   }
 }
@@ -138,13 +154,4 @@ function createGLShader(type, source) {
   gl.shaderSource(shader, source)
   gl.compileShader(shader)
   return shader
-}
-
-function dictionaryMap(dictionary, mapper) {
-  return Object
-      .keys(dictionary)
-      .reduce((acc, key) => {
-        acc[key] = mapper(key)
-        return acc
-      }, {})
 }

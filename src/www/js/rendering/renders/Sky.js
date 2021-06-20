@@ -42,7 +42,7 @@ export function createRender_Sky() {
   ])
 
   const attributes = {
-    vertexPosition: {
+    vertex: {
       size: 2,
       type: gl.FLOAT,
       normalized: false,

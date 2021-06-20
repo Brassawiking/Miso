@@ -61,7 +61,7 @@ export function createRender_PostProcessing() {
   ])
 
   const attributes = {
-    vertexPosition: {
+    vertex: {
       size: 2,
       type: gl.FLOAT,
       normalized: false,
