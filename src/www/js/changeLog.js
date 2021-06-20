@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 20, 2021
+🐛 Fixed trilobites not wandering around out in the sea
 🔹 Trilobites now wanders around instead of twitching on the spot
 🚀 Added monster trilobites spawning around the world! Fight them back (PAGEDOWN) or they will bite you! Can be toggled off in the top toolbar 
 

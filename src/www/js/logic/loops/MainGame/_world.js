@@ -194,7 +194,7 @@ export async function init_World({
       if (distanceToPlayer > 500) {
         monster.toughness = 0
       }
-      if (v3.length(v3.subtract(monster.wanderTarget, monster.position)) < 3) {
+      if (Math.pow(monster.wanderTarget[0] - monster.position[0], 2) + Math.pow(monster.wanderTarget[2] - monster.position[2], 2)  < Math.pow(1, 2)) {
         monster.wanderTarget = v3.add(monster.spawn, [
           Math.random() * 20 - 10,
           0,
