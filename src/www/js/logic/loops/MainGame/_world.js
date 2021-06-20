@@ -166,14 +166,15 @@ export async function init_World({
       const spawn = v3.add(player.position, [Math.random() * 1000 - 500, 0, Math.random() * 1000 - 500])
       spawn[1] = WORLD.heightAt(spawn, world)
       const position = [
-        spawn[0]+(Math.random()*4 -2), 
+        spawn[0], 
         spawn[1]+50, 
-        spawn[2]+(Math.random()*4 -2)
+        spawn[2]
       ]
       
       state.monsters.push({
         spawn: spawn,
         position: position,
+        wanderTarget: spawn,
         toughness: 3,
         speed: 1,
         velocity: [0, 0, 0],
@@ -188,10 +189,17 @@ export async function init_World({
       let target = player.position
 
       if (distanceToPlayer > monster.aggroRange) {
-        target = monster.spawn
+        target = monster.wanderTarget
       }
       if (distanceToPlayer > 500) {
         monster.toughness = 0
+      }
+      if (v3.length(v3.subtract(monster.wanderTarget, monster.position)) < 3) {
+        monster.wanderTarget = v3.add(monster.spawn, [
+          Math.random() * 20 - 10,
+          0,
+          Math.random() * 20 - 10,
+        ])
       }
 
       const toTarget = v3.subtract(target, monster.position)
