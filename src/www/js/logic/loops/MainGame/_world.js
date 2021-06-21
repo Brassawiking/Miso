@@ -47,6 +47,7 @@ export async function init_World({
     loadData('data/lands/miso_land_-4_-2.json'),
     loadData('data/lands/miso_land_1_-2.json'),
     loadData('data/lands/miso_land_0_0.json'),
+    loadData('data/lands/miso_land_1_0.json'),
   ])
   loadedLands.forEach(x => loadLandIntoWorld(x, world))
 
@@ -88,7 +89,7 @@ export async function init_World({
       state.viewDistance++
     }
     if (keyboard.keyOnce('O')) {
-      state.viewDistance = Math.max(state.viewDistance - 1, 1)
+      state.viewDistance = Math.max(state.viewDistance - 1, 0)
     }
 
     if (keyboard.keyOnce('-')) {

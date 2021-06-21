@@ -1,5 +1,9 @@
 export const changeLog = `
 
+🗓️ June 21, 2021
+🔹 Minimum view distance lowered, can now be set to be only the current land you are standing on
+⭐ Added 1 new land created by yours truly!
+
 🗓️ June 20, 2021
 🐛 Fixed trilobites not wandering around out in the sea
 🔹 Trilobites now wanders around instead of twitching on the spot
