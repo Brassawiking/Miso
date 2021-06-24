@@ -1,7 +1,7 @@
 export const changeLog = `
 
 🗓️ June 24, 2021
-🔹 Fix viewport on Ipad
+🔹 Fixed viewport on Ipad
 🔹 Reduced trilobite spawn density
 ⭐ Added 1 new land created by yours truly!
 🔹 Moved monster toggle button
