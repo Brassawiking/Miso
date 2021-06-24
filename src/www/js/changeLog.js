@@ -1,6 +1,8 @@
 export const changeLog = `
 
 🗓️ June 24, 2021
+🔹 Reduced trilobite spawn density
+⭐ Added 1 new land created by yours truly!
 🔹 Moved monster toggle button
 ⭐ Added 9 new lands created by another person!
 

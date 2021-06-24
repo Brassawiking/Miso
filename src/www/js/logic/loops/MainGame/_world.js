@@ -57,6 +57,7 @@ export async function init_World({
     loadData('data/lands/miso_land_-8_-1.json'),
     loadData('data/lands/miso_land_-8_0.json'),
     loadData('data/lands/miso_land_-8_1.json'),
+    loadData('data/lands/miso_land_-2_1.json'),
   ])
   loadedLands.forEach(x => loadLandIntoWorld(x, world))
 
@@ -172,7 +173,7 @@ export async function init_World({
       land.propListDirty = false
     })
 
-    if (state.spawnMonsters && state.monsters.length < 1000) {
+    if (state.spawnMonsters && state.monsters.length < 500) {
       const spawn = v3.add(player.position, [Math.random() * 1000 - 500, 0, Math.random() * 1000 - 500])
       spawn[1] = WORLD.heightAt(spawn, world)
       const position = [
