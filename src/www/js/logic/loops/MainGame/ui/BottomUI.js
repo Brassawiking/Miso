@@ -72,6 +72,15 @@ export function BottomUI({ state, state: { player } }) {
         <button 
           onclick=${e => {
             e.target.blur()
+            state.spawnMonsters = !state.spawnMonsters
+          }}
+          class="${state.spawnMonsters ? 'selected' : ''}"
+        >
+          Monsters
+        </button>
+        <button 
+          onclick=${e => {
+            e.target.blur()
             state.help = !state.help
           }}
           class="${state.help ? 'selected' : ''}"

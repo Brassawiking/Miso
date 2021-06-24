@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 24, 2021
+🔹 Moved monster toggle button
 ⭐ Added 9 new lands created by another person!
 
 🗓️ June 21, 2021
