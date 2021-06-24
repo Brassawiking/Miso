@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ June 24, 2021
+⭐ Added 9 new lands created by another person!
+
 🗓️ June 21, 2021
 🔹 Minimum view distance lowered, can now be set to be only the current land you are standing on
 ⭐ Added 1 new land created by yours truly!
