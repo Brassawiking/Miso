@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ June 25, 2021
+⭐ Added 1 new land created by yours truly!
+
 🗓️ June 24, 2021
 🔹 Fixed viewport on Ipad
 🔹 Reduced trilobite spawn density
