@@ -64,20 +64,15 @@ export async function init_World({
 
   setInterval(() => {
     player.recovery.value = Math.min(player.recovery.value + 1, player.recovery.max)
-  }, 5000)
+    if (player.recovery.value === player.recovery.max) {
+      player.recovery.value = 0
+      player.toughness.value = Math.min(player.toughness.value + 1, player.toughness.max)
+      player.stamina.value = Math.min(player.stamina.value + 5, player.stamina.max)
+      player.ability.value = Math.min(player.ability.value + 1, player.ability.max)
+    }
+  }, 1000)
 
   let shieldTimer
-  const recoverPoint = (stat) => {
-    if (stat.value < stat.max) {
-      if (player.recovery.value > 0) {
-        stat.value++
-        player.recovery.value--
-        sound_recovery()
-      } else {
-        sound_notAvailable()
-      }
-    }
-  }
 
   return ({ time, deltaTime }) => {
     const sunSpeed = time / 5 + Math.PI
@@ -85,16 +80,6 @@ export async function init_World({
     const lands = getLands(player, world, state)
 
     state.interactiveLandpoint = getInteractiveProp(player, world)
-
-    if (keyboard.keyOnce('B')) {
-      recoverPoint(player.ability)
-    }
-    if (keyboard.keyOnce('N')) {
-      recoverPoint(player.stamina)
-    }
-    if (keyboard.keyOnce('M')) {
-      recoverPoint(player.toughness)
-    }
 
     if (keyboard.keyOnce('P')) {
       state.viewDistance++
