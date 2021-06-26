@@ -63,7 +63,7 @@ export async function createLoop_MainGame ({
     
     gravity: true,
     debug: false,
-    help: true,
+    help: localStorage.getItem('miso_help') !== 'false',
     fixedLandHeight: 5,
 
     viewDistance: 1,

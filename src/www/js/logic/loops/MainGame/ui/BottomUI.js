@@ -82,6 +82,7 @@ export function BottomUI({ state, state: { player } }) {
           onclick=${e => {
             e.target.blur()
             state.help = !state.help
+            localStorage.setItem('miso_help', state.help)
           }}
           class="${state.help ? 'selected' : ''}"
         >
