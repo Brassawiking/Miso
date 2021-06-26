@@ -65,6 +65,14 @@ export async function init_World({
   setInterval(() => {
     player.recovery.value = Math.min(player.recovery.value + 1, player.recovery.max)
     if (player.recovery.value === player.recovery.max) {
+      if (
+        player.toughness.value < player.toughness.max ||
+        player.stamina.value < player.stamina.max ||
+        player.ability.value < player.ability.max
+      ) {
+        sound_recovery()
+      }
+
       player.recovery.value = 0
       player.toughness.value = Math.min(player.toughness.value + 1, player.toughness.max)
       player.stamina.value = Math.min(player.stamina.value + 5, player.stamina.max)

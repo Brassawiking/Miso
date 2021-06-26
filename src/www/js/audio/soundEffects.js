@@ -6,7 +6,7 @@ export const sound_buy = createSoundEffect('https://opengameart.org/sites/defaul
 
 export const sound_jump = createSoundEffect('https://opengameart.org/sites/default/files/audio_preview/fall.wav.mp3', 0.25)
 export const sound_dash = createSoundEffect('https://opengameart.org/sites/default/files/sfx_fly.mp3', 0.25)
-export const sound_recovery = createSoundEffect('https://opengameart.org/sites/default/files/audio_preview/click.wav.mp3')
+export const sound_recovery = createSoundEffect('https://opengameart.org/sites/default/files/audio_preview/spell1_0.wav.mp3', 0.1)
 export const sound_lava = createSoundEffect('https://opengameart.org/sites/default/files/a_1.mp3')
 export const sound_shield = createSoundEffect('https://opengameart.org/sites/default/files/audio_preview/spell3.wav.mp3')
 export const sound_notAvailable = createSoundEffect('https://opengameart.org/sites/default/files/Metal%20Click.mp3')
