@@ -1,7 +1,7 @@
 export const changeLog = `
 
 🗓️ June 26, 2021
-🔹 Reworked recovery mechanic, when recovery is full all stats gets their own amount of points (for instance stamina gets much more) and the recovery timer restarts
+🔹 Redesigned recovery mechanic, when recovery is full all stats gets their own amount of points (for instance stamina gets much more) and the recovery timer restarts
 🔹 Improved mouse action LAND_EVEN to account for border lands not owned
 
 🗓️ June 25, 2021
