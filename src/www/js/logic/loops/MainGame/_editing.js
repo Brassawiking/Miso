@@ -46,12 +46,13 @@ export function init_Editing({
       brush.soft = !brush.soft
     }
   
-    const landPoints = BRUSH.ownedLandPoints(brush, world, user)
-    state.ownedLandPointsWithinBrush = landPoints
+    const landPoints = BRUSH.landPoints(brush, world, user)
+    const ownedLandPoints = landPoints.filter(x => x.land.owner === user.name)
+    state.ownedLandPointsWithinBrush = ownedLandPoints
     
     const heightDelta = 0.1
     if (keyboard.key('ARROWUP') || (mouse.left && state.currentActionType === 'land_raise')) {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         let factor = 1
         if (brush.soft) {
           const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
@@ -63,7 +64,7 @@ export function init_Editing({
     }
 
     if (keyboard.key('ARROWDOWN') || (mouse.left && state.currentActionType === 'land_lower')) {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         let factor = 1
         if (brush.soft) {
           const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
@@ -76,7 +77,7 @@ export function init_Editing({
 
     if (mouse.left && state.currentActionType === 'land_even') {
       let averageHeight = landPoints.reduce((sumHeight, land) => sumHeight + land.height, 0) / landPoints.length
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         let factor = 1
         if (brush.soft) {
           const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
@@ -88,7 +89,7 @@ export function init_Editing({
     }
 
     if (mouse.left && state.currentActionType === 'land_fixed') {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         let setHeight = true
         if (brush.soft) {
           const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
@@ -110,7 +111,7 @@ export function init_Editing({
     }
 
     if (keyboard.key('DELETE') || (mouse.left && state.currentActionType === 'reset')) {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         landPoint.height = 1
         landPoint.type = 'grass'
         if (landPoint.prop) {
@@ -130,7 +131,7 @@ export function init_Editing({
       state.currentPropType = propTypes[Math.min(propTypes.indexOf(state.currentPropType) + 1, propTypes.length - 1)]
     }
     if (keyboard.key('E') || (mouse.left && state.currentActionType === 'prop_add')) {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         if (!landPoint.prop) {
           if (landPoint.land.propCount >= world.maxPropCount) {
             return
@@ -143,7 +144,7 @@ export function init_Editing({
       })
     }
     if (keyboard.key('R') || (mouse.left && state.currentActionType === 'prop_remove')) {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         if (landPoint.prop) {
           landPoint.prop = null
           landPoint.land.propCount--
@@ -154,7 +155,7 @@ export function init_Editing({
     const propRotationSpeed = Math.PI / 90
     const propRotationFixedStep = Math.PI / 4
     if ((keyboard.key('K') && !keyboard.key('SHIFT')) || (keyboard.keyOnce('K') && keyboard.key('SHIFT'))) {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         if (landPoint.prop) {
           landPoint.prop.rotation += keyboard.key('SHIFT') ? propRotationFixedStep : propRotationSpeed
           landPoint.land.propListDirty = true
@@ -162,7 +163,7 @@ export function init_Editing({
       })
     }
     if ((keyboard.key('L') && !keyboard.key('SHIFT')) || (keyboard.keyOnce('L') && keyboard.key('SHIFT'))) {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         if (landPoint.prop) {
           landPoint.prop.rotation -= keyboard.key('SHIFT') ? propRotationFixedStep : propRotationSpeed
           landPoint.land.propListDirty = true
@@ -177,7 +178,7 @@ export function init_Editing({
       state.currentLandType = landTypes[Math.min(landTypes.indexOf(state.currentLandType) + 1, landTypes.length - 1)]
     }
     if (keyboard.key('Q') || (mouse.left && state.currentActionType === 'paint')) {
-      landPoints.forEach(landPoint => {
+      ownedLandPoints.forEach(landPoint => {
         landPoint.type = state.currentLandType
         landPoint.land.colorMapDirty = true
       })
@@ -212,7 +213,7 @@ export function init_Editing({
     }
 
     if (keyboard.keyOnce(' ')) {
-      const props = landPoints.filter(x => x.prop).map(x => x.prop)
+      const props = ownedLandPoints.filter(x => x.prop).map(x => x.prop)
       if (props.length) {
         state.editingProps = props
         // const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text || '')

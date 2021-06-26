@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ June 26, 2021
+🔹 Improved mouse action LAND_EVEN to account for border lands not owned
+
 🗓️ June 25, 2021
 ⭐ Added 1 new land created by yours truly!
 

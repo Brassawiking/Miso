@@ -250,14 +250,14 @@ export const BRUSH = {
     }  
   },
 
-  ownedLandPoints(b, world, user) {
+  landPoints(b, world, user) {
     const landPoints = new Set()
     for (let i = 0 ; i < 2 * (b.size - 1) + 1; ++i) {
       for (let j = 0 ; j < 2 * (b.size - 1) + 1; ++j) {
         const offset = [i-b.size + 1, 0, j-b.size + 1]
         const landPoint = LANDPOINT.at(v3.add(b.position, offset), world)
         
-        if (landPoint && landPoint.land.owner === user.name) {
+        if (landPoint) {
           landPoints.add(landPoint)
         }
       }
