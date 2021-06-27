@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 26, 2021
+🔹 Save land button is now disabled when you are on somebody else's land
 🔹 Lands are now streamed on demand, which gives a faster startup and easier to upload new lands!
 
 🗓️ June 26, 2021

@@ -177,6 +177,11 @@ button {
   outline: none !important;
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /*********************
   Dump from JS files
 *********************/

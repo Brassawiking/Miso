@@ -31,7 +31,7 @@ export async function init_World({
 
     loadData('data/lands/miso_land_-1_1.json'),
     loadData('data/lands/miso_land_-2_1.json'),
-    // loadData('data/lands/miso_land_0_1.json'),
+    loadData('data/lands/miso_land_0_1.json'),
 
     loadData('data/lands/miso_land_-1_-1.json'),
     loadData('data/lands/miso_land_-2_-1.json'),

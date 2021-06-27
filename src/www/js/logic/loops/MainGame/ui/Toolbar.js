@@ -1,22 +1,23 @@
 import { preact } from '../../../../rendering/ui.js'
-import { LAND } from '../../../entities.js'
+import { WORLD, LAND } from '../../../entities.js'
 import { loadLandIntoWorld } from '../../../data.js'
 import { actionTypes, landTypes, propTypes} from '../_enums.js'
 const  { html } = preact
 
 export function Toolbar({ state, state: { brush, player, world }, data: { user }}) {
+  const currentLand = LAND.at(player.position, world)
+  const playerOwnsCurrentLand = currentLand && currentLand.owner == user.name 
+
   const save = e => {
     e.target.blur()
-    
-    const land = LAND.at(player.position, world)
-    if (land && land.owner == user.name) {
+    if (playerOwnsCurrentLand) {
       const data = { 
-        name: land.name,
-        owner: land.owner,
-        authors: land.authors,
-        x: land.x,
-        y: land.y,
-        points: land.points.map(x => {
+        name: currentLand.name,
+        owner: currentLand.owner,
+        authors: currentLand.authors,
+        x: currentLand.x,
+        y: currentLand.y,
+        points: currentLand.points.map(x => {
           const point = { ...x }
           delete point.land
           delete point._position
@@ -29,7 +30,7 @@ export function Toolbar({ state, state: { brush, player, world }, data: { user }
 
       var download = document.createElement('a')
       download.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(data)))
-      download.setAttribute('download', `miso_land_${land.x}_${land.y}.json`)
+      download.setAttribute('download', `miso_land_${WORLD.landIndexKey(currentLand.x, currentLand.y)}.json`)
       download.setAttribute('target', '_blank')
       download.style.display = 'none'
       document.body.appendChild(download)
@@ -153,11 +154,11 @@ export function Toolbar({ state, state: { brush, player, world }, data: { user }
           tabindex="-1"
         />
       </label>
-      <button onclick=${save} style="margin: 0 4px;">
-        Save
+      <button onclick=${save} style="margin: 0 4px;" disabled=${!playerOwnsCurrentLand}>
+        Save Land
       </button>
       <button onclick=${load} style="margin: 0 4px;">
-        Load
+        Load Land
       </button>
     </div>
 

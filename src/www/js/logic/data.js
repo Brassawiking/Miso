@@ -1,10 +1,18 @@
 import { LAND, PROP, } from './entities.js'
 
 export async function loadData(url) {
-  return (await fetch(url)).json()
+  try {
+    return (await (await fetch(url)).json())
+  } catch (error) {
+    return null    
+  }
 }
 
 export function loadLandIntoWorld(data, world) {
+  if (data == null) {
+    return
+  }
+
   const land = LAND.identity(world.landSize)
   land.name = data.name
   land.owner = data.owner
