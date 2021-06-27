@@ -112,6 +112,13 @@ export function init_Editing({
 
     if (keyboard.key('DELETE') || (mouse.left && state.currentActionType === 'reset')) {
       ownedLandPoints.forEach(landPoint => {
+        if (brush.soft) {
+          const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
+          if (brush.size - distance <= 0) {
+            return
+          }
+        }
+
         landPoint.height = 1
         landPoint.type = 'grass'
         if (landPoint.prop) {
@@ -132,6 +139,13 @@ export function init_Editing({
     }
     if (keyboard.key('E') || (mouse.left && state.currentActionType === 'prop_add')) {
       ownedLandPoints.forEach(landPoint => {
+        if (brush.soft) {
+          const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
+          if (brush.size - distance <= 0) {
+            return
+          }
+        }
+
         if (!landPoint.prop) {
           if (landPoint.land.propCount >= world.maxPropCount) {
             return
@@ -145,6 +159,13 @@ export function init_Editing({
     }
     if (keyboard.key('R') || (mouse.left && state.currentActionType === 'prop_remove')) {
       ownedLandPoints.forEach(landPoint => {
+        if (brush.soft) {
+          const distance = Math.abs(v3.length(v3.subtract(LANDPOINT.position(landPoint), brush.position)))
+          if (brush.size - distance <= 0) {
+            return
+          }
+        }
+
         if (landPoint.prop) {
           landPoint.prop = null
           landPoint.land.propCount--
@@ -216,10 +237,6 @@ export function init_Editing({
       const props = ownedLandPoints.filter(x => x.prop).map(x => x.prop)
       if (props.length) {
         state.editingProps = props
-        // const text = prompt(`Edit text for ${props.length} prop(s)`, props[0].text || '')
-        // if (text != null) {
-        //   props.forEach(prop => { prop.text = text })
-        // }
       }
     }
   }

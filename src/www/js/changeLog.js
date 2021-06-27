@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ June 26, 2021
+🔹 Add/remove prop and reset land now supports smooth brush mode
 🐛 Removed outdated controls info
 ⭐ Added 10 new lands created by yours truly!
 🔹 Save land button is now disabled when you are on somebody else's land
