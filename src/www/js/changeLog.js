@@ -1,6 +1,8 @@
 export const changeLog = `
 
 🗓️ June 26, 2021
+🔹 Fixed a security issue
+🔹 Added scale (H / J) for props
 🔹 Add/remove prop and reset land now supports smooth brush mode
 🐛 Removed outdated controls info
 ⭐ Added 10 new lands created by yours truly!
