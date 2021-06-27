@@ -18,6 +18,7 @@ export function createRender_Prop(mesh, normals, colors) {
         u_sunRay: 'vec3',
         u_rotation: 'float',
         u_opacity: 'float',
+        u_scale: 'float',
       },
       varyings: {
         v_normal: 'vec4',
@@ -32,6 +33,13 @@ export function createRender_Prop(mesh, normals, colors) {
             0, 0, 0, 1.0
           );
 
+          mat4 scale = mat4(
+            u_scale, 0, 0, 0,
+            0, u_scale, 0, 0,
+            0, 0, u_scale, 0,
+            0, 0, 0, 1
+          );
+
           mat4 translate = mat4(
             1.0, 0, 0, worldPosition.x,
             0, 1.0, 0, worldPosition.y,
@@ -44,6 +52,7 @@ export function createRender_Prop(mesh, normals, colors) {
           v_color = a_color;
           gl_Position = vertexPosition
             * rotate
+            * scale
             * translate
             * cameraView;
         }
@@ -97,7 +106,8 @@ export function createRender_Prop(mesh, normals, colors) {
   let currentSunRay
   let currentRotation
   let currentOpacity
-  return (cameraView, position, sunRay, rotation, opacity = 1) => {
+  let currentScale
+  return (cameraView, position, sunRay, rotation, opacity = 1, scale = 1) => {
     if (currentCameraView != cameraView) {
       uniforms.cameraView = ['Matrix4fv', false, cameraView]
       currentCameraView = cameraView
@@ -117,6 +127,10 @@ export function createRender_Prop(mesh, normals, colors) {
     if (currentOpacity != opacity) {
       uniforms.u_opacity = ['1f', opacity]
       currentOpacity = opacity      
+    }
+    if (currentScale != scale) {
+      uniforms.u_scale = ['1f', scale]
+      currentScale = scale
     }
 
     Shader({

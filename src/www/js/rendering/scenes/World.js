@@ -186,7 +186,7 @@ export function createScene_World(landSize) {
           LANDPOINT.position(state.interactiveLandpoint), 
           [
             0, 
-            state.interactiveLandpoint.height + getInterativePropHeightOffset(state.interactiveLandpoint.prop), 
+            state.interactiveLandpoint.height + getInterativePropHeightOffset(state.interactiveLandpoint.prop) * state.interactiveLandpoint.prop.scale, 
             0
           ]
         ), 
@@ -428,7 +428,7 @@ export function createScene_World(landSize) {
         const { prop, position, landPoint } = propList[i]
         let propRender = propRenders[prop.type]
         if (propRender) {
-          propRender(cameraView, position, sunRay, prop.rotation, landPoint._withinBrush ? 0.5 : 1)
+          propRender(cameraView, position, sunRay, prop.rotation, landPoint._withinBrush ? 0.5 : 1, prop.scale)
         }
       }
     })

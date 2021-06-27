@@ -192,6 +192,25 @@ export function init_Editing({
       })
     }
 
+    const propScaleSpeed = 0.01
+    const propScaleFixedStep = 0.25
+    if ((keyboard.key('H') && !keyboard.key('SHIFT')) || (keyboard.keyOnce('H') && keyboard.key('SHIFT'))) {
+      ownedLandPoints.forEach(landPoint => {
+        if (landPoint.prop) {
+          landPoint.prop.scale += keyboard.key('SHIFT') ? propScaleFixedStep : propScaleSpeed
+          landPoint.land.propListDirty = true
+        }
+      })
+    }
+    if ((keyboard.key('J') && !keyboard.key('SHIFT')) || (keyboard.keyOnce('J') && keyboard.key('SHIFT'))) {
+      ownedLandPoints.forEach(landPoint => {
+        if (landPoint.prop) {
+          landPoint.prop.scale -= keyboard.key('SHIFT') ? propScaleFixedStep : propScaleSpeed
+          landPoint.land.propListDirty = true
+        }
+      })
+    }
+
     if (keyboard.keyOnce('Z')) {
       state.currentLandType = landTypes[Math.max(landTypes.indexOf(state.currentLandType) - 1, 0)]
     }

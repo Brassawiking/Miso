@@ -196,6 +196,7 @@ export const PROP = {
       text: null,
       activeText: null,
       rotation: 0,
+      scale: 1,
       interactions: [],
       // interactions: [
       //   {
