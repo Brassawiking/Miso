@@ -1,6 +1,9 @@
 export const changeLog = `
 
 🗓️ June 26, 2021
+🔹 Lands are now streamed on demand, which gives a faster startup and easier to upload new lands!
+
+🗓️ June 26, 2021
 🔹 Added new recovery sound effect
 🔹 Toggled help is now remembered after you reload
 🔹 Redesigned recovery mechanic, when recovery is full all stats gets their own amount of points (for instance stamina gets much more) and the recovery timer restarts

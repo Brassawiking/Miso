@@ -24,43 +24,20 @@ export async function init_World({
 }) {
   const scene_World = createScene_World(world.landSize)
 
-  const loadedLands = await Promise.all([
+  const preloadedLands = await Promise.all([
     loadData('data/lands/miso_land_-1_0.json'),
-    loadData('data/lands/miso_land_-1_-1.json'),
-    loadData('data/lands/miso_land_0_-1.json'),
     loadData('data/lands/miso_land_-2_0.json'),
-    loadData('data/lands/miso_land_-1_-2.json'),
-    loadData('data/lands/miso_land_-1_-3.json'),
-    loadData('data/lands/miso_land_-3_0.json'),
-    loadData('data/lands/miso_land_-4_-1.json'),
-    loadData('data/lands/miso_land_-5_1.json'),
-    loadData('data/lands/miso_land_-5_-1.json'),
-    loadData('data/lands/miso_land_-5_0.json'),
-    loadData('data/lands/miso_land_-3_-1.json'),
-    loadData('data/lands/miso_land_-3_1.json'),
-    loadData('data/lands/miso_land_-4_0.json'),
-    loadData('data/lands/miso_land_-4_1.json'),
-    loadData('data/lands/miso_land_0_-2.json'),
-    loadData('data/lands/miso_land_-1_1.json'),
-    loadData('data/lands/miso_land_-2_-1.json'),
-    loadData('data/lands/miso_land_-1_2.json'),
-    loadData('data/lands/miso_land_-4_-2.json'),
-    loadData('data/lands/miso_land_1_-2.json'),
     loadData('data/lands/miso_land_0_0.json'),
-    loadData('data/lands/miso_land_1_0.json'),
-    loadData('data/lands/miso_land_-6_-1.json'),
-    loadData('data/lands/miso_land_-6_0.json'),
-    loadData('data/lands/miso_land_-6_1.json'),
-    loadData('data/lands/miso_land_-7_-1.json'),
-    loadData('data/lands/miso_land_-7_0.json'),
-    loadData('data/lands/miso_land_-7_1.json'),
-    loadData('data/lands/miso_land_-8_-1.json'),
-    loadData('data/lands/miso_land_-8_0.json'),
-    loadData('data/lands/miso_land_-8_1.json'),
+
+    loadData('data/lands/miso_land_-1_1.json'),
     loadData('data/lands/miso_land_-2_1.json'),
-    loadData('data/lands/miso_land_-2_-2.json'),
+    // loadData('data/lands/miso_land_0_1.json'),
+
+    loadData('data/lands/miso_land_-1_-1.json'),
+    loadData('data/lands/miso_land_-2_-1.json'),
+    loadData('data/lands/miso_land_0_-1.json'),
   ])
-  loadedLands.forEach(x => loadLandIntoWorld(x, world))
+  preloadedLands.forEach(x => loadLandIntoWorld(x, world))
 
   setInterval(() => {
     player.recovery.value = Math.min(player.recovery.value + 1, player.recovery.max)
@@ -75,7 +52,7 @@ export async function init_World({
 
       player.recovery.value = 0
       player.toughness.value = Math.min(player.toughness.value + 1, player.toughness.max)
-      player.stamina.value = Math.min(player.stamina.value + 5, player.stamina.max)
+      player.stamina.value = Math.min(player.stamina.value + 8, player.stamina.max)
       player.ability.value = Math.min(player.ability.value + 1, player.ability.max)
     }
   }, 1000)
@@ -295,20 +272,27 @@ export async function init_World({
 }
 
 function getLands(player, world, state) {
-  const getOrCreateLand = (iX, iY) => 
-    LAND.at_index(iX, iY, world) ||
-    LAND.add(LAND.identity(world.landSize), world, iX, iY)
+  const getOrCreateLand = (iX, iY) => {
+    const land = LAND.at_index(iX, iY, world)
+    if (!land) {
+      loadData(`data/lands/miso_land_${WORLD.landIndexKey(iX, iY)}.json`)
+        .then(data => loadLandIntoWorld(data, world))
+    }
+    return (
+      land ||
+      LAND.add(LAND.identity(world.landSize), world, iX, iY)
+    )
+  }
  
   const activeLandIndexX = Math.floor(player.position[0] / world.landSize)
   const activeLandIndexY = Math.floor(player.position[2] / world.landSize)
-  const activeLand = getOrCreateLand(activeLandIndexX, activeLandIndexY)
   
   const result = []
   const viewDistance = state.viewDistance
 
   for (let i = -viewDistance; i <= viewDistance ; ++i) {
     for (let j = -viewDistance; j <= viewDistance ; ++j) {
-      result.push(getOrCreateLand(activeLand.x + i, activeLand.y + j))
+      result.push(getOrCreateLand(activeLandIndexX + i, activeLandIndexY + j))
     }
   }
 
