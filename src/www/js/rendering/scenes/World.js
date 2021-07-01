@@ -19,6 +19,7 @@ import { createRender_Crystal } from '../renders/props/Crystal.js'
 import { createRender_HouseRoof } from '../renders/props/HouseRoof.js'
 import { createRender_HouseWall } from '../renders/props/HouseWall.js'
 import { createRender_Steps } from '../renders/props/Steps.js'
+import { createRender_Chest } from '../renders/props/Chest.js'
 
 import { createRender_Line } from '../renders/Line.js'
 
@@ -38,25 +39,26 @@ export function createScene_World(landSize) {
   const render_TrilobiteHit = createRender_Trilobite([1, 1, 1, 1])
   
   const propRenders = {
-    'bush': createRender_Bush(),
-    'stone_tablet': createRender_StoneTablet(),
-    'person': createRender_Person(),
-    'person_red': createRender_Person([1, 0, 0, 1]),
-    'person_green': createRender_Person([0, 1, 0, 1]),
-    'person_blue': createRender_Person([0, 0, 1, 1]),
-    'person_yellow': createRender_Person([1, 1, 0, 1]),
-    'person_purple': createRender_Person([1, 0, 1, 1]),
-    'person_cyan': createRender_Person([0, 1, 1, 1]),
-    'person_white': createRender_Person([1, 1, 1, 1]),
-    'person_black': createRender_Person([0, 0, 0, 1]),
-    'tree': createRender_Tree(),
-    'pole_horizontal': createRender_PoleHorizontal(),
-    'pole_vertical': createRender_PoleVertical(),
-    'fence': createRender_Fence(),
-    'crystal': createRender_Crystal(),
-    'house_roof': createRender_HouseRoof(),
-    'house_wall': createRender_HouseWall(),
-    'steps': createRender_Steps(),
+    bush: createRender_Bush(),
+    stone_tablet: createRender_StoneTablet(),
+    person: createRender_Person(),
+    person_red: createRender_Person([1, 0, 0, 1]),
+    person_green: createRender_Person([0, 1, 0, 1]),
+    person_blue: createRender_Person([0, 0, 1, 1]),
+    person_yellow: createRender_Person([1, 1, 0, 1]),
+    person_purple: createRender_Person([1, 0, 1, 1]),
+    person_cyan: createRender_Person([0, 1, 1, 1]),
+    person_white: createRender_Person([1, 1, 1, 1]),
+    person_black: createRender_Person([0, 0, 0, 1]),
+    tree: createRender_Tree(),
+    pole_horizontal: createRender_PoleHorizontal(),
+    pole_vertical: createRender_PoleVertical(),
+    fence: createRender_Fence(),
+    crystal: createRender_Crystal(),
+    house_roof: createRender_HouseRoof(),
+    house_wall: createRender_HouseWall(),
+    steps: createRender_Steps(),
+    chest: createRender_Chest(),
   }
 
   const landCache = []

@@ -37,4 +37,5 @@ export const propTypes = [
   'house_roof',
   'house_wall',
   'steps',
+  'chest',
 ].sort((a, b) => a.localeCompare(b))

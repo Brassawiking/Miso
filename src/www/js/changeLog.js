@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ July 01, 2021
+🔹 Added prop CHEST
+
 🗓️ June 26, 2021
 🔹 Fixed a security issue
 🔹 Added scale (H / J) for props
