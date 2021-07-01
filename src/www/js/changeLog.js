@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ July 01, 2021
+🐛 Fixed line of interest placement for CHEST prop text
 🔹 Added prop CHEST
 
 🗓️ June 26, 2021

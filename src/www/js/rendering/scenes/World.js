@@ -474,6 +474,8 @@ function getInterativePropHeightOffset(prop) {
       return 4.5
     case 'steps': 
       return 0
+    case 'chest': 
+      return 0.5
     default:
       return 2
   }
