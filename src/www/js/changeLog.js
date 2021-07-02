@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ July 02, 2021
+🔹 Added prop CAMPFIRE
+
 🗓️ July 01, 2021
 🐛 Fixed line of interest placement for CHEST prop text
 🔹 Added prop CHEST

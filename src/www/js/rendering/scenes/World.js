@@ -20,6 +20,7 @@ import { createRender_HouseRoof } from '../renders/props/HouseRoof.js'
 import { createRender_HouseWall } from '../renders/props/HouseWall.js'
 import { createRender_Steps } from '../renders/props/Steps.js'
 import { createRender_Chest } from '../renders/props/Chest.js'
+import { createRender_Campfire } from '../renders/props/Campfire.js'
 
 import { createRender_Line } from '../renders/Line.js'
 
@@ -59,6 +60,7 @@ export function createScene_World(landSize) {
     house_wall: createRender_HouseWall(),
     steps: createRender_Steps(),
     chest: createRender_Chest(),
+    campfire: createRender_Campfire(),
   }
 
   const landCache = []
@@ -476,6 +478,8 @@ function getInterativePropHeightOffset(prop) {
       return 0
     case 'chest': 
       return 0.5
+    case 'campfire': 
+      return 0.75
     default:
       return 2
   }
