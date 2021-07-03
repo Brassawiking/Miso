@@ -24,6 +24,8 @@ import { createRender_Campfire } from '../renders/props/Campfire.js'
 
 import { createRender_Line } from '../renders/Line.js'
 
+import { MAX_PROP_INSTANCE_COUNT } from '../renders/props/_Prop.js'
+
 import { createRender_PostProcessing } from '../renders/PostProcessing.js'
 import { LANDPOINT } from '../../logic/entities.js'
 
@@ -152,7 +154,7 @@ export function createScene_World(landSize) {
       const render = monster.isHit || monster.toughness <= 0
         ? render_TrilobiteHit
         : render_Trilobite
-      render(camera.matrix, monster.position, sunRay, rotation, 1)
+      render(camera.matrix, monster.position, sunRay, [rotation], [1], [1])
     }
 
     const modelFacingNormal = [0, 0, -1]
@@ -160,7 +162,7 @@ export function createScene_World(landSize) {
     if (v3.cross(player.direction, modelFacingNormal)[1] < 0) {
       playerRotation = 2*Math.PI - playerRotation 
     }
-    render_PlayerModel(camera.matrix, player.position, sunRay, playerRotation, player.shielded ? 0.25 : 1)
+    render_PlayerModel(camera.matrix, player.position, sunRay, [playerRotation], [player.shielded ? 0.25 : 1], [1])
     
     if (player.swinging) {
       const playerArms = v3.add(player.position, [0, 1.25, 0])
@@ -406,6 +408,8 @@ export function createScene_World(landSize) {
         }
 
         propList.length = 0
+        const propBuckets = {}
+
         for (let i = 0; i < landSize; ++i) {
           for (let j = 0; j < landSize; ++j) {
             const landPoint = land.points[i + j*landSize]
@@ -413,26 +417,51 @@ export function createScene_World(landSize) {
             if (!prop) {
               continue
             }
-            propList.push({
-              prop,
-              landPoint, 
-              position: [
-                i + land.x*landSize, 
-                landPoint.height,
-                j + land.y*landSize
-              ],
-            }) 
+
+            const propBucket = propBuckets[prop.type] = propBuckets[prop.type] || {
+              positions: [],
+              rotations: [],
+              scales: [],
+              opacities: [],
+            }
+
+            propBucket.positions.push(
+              i + land.x*landSize, 
+              landPoint.height,
+              j + land.y*landSize
+            )
+
+            propBucket.rotations.push(prop.rotation)
+            propBucket.scales.push(prop.scale)
+            propBucket.opacities.push(landPoint._withinBrush ? 0.5 : 1)
           }
         }
-        propList.sort((a, b) => a.prop.type.localeCompare(b.prop.type))
+
+        propList.push(
+          ...Object
+            .keys(propBuckets)
+            .map(propType => ({
+              render: propRenders[propType],
+              values: propBuckets[propType]
+            }))
+        )
       }
 
       const propList = propListCache[index]
       for (let i = 0, len = propList.length; i < len; ++i) {
-        const { prop, position, landPoint } = propList[i]
-        let propRender = propRenders[prop.type]
-        if (propRender) {
-          propRender(cameraView, position, sunRay, prop.rotation, landPoint._withinBrush ? 0.5 : 1, prop.scale)
+        const { render, values: { positions, rotations, scales, opacities } } = propList[i]
+        
+        for (let j = 0, len = positions.length / 3 ; j < len; j += MAX_PROP_INSTANCE_COUNT) {
+          const start = j
+          const end = start + MAX_PROP_INSTANCE_COUNT
+          render(
+            cameraView, 
+            positions.slice(start*3, end*3), 
+            sunRay, 
+            rotations.slice(start, end), 
+            opacities.slice(start, end), 
+            scales.slice(start, end),
+          )
         }
       }
     })

@@ -4,6 +4,7 @@ import { createArrayBuffer } from '../../buffers.js'
 
 let Shader
 
+export const MAX_PROP_INSTANCE_COUNT = 128
 export function createRender_Prop(mesh, normals, colors) {
   if (!Shader) {
     Shader = createShader({
@@ -14,29 +15,35 @@ export function createRender_Prop(mesh, normals, colors) {
       },
       uniforms: {
         cameraView: 'mat4',
-        worldPosition: 'vec3',
         u_sunRay: 'vec3',
-        u_rotation: 'float',
-        u_opacity: 'float',
-        u_scale: 'float',
+        u_positions: `vec3[${MAX_PROP_INSTANCE_COUNT}]`,
+        u_rotations: `float[${MAX_PROP_INSTANCE_COUNT}]`,
+        u_scales: `float[${MAX_PROP_INSTANCE_COUNT}]`,
+        u_opacities: `float[${MAX_PROP_INSTANCE_COUNT}]`,
       },
       varyings: {
         v_normal: 'vec4',
         v_color: 'vec4',
+        v_opacity: 'float',
       },
       vertex: `
         void main() {
+          vec3 worldPosition = u_positions[gl_InstanceID];
+          float rotation = u_rotations[gl_InstanceID];
+          float scaling = u_scales[gl_InstanceID];
+          float opacity = u_opacities[gl_InstanceID];
+
           mat4 rotate = mat4(
-            cos(-u_rotation), 0, sin(-u_rotation), 0,
+            cos(-rotation), 0, sin(-rotation), 0,
             0, 1.0, 0, 0,
-            -sin(-u_rotation), 0, cos(-u_rotation), 0,
+            -sin(-rotation), 0, cos(-rotation), 0,
             0, 0, 0, 1.0
           );
 
           mat4 scale = mat4(
-            u_scale, 0, 0, 0,
-            0, u_scale, 0, 0,
-            0, 0, u_scale, 0,
+            scaling, 0, 0, 0,
+            0, scaling, 0, 0,
+            0, 0, scaling, 0,
             0, 0, 0, 1
           );
 
@@ -47,9 +54,11 @@ export function createRender_Prop(mesh, normals, colors) {
             0, 0, 0, 1.0
           );
   
+          v_opacity = opacity;
           v_normal = a_normal
             * rotate;
           v_color = a_color;
+
           gl_Position = vertexPosition
             * rotate
             * scale
@@ -60,7 +69,7 @@ export function createRender_Prop(mesh, normals, colors) {
       fragment: `
         void main() {
           float light = dot(-normalize(u_sunRay), normalize(v_normal.xyz));
-          fragment = vec4((v_color * max(light, 0.4)).rgb, v_color.a * u_opacity);
+          fragment = vec4((v_color * max(light, 0.4)).rgb, v_color.a * v_opacity);
         }
       `
     })
@@ -102,35 +111,20 @@ export function createRender_Prop(mesh, normals, colors) {
   }
 
   let currentCameraView
-  let currentPosition
   let currentSunRay
-  let currentRotation
-  let currentOpacity
-  let currentScale
-  return (cameraView, position, sunRay, rotation, opacity = 1, scale = 1) => {
+  return (cameraView, positions, sunRay, rotations, opacities, scales) => {
+    uniforms.u_positions = ['3fv', positions]
+    uniforms.u_rotations = ['1fv', rotations]
+    uniforms.u_opacities = ['1fv', opacities]
+    uniforms.u_scales = ['1fv', scales]
+
     if (currentCameraView != cameraView) {
       uniforms.cameraView = ['Matrix4fv', false, cameraView]
       currentCameraView = cameraView
     }
-    if (currentPosition != position) {
-      uniforms.worldPosition = ['3f', ...position]
-      currentPosition = position
-    }
     if (currentSunRay != sunRay) {
       uniforms.u_sunRay = ['3f', ...sunRay]
       currentSunRay = sunRay      
-    }
-    if (currentRotation != rotation) {
-      uniforms.u_rotation = ['1f', rotation]
-      currentRotation = rotation      
-    }
-    if (currentOpacity != opacity) {
-      uniforms.u_opacity = ['1f', opacity]
-      currentOpacity = opacity      
-    }
-    if (currentScale != scale) {
-      uniforms.u_scale = ['1f', scale]
-      currentScale = scale
     }
 
     Shader({
@@ -138,6 +132,6 @@ export function createRender_Prop(mesh, normals, colors) {
       uniforms
     })
 
-    gl.drawArrays(gl.TRIANGLES, 0, mesh.length / 3)
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.length / 3, positions.length / 3)
   }
 }
