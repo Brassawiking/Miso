@@ -90,11 +90,6 @@ export function createScene_World(landSize) {
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0)
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
  
-
-  const swap = (list, indexA, indexB) => {
-    [list[indexA], list[indexB]] = [list[indexB], list[indexA]]
-  }
-
   return ({
     time,
     lands,
@@ -106,24 +101,6 @@ export function createScene_World(landSize) {
     },
     sunRay
   }) => {
-
-    lands.forEach((land, index) => {
-      const cachedLandIndex = landCache.indexOf(land)
-      if (cachedLandIndex > -1 && cachedLandIndex !== index) {
-        swap(landCache, index, cachedLandIndex)
-        swap(heightMapCache, index, cachedLandIndex)
-        swap(heightMapTextureCache, index, cachedLandIndex)
-        swap(colorMapCache, index, cachedLandIndex)
-        swap(colorMapTextureCache, index, cachedLandIndex)
-        swap(propListCache, index, cachedLandIndex)
-        
-        // Rebuild terrain seam
-        // TODO: Rebuild seam only to remove lag
-        land.heightMapDirty = true
-        land.colorMapDirty = true
-      }
-    })
-
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer)
 
     gl.bindTexture(gl.TEXTURE_2D, colorTexture)

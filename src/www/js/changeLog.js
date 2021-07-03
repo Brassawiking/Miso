@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ July 03, 2021
+🐛 Reverted land transition optimizations, broken seams just kept showing up
 🔹 Tweaked sunset to act more proper 
 🔹 Sea now gets darker during nights
 🚀 Improved prop batch rendering with device-aware max limit! 
