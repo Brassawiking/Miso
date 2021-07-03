@@ -422,7 +422,7 @@ export function createScene_World(landSize) {
               positions: [],
               rotations: [],
               scales: [],
-              opacities: [],
+              landPoints: [],
             }
 
             propBucket.positions.push(
@@ -433,7 +433,7 @@ export function createScene_World(landSize) {
 
             propBucket.rotations.push(prop.rotation)
             propBucket.scales.push(prop.scale)
-            propBucket.opacities.push(landPoint._withinBrush ? 0.5 : 1)
+            propBucket.landPoints.push(landPoint)
           }
         }
 
@@ -449,7 +449,7 @@ export function createScene_World(landSize) {
 
       const propList = propListCache[index]
       for (let i = 0, len = propList.length; i < len; ++i) {
-        const { render, values: { positions, rotations, scales, opacities } } = propList[i]
+        const { render, values: { positions, rotations, scales, landPoints } } = propList[i]
         
         for (let j = 0, len = positions.length / 3 ; j < len; j += MAX_PROP_INSTANCE_COUNT) {
           const start = j
@@ -459,7 +459,7 @@ export function createScene_World(landSize) {
             positions.slice(start*3, end*3), 
             sunRay, 
             rotations.slice(start, end), 
-            opacities.slice(start, end), 
+            landPoints.slice(start, end).map(x => x._withinBrush ? 0.5 : 1), 
             scales.slice(start, end),
           )
         }
