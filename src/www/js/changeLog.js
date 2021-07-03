@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ July 03, 2021
+🔹 Added sun and day/night cycle to the sky!
+
 🗓️ July 02, 2021
 🔹 Added prop CAMPFIRE
 

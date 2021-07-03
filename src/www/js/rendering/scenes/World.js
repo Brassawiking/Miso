@@ -137,7 +137,7 @@ export function createScene_World(landSize) {
 
     gl.clear(gl.DEPTH_BUFFER_BIT)
 
-    render_Sky()
+    render_Sky(camera, sunRay)
     handleTerrain(camera.matrix, lands, time, sunRay)
 
 
