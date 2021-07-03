@@ -109,13 +109,18 @@ export function createScene_World(landSize) {
 
     lands.forEach((land, index) => {
       const cachedLandIndex = landCache.indexOf(land)
-      if (cachedLandIndex > -1) {
+      if (cachedLandIndex > -1 && cachedLandIndex !== index) {
         swap(landCache, index, cachedLandIndex)
         swap(heightMapCache, index, cachedLandIndex)
         swap(heightMapTextureCache, index, cachedLandIndex)
         swap(colorMapCache, index, cachedLandIndex)
         swap(colorMapTextureCache, index, cachedLandIndex)
         swap(propListCache, index, cachedLandIndex)
+        
+        // Rebuild terrain seam
+        // TODO: Rebuild seam only to remove lag
+        land.heightMapDirty = true
+        land.colorMapDirty = true
       }
     })
 
@@ -355,7 +360,7 @@ export function createScene_World(landSize) {
                 ? landRight.points[j * landSize].height
                 : height = land.points[(i-1) + j*landSize].height
             }
-            else if (landTopRight && i == landSize && j == landSize) {
+            else {
               height = landTopRight
                 ? landTopRight.points[0].height
                 : height = land.points[(i-1) + (j-1)*landSize].height
@@ -384,7 +389,7 @@ export function createScene_World(landSize) {
         const mapSize = landSize + 1
         let colorMap = colorMapCache[index]
         if (!colorMap) {
-          colorMap = new Uint8Array(new Array(mapSize * mapSize * 4))
+          colorMap = new Uint8Array(new Array(mapSize * mapSize * 4).fill(255))
           colorMapCache[index] = colorMap
         }
 
@@ -407,7 +412,7 @@ export function createScene_World(landSize) {
                 : land.points[(i-1) + j*landSize]
               )
             }
-            else if (i == landSize && j == landSize) {
+            else {
               color = getColor(landTopRight 
                 ? landTopRight.points[0]
                 : land.points[(i-1) + (j-1)*landSize]
@@ -417,7 +422,6 @@ export function createScene_World(landSize) {
             colorMap[i*4 + j*4*mapSize + 0] = color[0]
             colorMap[i*4 + j*4*mapSize + 1] = color[1]
             colorMap[i*4 + j*4*mapSize + 2] = color[2]
-            colorMap[i*4 + j*4*mapSize + 3] = 255
           }
         }
 
