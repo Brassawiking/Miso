@@ -2,7 +2,7 @@ import { gl } from '../../gl.js'
 import { createShader } from '../../shaders.js'
 import { createArrayBuffer } from '../../buffers.js'
 
-const MAX_PROP_INSTANCE_COUNT = 64
+const MAX_PROP_INSTANCE_COUNT = (gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS) / 4) / 4 - 5
 let Shader
 
 export function createRender_Prop(mesh, normals, colors) {

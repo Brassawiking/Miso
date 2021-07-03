@@ -451,6 +451,8 @@ export function createScene_World(landSize) {
   }
 
   function handleProps(cameraView, lands, sunRay) {
+    const renderPropBuckets = {}
+
     lands.forEach((land, index) => {
       if (land.propListDirty || land.heightMapDirty || land != landCache[index]) {
         const landSize = Math.sqrt(land.points.length)
@@ -494,17 +496,36 @@ export function createScene_World(landSize) {
         propList.push(
           ...Object
             .keys(propBuckets)
-            .sort((a, b) => a.localeCompare(b))
             .map(propType => ({
+              type: propType,
               render: propRenders[propType],
               values: propBuckets[propType]
             }))
         )
       }
 
-      const propList = propListCache[index]
-      for (let i = 0, len = propList.length; i < len; ++i) {
-        const { render, values: { positions, rotations, scales, landPoints } } = propList[i]
+      propListCache[index].forEach(propList => {
+        const renderBucket = renderPropBuckets[propList.type] = renderPropBuckets[propList.type] || {
+          render: propList.render,
+          values: {
+            positions: [],
+            rotations: [],
+            scales: [],
+            landPoints: [],
+          }
+        }
+        renderBucket.values.positions.push(...propList.values.positions)
+        renderBucket.values.rotations.push(...propList.values.rotations)
+        renderBucket.values.scales.push(...propList.values.scales)
+        renderBucket.values.landPoints.push(...propList.values.landPoints)
+      })
+    })
+
+    Object
+      .keys(renderPropBuckets)
+      .sort((a, b) => a.localeCompare(b))
+      .forEach(propType => {
+        const { render, values: { positions, rotations, scales, landPoints } } = renderPropBuckets[propType]
         render(
           cameraView, 
           positions, 
@@ -513,8 +534,7 @@ export function createScene_World(landSize) {
           landPoints.map(x => x._withinBrush ? 0.5 : 1), 
           scales,
         )        
-      }
-    })
+      })
   }
 
   function handleBrush(cameraView, brush) {

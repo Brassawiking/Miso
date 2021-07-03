@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ July 03, 2021
+🚀 Improved prop batch rendering with device-aware max limit! 
 🐛 Reduced max prop batching... again
 🐛 Reduced max prop batching to support less performant devices (mobiles, etc)
 🐛 Terrain seams now rebuilds correctly, transition lag is partially back again
