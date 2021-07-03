@@ -24,8 +24,6 @@ import { createRender_Campfire } from '../renders/props/Campfire.js'
 
 import { createRender_Line } from '../renders/Line.js'
 
-import { MAX_PROP_INSTANCE_COUNT } from '../renders/props/_Prop.js'
-
 import { createRender_PostProcessing } from '../renders/PostProcessing.js'
 import { LANDPOINT } from '../../logic/entities.js'
 
@@ -160,6 +158,19 @@ export function createScene_World(landSize) {
     render_Sky(camera, sunRay)
     handleTerrain(camera.matrix, lands, time, sunRay)
 
+    const batchMonstersNormal = {
+      positions: [],
+      rotations: [],
+      scales: [],
+      opacities: [],
+    } 
+    const batchMonstersHit = {
+      positions: [],
+      rotations: [],
+      scales: [],
+      opacities: [],
+    } 
+    
     for (let i = 0, len = state.monsters.length; i < len; ++i) {
       const monster = state.monsters[i]
       const modelFacingNormal = [0, 0, -1]
@@ -168,11 +179,33 @@ export function createScene_World(landSize) {
       if (v3.cross(direction, modelFacingNormal)[1] < 0) {
         rotation = 2*Math.PI - rotation 
       }
-      const render = monster.isHit || monster.toughness <= 0
-        ? render_TrilobiteHit
-        : render_Trilobite
-      render(camera.matrix, monster.position, sunRay, [rotation], [1], [1])
+
+      const batch = monster.isHit || monster.toughness <= 0
+        ? batchMonstersHit
+        : batchMonstersNormal
+      
+      batch.positions.push(...monster.position)
+      batch.rotations.push(rotation)
+      batch.scales.push(1)
+      batch.opacities.push(1)
     }
+
+    render_Trilobite(
+      camera.matrix, 
+      batchMonstersNormal.positions, 
+      sunRay, 
+      batchMonstersNormal.rotations, 
+      batchMonstersNormal.opacities, 
+      batchMonstersNormal.scales, 
+    )
+    render_TrilobiteHit(
+      camera.matrix, 
+      batchMonstersHit.positions, 
+      sunRay, 
+      batchMonstersHit.rotations, 
+      batchMonstersHit.opacities, 
+      batchMonstersHit.scales, 
+    )
 
     const modelFacingNormal = [0, 0, -1]
     let playerRotation = Math.acos(v3.dot(modelFacingNormal, player.direction))
@@ -457,6 +490,7 @@ export function createScene_World(landSize) {
         propList.push(
           ...Object
             .keys(propBuckets)
+            .sort((a, b) => a.localeCompare(b))
             .map(propType => ({
               render: propRenders[propType],
               values: propBuckets[propType]
@@ -467,19 +501,14 @@ export function createScene_World(landSize) {
       const propList = propListCache[index]
       for (let i = 0, len = propList.length; i < len; ++i) {
         const { render, values: { positions, rotations, scales, landPoints } } = propList[i]
-        
-        for (let j = 0, len = positions.length / 3 ; j < len; j += MAX_PROP_INSTANCE_COUNT) {
-          const start = j
-          const end = start + MAX_PROP_INSTANCE_COUNT
-          render(
-            cameraView, 
-            positions.slice(start*3, end*3), 
-            sunRay, 
-            rotations.slice(start, end), 
-            landPoints.slice(start, end).map(x => x._withinBrush ? 0.5 : 1), 
-            scales.slice(start, end),
-          )
-        }
+        render(
+          cameraView, 
+          positions, 
+          sunRay, 
+          rotations, 
+          landPoints.map(x => x._withinBrush ? 0.5 : 1), 
+          scales,
+        )        
       }
     })
   }

@@ -2,9 +2,9 @@ import { gl } from '../../gl.js'
 import { createShader } from '../../shaders.js'
 import { createArrayBuffer } from '../../buffers.js'
 
+const MAX_PROP_INSTANCE_COUNT = 128
 let Shader
 
-export const MAX_PROP_INSTANCE_COUNT = 128
 export function createRender_Prop(mesh, normals, colors) {
   if (!Shader) {
     Shader = createShader({
@@ -112,26 +112,36 @@ export function createRender_Prop(mesh, normals, colors) {
 
   let currentCameraView
   let currentSunRay
-  return (cameraView, positions, sunRay, rotations, opacities, scales) => {
-    uniforms.u_positions = ['3fv', positions]
-    uniforms.u_rotations = ['1fv', rotations]
-    uniforms.u_opacities = ['1fv', opacities]
-    uniforms.u_scales = ['1fv', scales]
+  return (cameraView, batchPositions, sunRay, batchRotations, batchOpacities, batchScales) => {
+    for (let j = 0, len = batchPositions.length / 3 ; j < len; j += MAX_PROP_INSTANCE_COUNT) {
+      const start = j
+      const end = start + MAX_PROP_INSTANCE_COUNT
 
-    if (currentCameraView != cameraView) {
-      uniforms.cameraView = ['Matrix4fv', false, cameraView]
-      currentCameraView = cameraView
+      const positions = batchPositions.slice(start*3, end*3)
+      const rotations = batchRotations.slice(start, end)
+      const opacities = batchOpacities.slice(start, end)
+      const scales = batchScales.slice(start, end)
+
+      uniforms.u_positions = ['3fv', positions]
+      uniforms.u_rotations = ['1fv', rotations]
+      uniforms.u_opacities = ['1fv', opacities]
+      uniforms.u_scales = ['1fv', scales]
+  
+      if (currentCameraView != cameraView) {
+        uniforms.cameraView = ['Matrix4fv', false, cameraView]
+        currentCameraView = cameraView
+      }
+      if (currentSunRay != sunRay) {
+        uniforms.u_sunRay = ['3f', ...sunRay]
+        currentSunRay = sunRay      
+      }
+  
+      Shader({
+        attributes,
+        uniforms
+      })
+  
+      gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.length / 3, positions.length / 3)
     }
-    if (currentSunRay != sunRay) {
-      uniforms.u_sunRay = ['3f', ...sunRay]
-      currentSunRay = sunRay      
-    }
-
-    Shader({
-      attributes,
-      uniforms
-    })
-
-    gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.length / 3, positions.length / 3)
   }
 }

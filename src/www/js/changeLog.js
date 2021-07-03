@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ July 03, 2021
+🔹 Batched trilobites for optimized rendering
 🚀 Improved cache handling, moving between lands should now have much less lag  
 🐛 Fixed broken prop highlight when within the brush
 🚀 Big performance boost to prop rendering! 
