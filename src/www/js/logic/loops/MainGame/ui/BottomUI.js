@@ -72,6 +72,15 @@ export function BottomUI({ state, state: { player } }) {
         <button 
           onclick=${e => {
             e.target.blur()
+            state.dayCycle = !state.dayCycle
+          }}
+          class="${state.dayCycle ? 'selected' : ''}"
+        >
+          Day/Night
+        </button>
+        <button 
+          onclick=${e => {
+            e.target.blur()
             state.spawnMonsters = !state.spawnMonsters
           }}
           class="${state.spawnMonsters ? 'selected' : ''}"

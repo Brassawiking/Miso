@@ -61,7 +61,11 @@ export async function init_World({
 
   return ({ time, deltaTime }) => {
     const sunSpeed = time / 10 + Math.PI
-    const sunRay = [Math.sin(sunSpeed), -Math.sin(sunSpeed / 3) - 0.5, Math.cos(sunSpeed)]
+    const sunRay = [
+      Math.sin(sunSpeed), 
+      state.dayCycle ? -Math.sin(sunSpeed / 3) - 0.5 : -1, 
+      Math.cos(sunSpeed)
+    ]
     const lands = getLands(player, world, state)
 
     state.interactiveLandpoint = getInteractiveProp(player, world)

@@ -67,6 +67,7 @@ export async function createLoop_MainGame ({
     fixedLandHeight: 5,
 
     viewDistance: 1,
+    dayCycle: true,
 
     spawnMonsters: true,
     monsters: [],

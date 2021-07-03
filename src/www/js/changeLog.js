@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ July 03, 2021
+🔹 Added toggle for day/night cycle (for when you need proper light when editing lands)
 🔹 Added sun and day/night cycle to the sky!
 
 🗓️ July 02, 2021
