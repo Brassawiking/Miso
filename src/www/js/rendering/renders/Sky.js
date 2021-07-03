@@ -44,7 +44,7 @@ export function createRender_Sky() {
         vec3 toSun = normalize(-u_sunRay);
         float toSunCenter = length(toSun - normalize(v_cameraDirection));
         vec3 sunColor = vec3(253.0 / 255.0, 184.0 / 255.0, 19.0 / 255.0);
-        vec3 sunLight = sunColor * pow(max(1.0-toSunCenter, 0.0), 16.0);
+        vec3 sunLight = sunColor * pow(max(1.0-toSunCenter, 0.0), 16.0) * smoothstep(-0.075, 0.0, toSun.y);
 
         fragment = vec4(mix(nightColor, dayColor, max(toSun.y + 0.25, 0.0)) + sunLight, 1);
       }    

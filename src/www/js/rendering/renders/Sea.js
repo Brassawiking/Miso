@@ -61,6 +61,7 @@ export function createRender_Sea() {
         vec3 reflectSunRay = normalize(reflect(-u_sunRay, normal));
         vec3 specular = lightColor
           * pow(max(dot(viewRay, reflectSunRay), 0.0), 64.0)
+          * smoothstep(-0.075, 0.0, -normalize(u_sunRay).y)
           * 1.5;
         
         fragment = vec4((diffuse + specular) + seaColor * max(-u_sunRay.y, 0.3), 0.8);
