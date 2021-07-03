@@ -63,7 +63,7 @@ export function createRender_Sea() {
           * pow(max(dot(viewRay, reflectSunRay), 0.0), 64.0)
           * 1.5;
         
-        fragment = vec4((diffuse + specular) + seaColor, 0.8);
+        fragment = vec4((diffuse + specular) + seaColor * max(-u_sunRay.y, 0.3), 0.8);
       }    
     `
   })

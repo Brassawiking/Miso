@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ July 03, 2021
+🔹 Sea now gets darker during nights
 🚀 Improved prop batch rendering with device-aware max limit! 
 🐛 Reduced max prop batching... again
 🐛 Reduced max prop batching to support less performant devices (mobiles, etc)
