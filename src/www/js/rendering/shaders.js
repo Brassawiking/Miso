@@ -4,6 +4,28 @@ let currentProgram
 let cachedAttributeInputs
 let cachedUniformInputs
 
+const cachedUniformFunctions = {
+  '1f': gl.uniform1f.bind(gl),
+  '1fv': gl.uniform1fv.bind(gl),
+  '1i': gl.uniform1i.bind(gl),
+  '1iv': gl.uniform1iv.bind(gl),
+  '2f': gl.uniform2f.bind(gl),
+  '2fv': gl.uniform2fv.bind(gl),
+  '2i': gl.uniform2i.bind(gl),
+  '2iv': gl.uniform2iv.bind(gl),
+  '3f': gl.uniform3f.bind(gl),
+  '3fv': gl.uniform3fv.bind(gl),
+  '3i': gl.uniform3i.bind(gl),
+  '3iv': gl.uniform3iv.bind(gl),
+  '4f': gl.uniform4f.bind(gl),
+  '4fv': gl.uniform4fv.bind(gl),
+  '4i': gl.uniform4i.bind(gl),
+  '4iv': gl.uniform4iv.bind(gl),
+  'Matrix2fv': gl.uniformMatrix2fv.bind(gl),
+  'Matrix3fv': gl.uniformMatrix3fv.bind(gl),
+  'Matrix4fv': gl.uniformMatrix4fv.bind(gl),
+}
+
 export function createShader(options) {
   const shaderProgram = createGLShaderProgram(options)
   const attributes = Object
@@ -68,7 +90,7 @@ export function createShader(options) {
       cachedUniformInputs[name] = input
       
       const [type, ...args] = input
-      gl[`uniform${type}`](uniform.location, ...args)
+      cachedUniformFunctions[type](uniform.location, ...args)
     }
   }
 }
