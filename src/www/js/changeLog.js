@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ July 04, 2021
+🔹 More render optimizations 
 🚀 Yet another big performance boost to prop rendering, no longer primary bottleneck!
 
 🗓️ July 03, 2021

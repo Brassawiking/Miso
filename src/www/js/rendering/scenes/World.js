@@ -70,6 +70,8 @@ export function createScene_World(landSize) {
   const colorMapTextureCache = []
   const propListCache = []
 
+  let renderQueue
+
   const colorTexture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, colorTexture)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
@@ -435,16 +437,16 @@ export function createScene_World(landSize) {
   }
 
   function handleProps(cameraView, lands, sunRay) {
-    const renderPropBuckets = {}
+    let renderQueueDirty = false
 
     lands.forEach((land, index) => {
+      let propList = propListCache[index]
+
       if (land.propListDirty || land.heightMapDirty || land != landCache[index]) {
         const landSize = Math.sqrt(land.points.length)
 
-        let propList = propListCache[index]
         if (!propList) {
-          propList = []
-          propListCache[index] = propList
+          propList = propListCache[index] = []
         }
 
         propList.length = 0
@@ -486,39 +488,60 @@ export function createScene_World(landSize) {
               values: propBuckets[propType]
             }))
         )
-      }
 
-      propListCache[index].forEach(propList => {
-        const renderBucket = renderPropBuckets[propList.type] = renderPropBuckets[propList.type] || {
-          render: propList.render,
-          values: {
+        renderQueueDirty = true
+      }
+    })
+
+    if (renderQueueDirty) {
+      const renderBuckets = {}
+
+      propListCache.forEach(propList => {
+        for (let i = 0, len = propList.length; i < len; ++i) {
+          const { type, render, values: { positions, rotations, scales, landPoints } } = propList[i]
+          
+          const renderBucket = renderBuckets[type] = renderBuckets[type] || {
+            render,
             positions: [],
             rotations: [],
             scales: [],
             landPoints: [],
           }
-        }
-        renderBucket.values.positions.push(...propList.values.positions)
-        renderBucket.values.rotations.push(...propList.values.rotations)
-        renderBucket.values.scales.push(...propList.values.scales)
-        renderBucket.values.landPoints.push(...propList.values.landPoints)
-      })
-    })
 
-    Object
-      .keys(renderPropBuckets)
-      .sort((a, b) => a.localeCompare(b))
-      .forEach(propType => {
-        const { render, values: { positions, rotations, scales, landPoints } } = renderPropBuckets[propType]
-        render(
-          cameraView, 
-          sunRay, 
-          new Float32Array(positions), 
-          new Float32Array(rotations), 
-          new Float32Array(scales),
-          new Float32Array(landPoints.map(x => x._withinBrush ? 0.5 : 1)), 
-        )        
+          for (let j = 0; j < positions.length / 3; ++j) {
+            renderBucket.positions.push(positions[j*3+0])
+            renderBucket.positions.push(positions[j*3+1])
+            renderBucket.positions.push(positions[j*3+2])
+            renderBucket.rotations.push(rotations[j])
+            renderBucket.scales.push(scales[j])
+            renderBucket.landPoints.push(landPoints[j])
+          }    
+        }
       })
+
+      renderQueue = Object
+        .keys(renderBuckets)
+        .sort((a, b) => a.localeCompare(b))
+        .map(type => ({
+          render: renderBuckets[type].render,
+          positions: new Float32Array(renderBuckets[type].positions),
+          rotations: new Float32Array(renderBuckets[type].rotations),
+          scales: new Float32Array(renderBuckets[type].scales),
+          landPoints: renderBuckets[type].landPoints,
+        }))
+    }
+
+    for (let i = 0, len = renderQueue.length; i < len; ++i) {
+      const { render, positions, rotations, scales, landPoints } = renderQueue[i]
+      render(
+        cameraView, 
+        sunRay, 
+        positions, 
+        rotations, 
+        scales,
+        new Float32Array(landPoints.map(x => x._withinBrush ? 0.5 : 1)), 
+      )        
+    }
   }
 
   function handleBrush(cameraView, brush) {
