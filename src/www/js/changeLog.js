@@ -1,6 +1,7 @@
 export const changeLog = `
 
 🗓️ July 04, 2021
+🐛 Fixed problem with prop rendering when you changed view distance 
 🔹 Minor render optimization 
 🔹 More render optimizations 
 🚀 Yet another big performance boost to prop rendering, no longer primary bottleneck!

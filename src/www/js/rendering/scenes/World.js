@@ -496,7 +496,7 @@ export function createScene_World(landSize) {
     if (renderQueueDirty) {
       const renderBuckets = {}
 
-      propListCache.forEach(propList => {
+      propListCache.slice(0, lands.length).forEach(propList => {
         for (let i = 0, len = propList.length; i < len; ++i) {
           const { type, render, values: { positions, rotations, scales, landPoints } } = propList[i]
           
