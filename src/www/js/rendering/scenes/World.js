@@ -531,15 +531,24 @@ export function createScene_World(landSize) {
         }))
     }
 
+    renderPropQueue(cameraView, sunRay)
+  }
+
+  function renderPropQueue(cameraView, sunRay) {
     for (let i = 0, len = renderQueue.length; i < len; ++i) {
       const { render, positions, rotations, scales, landPoints } = renderQueue[i]
+      const landPointsLength = landPoints.length
+      const opacities = new Float32Array(landPointsLength)
+      for (let j = 0; j < landPointsLength; ++j) {
+        opacities[j] = landPoints[j]._withinBrush ? 0.5 : 1
+      }
       render(
         cameraView, 
         sunRay, 
         positions, 
         rotations, 
         scales,
-        new Float32Array(landPoints.map(x => x._withinBrush ? 0.5 : 1)), 
+        opacities, 
       )        
     }
   }
