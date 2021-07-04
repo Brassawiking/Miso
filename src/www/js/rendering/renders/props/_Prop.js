@@ -2,24 +2,23 @@ import { gl } from '../../gl.js'
 import { createShader } from '../../shaders.js'
 import { createArrayBuffer } from '../../buffers.js'
 
-const MAX_PROP_INSTANCE_COUNT = (gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS) / 4) / 4 - 5
 let Shader
 
 export function createRender_Prop(mesh, normals, colors) {
   if (!Shader) {
     Shader = createShader({
       attributes: {
-        vertexPosition: 'vec4',
+        a_vertex: 'vec4',
         a_normal: 'vec4',
         a_color: 'vec4',
+        a_position: ['vec3'],
+        a_rotation: ['float'],
+        a_scale: ['float'],
+        a_opacity: ['float'],
       },
       uniforms: {
-        cameraView: 'mat4',
+        u_cameraView: 'mat4',
         u_sunRay: 'vec3',
-        u_positions: `vec3[${MAX_PROP_INSTANCE_COUNT}]`,
-        u_rotations: `float[${MAX_PROP_INSTANCE_COUNT}]`,
-        u_scales: `float[${MAX_PROP_INSTANCE_COUNT}]`,
-        u_opacities: `float[${MAX_PROP_INSTANCE_COUNT}]`,
       },
       varyings: {
         v_normal: 'vec4',
@@ -28,10 +27,10 @@ export function createRender_Prop(mesh, normals, colors) {
       },
       vertex: `
         void main() {
-          vec3 worldPosition = u_positions[gl_InstanceID];
-          float rotation = u_rotations[gl_InstanceID];
-          float scaling = u_scales[gl_InstanceID];
-          float opacity = u_opacities[gl_InstanceID];
+          vec3 worldPosition = a_position;
+          float rotation = a_rotation;
+          float scaling = a_scale;
+          float opacity = a_opacity;
 
           mat4 rotate = mat4(
             cos(-rotation), 0, sin(-rotation), 0,
@@ -59,11 +58,11 @@ export function createRender_Prop(mesh, normals, colors) {
             * rotate;
           v_color = a_color;
 
-          gl_Position = vertexPosition
+          gl_Position = a_vertex
             * rotate
             * scale
             * translate
-            * cameraView;
+            * u_cameraView;
         }
       `,
       fragment: `
@@ -76,7 +75,7 @@ export function createRender_Prop(mesh, normals, colors) {
   }
 
   const attributes = {
-    vertexPosition: {
+    a_vertex: {
       size: 3,
       type: gl.FLOAT,
       normalized: false,
@@ -100,48 +99,74 @@ export function createRender_Prop(mesh, normals, colors) {
       offset: 0,
       buffer: createArrayBuffer(colors)
     },
+    a_position: {
+      size: 3,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: gl.createBuffer()
+    },
+    a_rotation: {
+      size: 1,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: gl.createBuffer()
+    },
+    a_scale: {
+      size: 1,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: gl.createBuffer()
+    },
+    a_opacity: {
+      size: 1,
+      type: gl.FLOAT,
+      normalized: false,
+      stride: 0,
+      offset: 0,
+      buffer: gl.createBuffer()
+    },
   }
 
   const uniforms = {
-    cameraView: null,
-    worldPosition: null,
+    u_cameraView: null,
     u_sunRay: null,
-    u_rotation: null,
-    u_opacity: null,
   }
 
   let currentCameraView
   let currentSunRay
-  return (cameraView, batchPositions, sunRay, batchRotations, batchOpacities, batchScales) => {
-    for (let j = 0, len = batchPositions.length / 3 ; j < len; j += MAX_PROP_INSTANCE_COUNT) {
-      const start = j
-      const end = start + MAX_PROP_INSTANCE_COUNT
+  return (cameraView, positions, sunRay, rotations, opacities, scales) => {
+    gl.bindBuffer(gl.ARRAY_BUFFER, attributes.a_position.buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW)
 
-      const positions = batchPositions.slice(start*3, end*3)
-      const rotations = batchRotations.slice(start, end)
-      const opacities = batchOpacities.slice(start, end)
-      const scales = batchScales.slice(start, end)
+    gl.bindBuffer(gl.ARRAY_BUFFER, attributes.a_rotation.buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rotations), gl.DYNAMIC_DRAW)
 
-      uniforms.u_positions = ['3fv', positions]
-      uniforms.u_rotations = ['1fv', rotations]
-      uniforms.u_opacities = ['1fv', opacities]
-      uniforms.u_scales = ['1fv', scales]
-  
-      if (currentCameraView != cameraView) {
-        uniforms.cameraView = ['Matrix4fv', false, cameraView]
-        currentCameraView = cameraView
-      }
-      if (currentSunRay != sunRay) {
-        uniforms.u_sunRay = ['3f', ...sunRay]
-        currentSunRay = sunRay      
-      }
-  
-      Shader({
-        attributes,
-        uniforms
-      })
-  
-      gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.length / 3, positions.length / 3)
+    gl.bindBuffer(gl.ARRAY_BUFFER, attributes.a_scale.buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(scales), gl.DYNAMIC_DRAW)
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, attributes.a_opacity.buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(opacities), gl.DYNAMIC_DRAW)
+      
+    if (currentCameraView != cameraView) {
+      uniforms.u_cameraView = ['Matrix4fv', false, cameraView]
+      currentCameraView = cameraView
     }
+    if (currentSunRay != sunRay) {
+      uniforms.u_sunRay = ['3f', ...sunRay]
+      currentSunRay = sunRay      
+    }
+
+    Shader({
+      attributes,
+      uniforms
+    })
+
+    gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.length / 3, positions.length / 3)
   }
 }

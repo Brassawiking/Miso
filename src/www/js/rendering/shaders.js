@@ -32,7 +32,8 @@ export function createShader(options) {
     .keys(options.attributes)
     .map(attribute => ({ 
       name: attribute, 
-      location: gl.getAttribLocation(shaderProgram, attribute)
+      location: gl.getAttribLocation(shaderProgram, attribute),
+      divisor: Array.isArray(options.attributes[attribute]) ? 1 : 0
     }))
   const uniforms = Object
     .keys(options.uniforms)
@@ -76,6 +77,7 @@ export function createShader(options) {
         input.stride, 
         input.offset
       )
+      gl.vertexAttribDivisor(attributeLocation, attribute.divisor);
     }
   
     for (let i = 0; i < uniformsCount; ++i) {
@@ -128,7 +130,13 @@ function vertexSource(options) {
 
     ${
       Object.keys(options.attributes)
-        .map(key => `in ${options.attributes[key]} ${key};`)
+        .map(name => {
+          let type = options.attributes[name]
+          if (Array.isArray(type)) {
+            type = type[0]
+          }
+          return `in ${type} ${name};`
+        })
         .join('\n')
     }
 

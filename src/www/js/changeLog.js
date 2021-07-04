@@ -1,5 +1,8 @@
 export const changeLog = `
 
+🗓️ July 04, 2021
+🚀 Yet another big performance boost to prop rendering, no longer primary bottleneck!
+
 🗓️ July 03, 2021
 🐛 Reverted land transition optimizations, broken seams just kept showing up
 🔹 Tweaked sunset to act more proper 
