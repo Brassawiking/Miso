@@ -138,20 +138,32 @@ export function createRender_Prop(mesh, normals, colors) {
     u_sunRay: null,
   }
 
+  const positionBuffer = attributes.a_position.buffer
+  const rotationBuffer = attributes.a_rotation.buffer
+  const scaleBuffer = attributes.a_scale.buffer
+  const opacityBuffer = attributes.a_opacity.buffer
+ 
   let currentCameraView
   let currentSunRay
-  return (cameraView, positions, sunRay, rotations, opacities, scales) => {
-    gl.bindBuffer(gl.ARRAY_BUFFER, attributes.a_position.buffer)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.DYNAMIC_DRAW)
+  return (
+    cameraView, 
+    sunRay, 
+    positions, 
+    rotations, 
+    scales, 
+    opacities
+  ) => {
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW)
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, attributes.a_rotation.buffer)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rotations), gl.DYNAMIC_DRAW)
+    gl.bindBuffer(gl.ARRAY_BUFFER, rotationBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, rotations, gl.DYNAMIC_DRAW)
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, attributes.a_scale.buffer)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(scales), gl.DYNAMIC_DRAW)
+    gl.bindBuffer(gl.ARRAY_BUFFER, scaleBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, scales, gl.DYNAMIC_DRAW)
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, attributes.a_opacity.buffer)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(opacities), gl.DYNAMIC_DRAW)
+    gl.bindBuffer(gl.ARRAY_BUFFER, opacityBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, opacities, gl.DYNAMIC_DRAW)
       
     if (currentCameraView != cameraView) {
       uniforms.u_cameraView = ['Matrix4fv', false, cameraView]

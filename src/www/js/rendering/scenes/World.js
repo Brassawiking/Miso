@@ -174,19 +174,19 @@ export function createScene_World(landSize) {
 
     render_Trilobite(
       camera.matrix, 
-      batchMonstersNormal.positions, 
       sunRay, 
-      batchMonstersNormal.rotations, 
-      batchMonstersNormal.opacities, 
-      batchMonstersNormal.scales, 
+      new Float32Array(batchMonstersNormal.positions), 
+      new Float32Array(batchMonstersNormal.rotations), 
+      new Float32Array(batchMonstersNormal.scales), 
+      new Float32Array(batchMonstersNormal.opacities), 
     )
     render_TrilobiteHit(
       camera.matrix, 
-      batchMonstersHit.positions, 
       sunRay, 
-      batchMonstersHit.rotations, 
-      batchMonstersHit.opacities, 
-      batchMonstersHit.scales, 
+      new Float32Array(batchMonstersHit.positions), 
+      new Float32Array(batchMonstersHit.rotations), 
+      new Float32Array(batchMonstersHit.scales), 
+      new Float32Array(batchMonstersHit.opacities), 
     )
 
     const modelFacingNormal = [0, 0, -1]
@@ -194,7 +194,14 @@ export function createScene_World(landSize) {
     if (v3.cross(player.direction, modelFacingNormal)[1] < 0) {
       playerRotation = 2*Math.PI - playerRotation 
     }
-    render_PlayerModel(camera.matrix, player.position, sunRay, [playerRotation], [player.shielded ? 0.25 : 1], [1])
+    render_PlayerModel(
+      camera.matrix, 
+      sunRay, 
+      new Float32Array(player.position), 
+      new Float32Array([playerRotation]), 
+      new Float32Array([1]),
+      new Float32Array([player.shielded ? 0.25 : 1]), 
+    )
     
     if (player.swinging) {
       const playerArms = v3.add(player.position, [0, 1.25, 0])
@@ -505,11 +512,11 @@ export function createScene_World(landSize) {
         const { render, values: { positions, rotations, scales, landPoints } } = renderPropBuckets[propType]
         render(
           cameraView, 
-          positions, 
           sunRay, 
-          rotations, 
-          landPoints.map(x => x._withinBrush ? 0.5 : 1), 
-          scales,
+          new Float32Array(positions), 
+          new Float32Array(rotations), 
+          new Float32Array(scales),
+          new Float32Array(landPoints.map(x => x._withinBrush ? 0.5 : 1)), 
         )        
       })
   }
